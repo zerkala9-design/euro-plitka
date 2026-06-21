@@ -52,7 +52,7 @@ const cfg = JSON.stringify(tileCalcConfig);
           <span class="variant-type">квадрат</span>
         </div>
         <div class="variant-svg-wrap">
-          <svg class="panel-svg" id="svg2" viewBox="0 0 240 360" xmlns="http://www.w3.org/2000/svg"></svg>
+          <svg class="panel-svg" id="svg2" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
         <div class="variant-nav-row">
           <button class="variant-nav" id="prevVar2">‹</button>
@@ -70,7 +70,7 @@ const cfg = JSON.stringify(tileCalcConfig);
           <span class="variant-type">ромб</span>
         </div>
         <div class="variant-svg-wrap">
-          <svg class="panel-svg" id="svg3" viewBox="0 0 240 360" xmlns="http://www.w3.org/2000/svg"></svg>
+          <svg class="panel-svg" id="svg3" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
         <div class="variant-nav-row">
           <button class="variant-nav" id="prevVar3">‹</button>
@@ -192,16 +192,23 @@ function calcVariants(W, H, facet, color) {
 
 // ---- SVG ----
 function drawPanel(svgEl, W, H, d1, d2) {
-  const VW = 240, VH = 360;
-  const scale = Math.min(VW / W, VH / H) * 0.9;
-  const pW = W * scale, pH = H * scale;
-  const ox = (VW - pW) / 2, oy = (VH - pH) / 2;
+  // Розмір viewport: пропорційний до стіни, ширина фіксована 300
+  const VW = 300;
+  const VH = Math.round(VW * H / W);
+  svgEl.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
+  svgEl.style.height = Math.min(VH, 480) + 'px';
 
-  const cellW = d1 * scale;
-  const cellH = d2 * scale;
+  const margin = 20; // місце для розмірних ліній
+  const pW = VW - margin - 8;
+  const pH = VH - margin - 8;
+  const ox = 4, oy = margin;
+
+  const scaleX = pW / W;
+  const scaleY = pH / H;
+  const cellW = d1 * scaleX;
+  const cellH = d2 * scaleY;
 
   let paths = '';
-  // Малюємо сітку ромбів (зсунута укладка)
   const cols = Math.ceil(W / d1) + 2;
   const rows = Math.ceil(H / (d2 / 2)) + 2;
 
@@ -209,34 +216,34 @@ function drawPanel(svgEl, W, H, d1, d2) {
     for (let c = -1; c <= cols; c++) {
       const cx = ox + (c + (r % 2 === 0 ? 0.5 : 0)) * cellW;
       const cy = oy + r * (cellH / 2);
-      // Ромб: 4 точки
       const pts = [
         [cx, cy - cellH / 2],
         [cx + cellW / 2, cy],
         [cx, cy + cellH / 2],
         [cx - cellW / 2, cy],
       ];
-      const d = `M${pts[0][0]},${pts[0][1]} L${pts[1][0]},${pts[1][1]} L${pts[2][0]},${pts[2][1]} L${pts[3][0]},${pts[3][1]} Z`;
-      paths += `<path d="${d}" fill="#d0d0d0" stroke="#999" stroke-width="0.5" />`;
+      const dp = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)} L${pts[1][0].toFixed(1)},${pts[1][1].toFixed(1)} L${pts[2][0].toFixed(1)},${pts[2][1].toFixed(1)} L${pts[3][0].toFixed(1)},${pts[3][1].toFixed(1)} Z`;
+      paths += `<path d="${dp}" fill="#d8d8d8" stroke="#888" stroke-width="0.7" />`;
     }
   }
 
-  // Рамка панелі (clipPath)
   const clipId = `clip-${Math.random().toString(36).slice(2)}`;
+  const fs = Math.max(7, Math.min(10, VW / 30));
   svgEl.innerHTML = `
     <defs>
       <clipPath id="${clipId}">
         <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" />
       </clipPath>
     </defs>
-    <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" fill="#f5f5f5" />
+    <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" fill="#ececec" />
     <g clip-path="url(#${clipId})">${paths}</g>
-    <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" fill="none" stroke="#333" stroke-width="1.5" />
-    <!-- розміри -->
-    <line x1="${ox}" y1="${oy - 6}" x2="${ox + pW}" y2="${oy - 6}" stroke="#2196f3" stroke-width="1" />
-    <text x="${ox + pW / 2}" y="${oy - 9}" text-anchor="middle" font-size="9" fill="#2196f3" font-family="Arial">${W} мм</text>
-    <line x1="${ox + pW + 6}" y1="${oy}" x2="${ox + pW + 6}" y2="${oy + pH}" stroke="#2196f3" stroke-width="1" />
-    <text x="${ox + pW + 10}" y="${oy + pH / 2}" text-anchor="start" font-size="9" fill="#2196f3" font-family="Arial" transform="rotate(90,${ox + pW + 10},${oy + pH / 2})">${H} мм</text>
+    <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" fill="none" stroke="#444" stroke-width="1.5" />
+    <!-- ширина -->
+    <line x1="${ox}" y1="${oy - 5}" x2="${ox + pW}" y2="${oy - 5}" stroke="#1976d2" stroke-width="1" marker-start="url(#arr)" />
+    <text x="${ox + pW / 2}" y="${oy - 8}" text-anchor="middle" font-size="${fs}" fill="#1976d2" font-family="Arial,sans-serif" font-weight="600">${W} мм</text>
+    <!-- висота -->
+    <line x1="${ox + pW + 5}" y1="${oy}" x2="${ox + pW + 5}" y2="${oy + pH}" stroke="#1976d2" stroke-width="1" />
+    <text x="${ox + pW + 8}" y="${oy + pH / 2}" text-anchor="middle" font-size="${fs}" fill="#1976d2" font-family="Arial,sans-serif" font-weight="600" transform="rotate(90,${ox + pW + 8},${oy + pH / 2})">${H} мм</text>
   `;
 }
 
@@ -480,11 +487,11 @@ document.addEventListener('DOMContentLoaded', () => {
   .variant-svg-wrap {
     background: #f9f9f9;
     border-radius: 8px;
-    padding: 8px;
+    padding: 12px;
     display: flex;
     justify-content: center;
   }
-  .panel-svg { width: 100%; max-width: 320px; height: 280px; }
+  .panel-svg { width: 100%; max-width: 340px; display: block; }
 
   .variant-dims {
     display: flex;
