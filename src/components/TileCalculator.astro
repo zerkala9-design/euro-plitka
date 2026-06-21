@@ -186,8 +186,7 @@ function calcVariants(W, H, facet, color) {
       },
     });
   }
-  // Лише перші 3 (найбільші плитки — менший N)
-  return variants.slice(0, 3);
+  return variants;
 }
 
 // ---- SVG ----
@@ -259,6 +258,12 @@ function fmtOld(n) {
 let allVariants = [];
 let idxes = [0, 0];
 
+function defaultIndex(variants) {
+  // Знаходимо перший варіант де tileSize <= 350мм (як старий сайт — починає з N=4)
+  const idx = variants.findIndex(v => v.fig2.tileSize <= 350);
+  return idx >= 0 ? idx : variants.length - 1;
+}
+
 function render() {
   const W = parseInt(document.getElementById('wallW').value) || 1500;
   const H = parseInt(document.getElementById('wallH').value) || 2700;
@@ -266,7 +271,8 @@ function render() {
   const color = document.getElementById('color').value;
 
   allVariants = calcVariants(W, H, facet, color);
-  idxes = [0, 0];
+  const def = defaultIndex(allVariants);
+  idxes = [def, def];
   renderVariants(W, H);
 }
 
