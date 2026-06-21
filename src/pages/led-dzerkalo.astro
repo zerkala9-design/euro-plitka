@@ -4,48 +4,75 @@ import LedCalculator from '../components/LedCalculator.astro';
 ---
 
 <Layout
-  title="Калькулятор LED дзеркала — розрахуйте вартість онлайн"
+  title="LED Дзеркала на замовлення — калькулятор ціни онлайн"
   description="Онлайн-калькулятор LED дзеркала: оберіть тип, розмір, колір підсвітки, опції. Миттєвий розрахунок ціни. Виготовлення 3-7 днів."
 >
-  <div class="page-hero">
+  <div class="page-hero page-hero--dark">
     <div class="container">
-      <div class="breadcrumb">
-        <a href="/">Головна</a>
-        <span>›</span>
-        <span>LED дзеркала</span>
-      </div>
-      <h1>Калькулятор LED дзеркала</h1>
-      <p>Розрахуйте вартість вашого дзеркала</p>
+      <div class="breadcrumb"><a href="/">Головна</a><span>›</span><span>LED дзеркала</span></div>
+      <div class="section-label">Виготовлення на замовлення</div>
+      <h1>LED Дзеркала на замовлення</h1>
+      <p class="hero-sub">Фонова та фронтальна підсвітка · будь-які розміри · виготовлення 3–7 днів</p>
     </div>
   </div>
 
-  <section class="section">
+  <section class="section calc-section">
     <div class="container">
       <LedCalculator />
     </div>
   </section>
 
-  <section class="section section--gray">
+  <section class="section backlight-section">
     <div class="container">
-      <h2>Про LED дзеркала</h2>
-      <div class="grid-2" style="margin-top:32px;gap:48px">
-        <div>
+      <div class="section-label">Підсвітка</div>
+      <h2>Типи підсвітки</h2>
+      <div class="backlight-grid">
+        <div class="backlight-card">
+          <div class="backlight-card__num">01</div>
           <h3>Фонова підсвітка</h3>
-          <p>Світлодіодна стрічка розміщена за дзеркалом — створює м'яке сяйво навколо та ефект глибини. Ідеально для ванної та спальні.</p>
-          <br />
+          <p>Світлодіодна стрічка розміщена за дзеркалом — створює м'яке сяйво навколо та ефект глибини. Ідеально для ванної кімнати та спальні. Освітлення розсіяне, атмосферне.</p>
+          <ul class="backlight-list">
+            <li>◆ М'яке атмосферне світло</li>
+            <li>◆ Ефект "парящого" дзеркала</li>
+            <li>◆ Ідеально для декору</li>
+          </ul>
+        </div>
+        <div class="backlight-card">
+          <div class="backlight-card__num">02</div>
           <h3>Фронтальна підсвітка</h3>
           <p>Підсвітка вбудована у спеціальний канал по периметру лицьової сторони. Забезпечує рівномірне функціональне освітлення для макіяжу та гоління.</p>
-        </div>
-        <div>
-          <h3>Додаткові опції</h3>
-          <ul class="options-list">
-            <li><b>Підігрів</b> — запобігає запотіванню дзеркала (+400 грн)</li>
-            <li><b>Сенсор</b> — ввімкнення / вимкнення доторком (+300 грн)</li>
-            <li><b>Дімер</b> — регулювання яскравості (+200 грн)</li>
+          <ul class="backlight-list">
+            <li>◆ Рівномірне яскраве освітлення</li>
+            <li>◆ Без тіней на обличчі</li>
+            <li>◆ Ідеально для ванної / гардеробної</li>
           </ul>
-          <br />
-          <h3>Терміни виготовлення</h3>
-          <p>Стандартні розміри — 3-5 робочих днів.<br />Нестандартні — 5-7 робочих днів.</p>
+        </div>
+      </div>
+
+      <div class="options-block">
+        <div class="section-label" style="margin-top: 48px;">Додаткові опції</div>
+        <div class="options-grid">
+          <div class="option-item">
+            <span class="option-icon">▲</span>
+            <div>
+              <strong>Підігрів</strong>
+              <p>Запобігає запотіванню дзеркала (+400 грн)</p>
+            </div>
+          </div>
+          <div class="option-item">
+            <span class="option-icon">■</span>
+            <div>
+              <strong>Сенсор</strong>
+              <p>Ввімкнення / вимкнення доторком (+300 грн)</p>
+            </div>
+          </div>
+          <div class="option-item">
+            <span class="option-icon">◆</span>
+            <div>
+              <strong>Дімер</strong>
+              <p>Регулювання яскравості підсвітки (+200 грн)</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -53,8 +80,57 @@ import LedCalculator from '../components/LedCalculator.astro';
 </Layout>
 
 <style>
-  .options-list { list-style: disc; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
-  .options-list li { font-size: 0.95rem; color: var(--text-muted); }
-  .options-list b { color: var(--text); }
-  h3 { margin-bottom: 8px; }
+  .page-hero--dark {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 60px 0 48px;
+  }
+  .page-hero--dark .breadcrumb { color: var(--text-muted); margin-bottom: 20px; font-size: 0.88rem; display: flex; gap: 8px; align-items: center; }
+  .page-hero--dark .breadcrumb a { color: var(--text-muted); }
+  .page-hero--dark h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text); margin-bottom: 12px; }
+  .hero-sub { color: var(--text-muted); font-size: 1.1rem; }
+
+  .section-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .calc-section { background: var(--bg); }
+  .backlight-section { background: #111; }
+
+  .backlight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 28px; }
+  .backlight-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    transition: border-color 0.2s;
+  }
+  .backlight-card:hover { border-color: rgba(201,168,76,0.3); }
+  .backlight-card__num { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 12px; }
+  .backlight-card h3 { color: var(--text); font-size: 1.15rem; margin-bottom: 12px; }
+  .backlight-card p { color: var(--text-muted); font-size: 0.93rem; line-height: 1.7; margin-bottom: 20px; }
+  .backlight-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .backlight-list li { color: var(--text-muted); font-size: 0.88rem; }
+
+  .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
+  .option-item {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px;
+    transition: border-color 0.2s;
+  }
+  .option-item:hover { border-color: rgba(201,168,76,0.3); }
+  .option-icon { color: var(--gold); font-size: 0.9rem; flex-shrink: 0; margin-top: 3px; }
+  .option-item strong { display: block; color: var(--text); font-size: 0.95rem; margin-bottom: 4px; }
+  .option-item p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; margin: 0; }
+
+  @media (max-width: 768px) {
+    .backlight-grid { grid-template-columns: 1fr; }
+    .options-grid { grid-template-columns: 1fr; }
+  }
 </style>

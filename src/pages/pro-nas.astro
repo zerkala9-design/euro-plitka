@@ -2,38 +2,168 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Про нас" description="Євро Плитка — виробник дзеркальної плитки та LED дзеркал у Києві. 10+ років досвіду.">
-  <div class="page-hero">
+<Layout title="Про нас — Євро Плитка Київ" description="Євро Плитка — виробник дзеркальної плитки та LED дзеркал у Києві. 10+ років досвіду.">
+  <div class="page-hero page-hero--dark">
     <div class="container">
       <div class="breadcrumb"><a href="/">Головна</a><span>›</span><span>Про нас</span></div>
-      <h1>Про нас</h1>
+      <div class="section-label">Київський виробник</div>
+      <h1>Про компанію</h1>
+      <p class="hero-sub">Більше 10 років виготовляємо дзеркальну плитку та LED дзеркала</p>
     </div>
   </div>
 
-  <section class="section">
+  <section class="section about-section">
     <div class="container">
-      <div class="about-text">
-        <p>Компанія <b>Євро Плитка</b> — київський виробник дзеркальної плитки та LED дзеркал. Більше 10 років ми допомагаємо клієнтам перетворювати інтер'єри, додаючи простору світла та глибини.</p>
-        <p>Ми виготовляємо дзеркальну плитку власними силами на сучасному обладнанні. Це дозволяє нам тримати якість під повним контролем і пропонувати конкурентні ціни без переплат посередникам.</p>
-        <h2>Наші переваги</h2>
-        <ul class="about-list">
-          <li>Власне виробництво в Києві</li>
-          <li>Точний лазерний розкрій — мінімум відходів</li>
-          <li>Дзеркало Silver, Bronze, Graphite з фацетом 0-20 мм</li>
-          <li>LED дзеркала будь-яких розмірів на замовлення</li>
-          <li>Монтаж досвідченою бригадою</li>
-          <li>Доставка по Києву та Україні</li>
-        </ul>
+      <div class="about-layout">
+        <div class="about-text">
+          <div class="section-label">Наша історія</div>
+          <h2>Євро Плитка</h2>
+          <p>Компанія <strong>Євро Плитка</strong> — київський виробник дзеркальної плитки та LED дзеркал. Більше 10 років ми допомагаємо клієнтам перетворювати інтер'єри, додаючи простору світла та глибини.</p>
+          <p>Ми виготовляємо дзеркальну плитку власними силами на сучасному обладнанні. Це дозволяє нам тримати якість під повним контролем і пропонувати конкурентні ціни без переплат посередникам.</p>
+        </div>
+        <div class="about-advantages">
+          <div class="section-label">Наші переваги</div>
+          <ul class="advantages-list">
+            <li><span class="adv-icon">✦</span><span>Власне виробництво в Києві</span></li>
+            <li><span class="adv-icon">✦</span><span>Точний лазерний розкрій — мінімум відходів</span></li>
+            <li><span class="adv-icon">✦</span><span>Дзеркало Silver, Bronze, Graphite з фацетом 0–20 мм</span></li>
+            <li><span class="adv-icon">✦</span><span>LED дзеркала будь-яких розмірів на замовлення</span></li>
+            <li><span class="adv-icon">✦</span><span>Монтаж досвідченою бригадою</span></li>
+            <li><span class="adv-icon">✦</span><span>Доставка по Києву та Україні</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section stats-section">
+    <div class="container">
+      <div class="section-label">Цифри</div>
+      <h2>Наші результати</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card__num">10+</div>
+          <div class="stat-card__label">Років досвіду</div>
+          <p>На ринку дзеркального декору України</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__num">500+</div>
+          <div class="stat-card__label">Проєктів завершено</div>
+          <p>Квартири, ресторани, готелі, офіси</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__num">3–7</div>
+          <div class="stat-card__label">Днів виготовлення</div>
+          <p>Стандартні та нестандартні розміри</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__num">100%</div>
+          <div class="stat-card__label">Гарантія якості</div>
+          <p>Власне виробництво, контроль на кожному етапі</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section steps-section">
+    <div class="container">
+      <div class="section-label">Процес</div>
+      <h2>Як ми працюємо</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-card__num">01</div>
+          <h3>Замовлення</h3>
+          <p>Зв'яжіться з нами по телефону або Telegram. Уточнюємо розміри, колір, фацет та кількість.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-card__num">02</div>
+          <h3>Розрахунок</h3>
+          <p>Підготовлюємо точний кошторис за допомогою калькулятора. Пропонуємо 2 варіанти розкрою.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-card__num">03</div>
+          <h3>Виготовлення</h3>
+          <p>Виробляємо плитку на власному обладнанні. Точний лазерний розкрій, полірування фацету.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-card__num">04</div>
+          <h3>Доставка та монтаж</h3>
+          <p>Доставляємо в акуратній упаковці. За бажанням — монтаж досвідченою бригадою з гарантією.</p>
+        </div>
       </div>
     </div>
   </section>
 </Layout>
 
 <style>
-  .about-text { max-width: 760px; }
-  .about-text p { font-size: 1.05rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.8; }
-  .about-text h2 { margin: 32px 0 16px; }
-  .about-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-  .about-list li { padding-left: 24px; position: relative; font-size: 1rem; }
-  .about-list li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+  .page-hero--dark {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 60px 0 48px;
+  }
+  .page-hero--dark .breadcrumb { color: var(--text-muted); margin-bottom: 20px; font-size: 0.88rem; display: flex; gap: 8px; align-items: center; }
+  .page-hero--dark .breadcrumb a { color: var(--text-muted); }
+  .page-hero--dark h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text); margin-bottom: 12px; }
+  .hero-sub { color: var(--text-muted); font-size: 1.1rem; }
+
+  .section-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  /* About section */
+  .about-section { background: var(--bg); }
+  .about-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  .about-text h2 { font-size: 1.6rem; color: var(--text); margin-bottom: 20px; }
+  .about-text p { font-size: 1rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.8; }
+  .about-text strong { color: var(--text); }
+
+  .advantages-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+  .advantages-list li { display: flex; gap: 12px; align-items: flex-start; font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; }
+  .adv-icon { color: var(--gold); flex-shrink: 0; font-size: 0.8rem; margin-top: 3px; }
+
+  /* Stats */
+  .stats-section { background: #111; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 32px; }
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 24px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: rgba(201,168,76,0.3); }
+  .stat-card__num { font-size: 2.8rem; font-weight: 800; color: var(--gold); line-height: 1; margin-bottom: 8px; }
+  .stat-card__label { font-size: 0.88rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text); margin-bottom: 8px; }
+  .stat-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin: 0; }
+
+  /* Steps */
+  .steps-section { background: var(--bg); }
+  .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 32px; }
+  .step-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    transition: border-color 0.2s;
+  }
+  .step-card:hover { border-color: rgba(201,168,76,0.3); }
+  .step-card__num { font-size: 2rem; font-weight: 800; color: var(--gold); opacity: 0.5; line-height: 1; margin-bottom: 16px; }
+  .step-card h3 { color: var(--text); font-size: 1rem; margin-bottom: 10px; }
+  .step-card p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.7; margin: 0; }
+
+  @media (max-width: 900px) {
+    .about-layout { grid-template-columns: 1fr; gap: 32px; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .steps-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .steps-grid { grid-template-columns: 1fr; }
+  }
 </style>
