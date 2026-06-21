@@ -61,44 +61,47 @@ const current = Astro.url.pathname;
     position: sticky;
     top: 0;
     z-index: 100;
-    background: #fff;
-    border-bottom: 2px solid var(--green);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background: rgba(12,12,12,0.96);
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.5);
   }
   .header__inner {
     display: flex;
     align-items: center;
     gap: 24px;
-    height: 64px;
+    height: 68px;
   }
   .logo {
     font-size: 1.4rem;
     font-weight: 800;
     white-space: nowrap;
     flex-shrink: 0;
+    letter-spacing: -0.02em;
   }
-  .logo__euro { color: var(--green); }
+  .logo__euro { color: var(--gold); }
   .logo__plitka { color: var(--text); }
 
   .nav { flex: 1; }
-  .nav__list { display: flex; gap: 4px; flex-wrap: wrap; }
+  .nav__list { display: flex; gap: 2px; flex-wrap: wrap; }
   .nav__link {
     display: block;
     padding: 6px 10px;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 600;
     border-radius: 4px;
-    color: var(--text);
+    color: var(--text-muted);
     transition: color 0.2s;
     white-space: nowrap;
+    letter-spacing: 0.02em;
   }
-  .nav__link:hover, .nav__link.active { color: var(--green); }
-  .nav__link.active { background: rgba(46,125,50,0.07); }
+  .nav__link:hover, .nav__link.active { color: var(--gold); }
+  .nav__link.active { background: rgba(201,168,76,0.08); }
 
   .header__contacts { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-  .header__phone { font-weight: 700; font-size: 0.95rem; white-space: nowrap; }
-  .header__phone:hover { color: var(--green); }
-  .btn__telegram { font-size: 0.85rem; padding: 8px 14px; }
+  .header__phone { font-weight: 700; font-size: 0.95rem; white-space: nowrap; color: var(--text); }
+  .header__phone:hover { color: var(--gold); }
+  .btn__telegram { font-size: 0.85rem; padding: 8px 16px; }
 
   .burger {
     display: none;
@@ -125,7 +128,7 @@ const current = Astro.url.pathname;
   .mobile-nav {
     display: none;
     flex-direction: column;
-    background: #fff;
+    background: #0f0f0f;
     border-top: 1px solid var(--border);
     padding: 16px 20px 24px;
   }
@@ -136,9 +139,10 @@ const current = Astro.url.pathname;
     padding: 10px 12px;
     font-weight: 600;
     border-radius: 6px;
+    color: var(--text-muted);
   }
-  .mobile-nav__link:hover { background: var(--bg-gray); color: var(--green); }
-  .mobile-nav__phone { margin-top: 16px; font-weight: 700; font-size: 1.1rem; color: var(--green); }
+  .mobile-nav__link:hover { background: var(--bg-card); color: var(--gold); }
+  .mobile-nav__phone { margin-top: 16px; font-weight: 700; font-size: 1.1rem; color: var(--gold); }
 
   @media (max-width: 960px) {
     .nav { display: none; }

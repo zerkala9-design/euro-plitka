@@ -4,44 +4,46 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
-  <div class="container footer__grid">
-    <div class="footer__brand">
-      <a href="/" class="logo">
-        <span class="logo__euro">Euro</span><span class="logo__plitka">Plitka</span>
-      </a>
-      <p>Дзеркальна плитка та LED дзеркала в Києві. Виготовлення та монтаж.</p>
-      <div class="footer__socials">
-        {site.social.instagram && (
-          <a href={site.social.instagram} target="_blank" rel="noopener">Instagram</a>
-        )}
-        {site.social.telegram && (
-          <a href={site.social.telegram} target="_blank" rel="noopener">Telegram</a>
-        )}
+  <div class="footer__top">
+    <div class="container footer__grid">
+      <div class="footer__brand">
+        <a href="/" class="logo">
+          <span class="logo__euro">Euro</span><span class="logo__plitka">Plitka</span>
+        </a>
+        <p>Дзеркальна плитка та LED дзеркала в Києві. Виготовлення та монтаж від виробника.</p>
+        <div class="footer__socials">
+          {site.social.instagram && (
+            <a href={site.social.instagram} target="_blank" rel="noopener">Instagram</a>
+          )}
+          {site.social.telegram && (
+            <a href={site.social.telegram} target="_blank" rel="noopener">Telegram</a>
+          )}
+        </div>
       </div>
-    </div>
 
-    <div>
-      <h4>Навігація</h4>
-      <ul>
-        {nav.map((item) => (
-          <li><a href={item.path}>{item.label}</a></li>
-        ))}
-      </ul>
-    </div>
+      <div>
+        <h4>Навігація</h4>
+        <ul>
+          {nav.map((item) => (
+            <li><a href={item.path}>{item.label}</a></li>
+          ))}
+        </ul>
+      </div>
 
-    <div>
-      <h4>Калькулятори</h4>
-      <ul>
-        <li><a href="/">Калькулятор панно</a></li>
-        <li><a href="/led-dzerkalo/">Калькулятор LED дзеркала</a></li>
-      </ul>
-      <h4 style="margin-top:1.5rem">Контакти</h4>
-      <ul class="footer__contacts">
-        <li><a href={`tel:${site.phone.tel}`}>{site.phone.display}</a></li>
-        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
-        <li>{site.address}</li>
-        <li>{site.workingHours}</li>
-      </ul>
+      <div>
+        <h4>Калькулятори</h4>
+        <ul>
+          <li><a href="/">Калькулятор панно</a></li>
+          <li><a href="/led-dzerkalo/">Калькулятор LED дзеркала</a></li>
+        </ul>
+        <h4 style="margin-top:1.5rem">Контакти</h4>
+        <ul class="footer__contacts">
+          <li><a href={`tel:${site.phone.tel}`}>{site.phone.display}</a></li>
+          <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+          <li>{site.address}</li>
+          <li>{site.workingHours}</li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -51,35 +53,40 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
-  .footer { background: #1a1a1a; color: #aaa; padding-top: 56px; margin-top: 64px; }
+  .footer {
+    background: #080808;
+    border-top: 1px solid rgba(201,168,76,0.15);
+    margin-top: 80px;
+    color: #666;
+  }
+  .footer__top { padding: 56px 0 48px; }
   .footer__grid {
     display: grid;
     grid-template-columns: 1.6fr 1fr 1.2fr;
-    gap: 40px;
-    padding-bottom: 40px;
+    gap: 48px;
   }
   .footer h4 {
-    color: #fff;
-    font-size: 0.9rem;
+    color: var(--gold);
+    font-size: 0.78rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.14em;
     margin-bottom: 1rem;
   }
-  .footer ul { display: flex; flex-direction: column; gap: 8px; }
-  .footer a { color: #aaa; font-size: 0.95rem; }
-  .footer a:hover { color: var(--green-light); }
-  .logo { font-size: 1.3rem; font-weight: 800; display: block; margin-bottom: 12px; }
-  .logo__euro { color: var(--green-light); }
-  .logo__plitka { color: #fff; }
-  .footer__brand p { font-size: 0.92rem; line-height: 1.6; max-width: 30ch; }
-  .footer__socials { display: flex; gap: 16px; margin-top: 16px; }
-  .footer__socials a { font-weight: 700; color: #fff; }
-  .footer__contacts a { font-weight: 600; color: #fff; }
+  .footer ul { display: flex; flex-direction: column; gap: 10px; }
+  .footer a { color: #666; font-size: 0.9rem; transition: color 0.2s; }
+  .footer a:hover { color: var(--gold); }
+  .logo { font-size: 1.3rem; font-weight: 800; display: block; margin-bottom: 14px; letter-spacing: -0.02em; }
+  .logo__euro { color: var(--gold); }
+  .logo__plitka { color: #e0e0e0; }
+  .footer__brand p { font-size: 0.9rem; line-height: 1.7; max-width: 30ch; color: #555; }
+  .footer__socials { display: flex; gap: 16px; margin-top: 20px; }
+  .footer__socials a { font-weight: 700; color: #888; }
+  .footer__contacts a { font-weight: 600; color: #888; }
   .footer__bottom {
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid #1a1a1a;
     padding: 20px 20px;
-    font-size: 0.85rem;
-    color: #666;
+    font-size: 0.82rem;
+    color: #333;
   }
   @media (max-width: 768px) {
     .footer__grid { grid-template-columns: 1fr 1fr; }
