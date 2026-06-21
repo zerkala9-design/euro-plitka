@@ -69,29 +69,6 @@ import TileCalculator from '../components/TileCalculator.astro';
     </div>
   </section>
 
-  <section class="section section--gray">
-    <div class="container">
-      <h2 class="section-heading">Кольори дзеркальної плитки</h2>
-      <div class="colors-grid">
-        <div class="color-card">
-          <div class="color-card__swatch" style="background: linear-gradient(135deg, #e0e0e0, #f5f5f5, #c0c0c0)"></div>
-          <span>Серебро</span>
-          <span class="color-price">2 120 грн/м²</span>
-        </div>
-        <div class="color-card">
-          <div class="color-card__swatch" style="background: linear-gradient(135deg, #cd7f32, #e8a857, #8b5a00)"></div>
-          <span>Бронза</span>
-          <span class="color-price">3 270 грн/м²</span>
-        </div>
-        <div class="color-card">
-          <div class="color-card__swatch" style="background: linear-gradient(135deg, #555, #888, #333)"></div>
-          <span>Графіт</span>
-          <span class="color-price">3 270 грн/м²</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="cta-section section">
     <div class="container">
       <div class="cta-box">
@@ -128,13 +105,7 @@ import TileCalculator from '../components/TileCalculator.astro';
   .advantage h3 { margin-bottom: 8px; }
   .advantage p { font-size: 0.9rem; color: var(--text-muted); }
 
-  .colors-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 640px; }
-  .color-card { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px; background: #fff; border-radius: 10px; border: 1.5px solid var(--border); }
-  .color-card__swatch { width: 80px; height: 80px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-  .color-card span { font-weight: 600; }
-  .color-price { color: var(--green); font-size: 0.85rem; }
-
-  .cta-box { background: var(--green); color: #fff; border-radius: 16px; padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 32px; flex-wrap: wrap; }
+.cta-box { background: var(--green); color: #fff; border-radius: 16px; padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 32px; flex-wrap: wrap; }
   .cta-box h2 { color: #fff; margin-bottom: 8px; }
   .cta-box p { opacity: 0.85; max-width: 50ch; }
   .cta-box__actions { display: flex; gap: 12px; flex-wrap: wrap; }

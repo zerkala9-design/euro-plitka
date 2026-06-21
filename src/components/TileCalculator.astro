@@ -353,8 +353,11 @@ function openModal(variantNum) {
 document.addEventListener('DOMContentLoaded', () => {
   render();
 
-  ['wallW', 'wallH', 'facet', 'color'].forEach(id =>
+  ['wallW', 'wallH'].forEach(id =>
     document.getElementById(id).addEventListener('input', render)
+  );
+  ['facet', 'color'].forEach(id =>
+    document.getElementById(id).addEventListener('change', render)
   );
 
   document.getElementById('prevVar2').addEventListener('click', () => navigate(0, -1));
