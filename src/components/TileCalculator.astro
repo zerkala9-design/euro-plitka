@@ -114,7 +114,7 @@ function calcVariants(W, H, facet, color) {
   const variants = [];
 
   // Перебираємо можливу кількість плиток по ширині
-  for (let N = 3; N <= 12; N++) {
+  for (let N = 1; N <= 20; N++) {
     const d1 = W / N; // горизонтальна діагональ ромба
 
     // Рис. 2: квадратний ромб (d1 = d2)
@@ -353,9 +353,14 @@ function openModal(variantNum) {
 document.addEventListener('DOMContentLoaded', () => {
   render();
 
-  ['wallW', 'wallH'].forEach(id =>
-    document.getElementById(id).addEventListener('input', render)
-  );
+  let debounceTimer;
+  ['wallW', 'wallH'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(render, 300);
+    });
+    document.getElementById(id).addEventListener('change', render);
+  });
   ['facet', 'color'].forEach(id =>
     document.getElementById(id).addEventListener('change', render)
   );
