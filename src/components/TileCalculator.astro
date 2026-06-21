@@ -191,15 +191,22 @@ function calcVariants(W, H, facet, color) {
 
 // ---- SVG ----
 function drawPanel(svgEl, W, H, d1, d2) {
-  // Розмір viewport: пропорційний до стіни, ширина фіксована 300
-  const VW = 300;
-  const VH = Math.round(VW * H / W);
-  svgEl.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
-  svgEl.style.height = Math.min(VH, 480) + 'px';
+  // Фіксований viewport, пропорційний стіні, але max висота 420
+  const MAX_W = 260, MAX_H = 420;
+  const ratio = H / W;
+  let pW, pH;
+  if (ratio > MAX_H / MAX_W) {
+    pH = MAX_H; pW = Math.round(pH / ratio);
+  } else {
+    pW = MAX_W; pH = Math.round(pW * ratio);
+  }
 
-  const margin = 20; // місце для розмірних ліній
-  const pW = VW - margin - 8;
-  const pH = VH - margin - 8;
+  const margin = 26;
+  const VW = pW + margin + 6;
+  const VH = pH + margin + 6;
+  svgEl.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
+  svgEl.style.height = VH + 'px';
+
   const ox = 4, oy = margin;
 
   const scaleX = pW / W;
@@ -210,7 +217,6 @@ function drawPanel(svgEl, W, H, d1, d2) {
   let paths = '';
   const cols = Math.ceil(W / d1) + 2;
   const rows = Math.ceil(H / (d2 / 2)) + 2;
-
   for (let r = -1; r <= rows; r++) {
     for (let c = -1; c <= cols; c++) {
       const cx = ox + (c + (r % 2 === 0 ? 0.5 : 0)) * cellW;
@@ -222,27 +228,31 @@ function drawPanel(svgEl, W, H, d1, d2) {
         [cx - cellW / 2, cy],
       ];
       const dp = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)} L${pts[1][0].toFixed(1)},${pts[1][1].toFixed(1)} L${pts[2][0].toFixed(1)},${pts[2][1].toFixed(1)} L${pts[3][0].toFixed(1)},${pts[3][1].toFixed(1)} Z`;
-      paths += `<path d="${dp}" fill="#d8d8d8" stroke="#888" stroke-width="0.7" />`;
+      paths += `<path d="${dp}" fill="#d8d8d8" stroke="#666" stroke-width="1" />`;
     }
   }
 
   const clipId = `clip-${Math.random().toString(36).slice(2)}`;
-  const fs = Math.max(7, Math.min(10, VW / 30));
+  const fs = 9;
   svgEl.innerHTML = `
     <defs>
       <clipPath id="${clipId}">
         <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" />
       </clipPath>
     </defs>
-    <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" fill="#ececec" />
+    <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" fill="#e8e8e8" />
     <g clip-path="url(#${clipId})">${paths}</g>
-    <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" fill="none" stroke="#444" stroke-width="1.5" />
-    <!-- ширина -->
-    <line x1="${ox}" y1="${oy - 5}" x2="${ox + pW}" y2="${oy - 5}" stroke="#1976d2" stroke-width="1" marker-start="url(#arr)" />
-    <text x="${ox + pW / 2}" y="${oy - 8}" text-anchor="middle" font-size="${fs}" fill="#1976d2" font-family="Arial,sans-serif" font-weight="600">${W} мм</text>
-    <!-- висота -->
-    <line x1="${ox + pW + 5}" y1="${oy}" x2="${ox + pW + 5}" y2="${oy + pH}" stroke="#1976d2" stroke-width="1" />
-    <text x="${ox + pW + 8}" y="${oy + pH / 2}" text-anchor="middle" font-size="${fs}" fill="#1976d2" font-family="Arial,sans-serif" font-weight="600" transform="rotate(90,${ox + pW + 8},${oy + pH / 2})">${H} мм</text>
+    <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" fill="none" stroke="#333" stroke-width="1.5" />
+    <!-- ширина: лінія зверху -->
+    <line x1="${ox}" y1="${oy - 8}" x2="${ox + pW}" y2="${oy - 8}" stroke="#1565c0" stroke-width="1.2" />
+    <line x1="${ox}" y1="${oy - 12}" x2="${ox}" y2="${oy - 4}" stroke="#1565c0" stroke-width="1.2" />
+    <line x1="${ox + pW}" y1="${oy - 12}" x2="${ox + pW}" y2="${oy - 4}" stroke="#1565c0" stroke-width="1.2" />
+    <text x="${ox + pW / 2}" y="${oy - 11}" text-anchor="middle" font-size="${fs}" fill="#1565c0" font-family="Arial,sans-serif" font-weight="700">${W} мм</text>
+    <!-- висота: лінія справа -->
+    <line x1="${ox + pW + 8}" y1="${oy}" x2="${ox + pW + 8}" y2="${oy + pH}" stroke="#1565c0" stroke-width="1.2" />
+    <line x1="${ox + pW + 4}" y1="${oy}" x2="${ox + pW + 12}" y2="${oy}" stroke="#1565c0" stroke-width="1.2" />
+    <line x1="${ox + pW + 4}" y1="${oy + pH}" x2="${ox + pW + 12}" y2="${oy + pH}" stroke="#1565c0" stroke-width="1.2" />
+    <text x="${ox + pW + 11}" y="${oy + pH / 2}" text-anchor="middle" font-size="${fs}" fill="#1565c0" font-family="Arial,sans-serif" font-weight="700" transform="rotate(90,${ox + pW + 11},${oy + pH / 2})">${H} мм</text>
   `;
 }
 
@@ -505,7 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
     display: flex;
     justify-content: center;
   }
-  .panel-svg { width: 100%; max-width: 340px; display: block; }
+  .panel-svg { display: block; margin: 0 auto; max-width: 100%; }
 
   .variant-dims {
     display: flex;
