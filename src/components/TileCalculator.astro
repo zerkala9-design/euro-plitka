@@ -47,13 +47,17 @@ const cfg = JSON.stringify(tileCalcConfig);
 
     <div class="calc-results" id="calcResults">
       <div class="calc-variant" id="variant2">
-        <div class="variant-header">
-          <button class="variant-nav" id="prevVar2">‹</button>
-          <span class="variant-title">Рис. 2</span>
-          <button class="variant-nav" id="nextVar2">›</button>
+        <div class="variant-heading">
+          <span class="variant-fig">Рис. 2</span>
+          <span class="variant-type">квадрат</span>
         </div>
         <div class="variant-svg-wrap">
-          <svg class="panel-svg" id="svg2" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg"></svg>
+          <svg class="panel-svg" id="svg2" viewBox="0 0 240 360" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <div class="variant-nav-row">
+          <button class="variant-nav" id="prevVar2">‹</button>
+          <span class="variant-counter" id="counter2"></span>
+          <button class="variant-nav" id="nextVar2">›</button>
         </div>
         <div class="variant-dims" id="dims2"></div>
         <div class="variant-info" id="info2"></div>
@@ -61,13 +65,17 @@ const cfg = JSON.stringify(tileCalcConfig);
       </div>
 
       <div class="calc-variant" id="variant3">
-        <div class="variant-header">
-          <button class="variant-nav" id="prevVar3">‹</button>
-          <span class="variant-title">Рис. 3</span>
-          <button class="variant-nav" id="nextVar3">›</button>
+        <div class="variant-heading">
+          <span class="variant-fig">Рис. 3</span>
+          <span class="variant-type">ромб</span>
         </div>
         <div class="variant-svg-wrap">
-          <svg class="panel-svg" id="svg3" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg"></svg>
+          <svg class="panel-svg" id="svg3" viewBox="0 0 240 360" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <div class="variant-nav-row">
+          <button class="variant-nav" id="prevVar3">‹</button>
+          <span class="variant-counter" id="counter3"></span>
+          <button class="variant-nav" id="nextVar3">›</button>
         </div>
         <div class="variant-dims" id="dims3"></div>
         <div class="variant-info" id="info3"></div>
@@ -116,7 +124,7 @@ function calcVariants(W, H, facet, color) {
     const actualH2 = rows2 * rowPitch2;
     if (actualH2 < 200) continue;
     const tileSize2 = Math.round(Math.sqrt(d1 * d1 + d2_fig2 * d2_fig2) / 2);
-    if (tileSize2 < 80) continue; // занадто маленька плитка
+    if (tileSize2 < 200) continue; // мінімум 200мм
 
     // Рис. 3: прямокутний ромб (висота точна)
     const M3 = Math.round(H / d1);
@@ -178,12 +186,13 @@ function calcVariants(W, H, facet, color) {
       },
     });
   }
-  return variants;
+  // Лише перші 3 (найбільші плитки — менший N)
+  return variants.slice(0, 3);
 }
 
 // ---- SVG ----
 function drawPanel(svgEl, W, H, d1, d2) {
-  const VW = 200, VH = 300;
+  const VW = 240, VH = 360;
   const scale = Math.min(VW / W, VH / H) * 0.9;
   const pW = W * scale, pH = H * scale;
   const ox = (VW - pW) / 2, oy = (VH - pH) / 2;
@@ -283,6 +292,11 @@ function renderVariants(W, H) {
     <div class="price-line">${fmtOld(v3.basePrice)} <span class="price-final">${fmt(v3.finalPrice)}</span></div>
     <div class="discount-badge discount-badge--big">Знижка -${Math.round(v3.discount * 100)}%</div>
   `;
+
+  // Лічильник варіантів
+  const total = allVariants.length;
+  document.getElementById('counter2').textContent = `${idxes[0] + 1} / ${total}`;
+  document.getElementById('counter3').textContent = `${idxes[1] + 1} / ${total}`;
 
   // Збережемо для модалки
   document.getElementById('variant2').dataset.v = JSON.stringify(v2);
@@ -433,18 +447,29 @@ document.addEventListener('DOMContentLoaded', () => {
     gap: 12px;
   }
 
-  .variant-header {
+  .variant-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .variant-fig { font-weight: 700; font-size: 1.1rem; }
+  .variant-type { font-size: 0.85rem; color: var(--green); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .variant-nav-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 16px;
+    padding: 4px 0;
   }
-  .variant-title { font-weight: 700; font-size: 1rem; }
+  .variant-counter { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; min-width: 40px; text-align: center; }
   .variant-nav {
     background: none;
     border: 1.5px solid var(--border);
     border-radius: 6px;
-    width: 32px; height: 32px;
-    font-size: 1.2rem;
+    width: 36px; height: 36px;
+    font-size: 1.4rem;
     cursor: pointer;
     color: var(--green);
     display: flex; align-items: center; justify-content: center;
@@ -459,7 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
     display: flex;
     justify-content: center;
   }
-  .panel-svg { width: 100%; max-width: 260px; height: 220px; }
+  .panel-svg { width: 100%; max-width: 320px; height: 280px; }
 
   .variant-dims {
     display: flex;
