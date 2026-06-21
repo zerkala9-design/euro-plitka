@@ -1,0 +1,39 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Про нас" description="Євро Плитка — виробник дзеркальної плитки та LED дзеркал у Києві. 10+ років досвіду.">
+  <div class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Головна</a><span>›</span><span>Про нас</span></div>
+      <h1>Про нас</h1>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="about-text">
+        <p>Компанія <b>Євро Плитка</b> — київський виробник дзеркальної плитки та LED дзеркал. Більше 10 років ми допомагаємо клієнтам перетворювати інтер'єри, додаючи простору світла та глибини.</p>
+        <p>Ми виготовляємо дзеркальну плитку власними силами на сучасному обладнанні. Це дозволяє нам тримати якість під повним контролем і пропонувати конкурентні ціни без переплат посередникам.</p>
+        <h2>Наші переваги</h2>
+        <ul class="about-list">
+          <li>Власне виробництво в Києві</li>
+          <li>Точний лазерний розкрій — мінімум відходів</li>
+          <li>Дзеркало Silver, Bronze, Graphite з фацетом 0-20 мм</li>
+          <li>LED дзеркала будь-яких розмірів на замовлення</li>
+          <li>Монтаж досвідченою бригадою</li>
+          <li>Доставка по Києву та Україні</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .about-text { max-width: 760px; }
+  .about-text p { font-size: 1.05rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.8; }
+  .about-text h2 { margin: 32px 0 16px; }
+  .about-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .about-list li { padding-left: 24px; position: relative; font-size: 1rem; }
+  .about-list li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; }
+</style>

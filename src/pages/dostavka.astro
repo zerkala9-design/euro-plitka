@@ -1,0 +1,80 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Доставка та оплата" description="Умови доставки та оплати. Дзеркальна плитка та LED дзеркала Київ.">
+  <div class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Головна</a><span>›</span><span>Доставка та оплата</span></div>
+      <h1>Доставка та оплата</h1>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid-2" style="gap:48px">
+        <div>
+          <h2>Доставка</h2>
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-item__icon">🚚</span>
+              <div>
+                <b>По Києву</b>
+                <p>Доставка власним транспортом. Акуратна упаковка, гарантія цілісності.</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-item__icon">📦</span>
+              <div>
+                <b>Нова Пошта / Укрпошта</b>
+                <p>Відправка по всій Україні. Вартість залежить від габаритів і ваги замовлення.</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-item__icon">🕐</span>
+              <div>
+                <b>Терміни виготовлення</b>
+                <p>Стандартні замовлення: 3-5 робочих днів.<br/>Нестандартні розміри: 5-7 робочих днів.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2>Оплата</h2>
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-item__icon">💳</span>
+              <div>
+                <b>Передоплата 50%</b>
+                <p>На карту ПриватБанку або Монобанку після підтвердження замовлення.</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-item__icon">💵</span>
+              <div>
+                <b>Решта при отриманні</b>
+                <p>50% оплачуєте готівкою або переказом при доставці або самовивозі.</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <span class="info-item__icon">🏦</span>
+              <div>
+                <b>Безготівковий розрахунок</b>
+                <p>Для юридичних осіб — оплата за рахунком з ПДВ або без.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .info-list { display: flex; flex-direction: column; gap: 20px; margin-top: 24px; }
+  .info-item { display: flex; gap: 16px; align-items: flex-start; }
+  .info-item__icon { font-size: 1.5rem; flex-shrink: 0; }
+  .info-item b { display: block; margin-bottom: 4px; font-size: 1rem; }
+  .info-item p { color: var(--text-muted); font-size: 0.93rem; }
+</style>

@@ -1,0 +1,148 @@
+---
+import { site, nav } from '../data/site';
+const current = Astro.url.pathname;
+---
+
+<header class="header">
+  <div class="container header__inner">
+    <a href="/" class="logo">
+      <span class="logo__euro">Euro</span><span class="logo__plitka">Plitka</span>
+    </a>
+
+    <nav class="nav" aria-label="Головне меню">
+      <ul class="nav__list">
+        {nav.map((item) => (
+          <li>
+            <a
+              href={item.path}
+              class:list={['nav__link', { active: current === item.path || (item.path !== '/' && current.startsWith(item.path)) }]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="header__contacts">
+      <a href={`tel:${site.phone.tel}`} class="header__phone">{site.phone.display}</a>
+      <a href={`https://t.me/${site.social.telegram.split('/').pop()}`} class="btn btn--primary btn__telegram" target="_blank">
+        Telegram
+      </a>
+    </div>
+
+    <button class="burger" id="burger" aria-label="Меню" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-nav" id="mobileNav">
+    <ul>
+      {nav.map((item) => (
+        <li><a href={item.path} class="mobile-nav__link">{item.label}</a></li>
+      ))}
+    </ul>
+    <a href={`tel:${site.phone.tel}`} class="mobile-nav__phone">{site.phone.display}</a>
+  </div>
+</header>
+
+<script>
+  const burger = document.getElementById('burger');
+  const mobileNav = document.getElementById('mobileNav');
+  burger?.addEventListener('click', () => {
+    const open = mobileNav?.classList.toggle('open');
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    burger.classList.toggle('open', !!open);
+  });
+</script>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #fff;
+    border-bottom: 2px solid var(--green);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .header__inner {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    height: 64px;
+  }
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .logo__euro { color: var(--green); }
+  .logo__plitka { color: var(--text); }
+
+  .nav { flex: 1; }
+  .nav__list { display: flex; gap: 4px; flex-wrap: wrap; }
+  .nav__link {
+    display: block;
+    padding: 6px 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-radius: 4px;
+    color: var(--text);
+    transition: color 0.2s;
+    white-space: nowrap;
+  }
+  .nav__link:hover, .nav__link.active { color: var(--green); }
+  .nav__link.active { background: rgba(46,125,50,0.07); }
+
+  .header__contacts { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .header__phone { font-weight: 700; font-size: 0.95rem; white-space: nowrap; }
+  .header__phone:hover { color: var(--green); }
+  .btn__telegram { font-size: 0.85rem; padding: 8px 14px; }
+
+  .burger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    flex-shrink: 0;
+  }
+  .burger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--text);
+    transition: all 0.3s;
+    border-radius: 2px;
+  }
+  .burger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+  .burger.open span:nth-child(2) { opacity: 0; }
+  .burger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+  .mobile-nav {
+    display: none;
+    flex-direction: column;
+    background: #fff;
+    border-top: 1px solid var(--border);
+    padding: 16px 20px 24px;
+  }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav ul { display: flex; flex-direction: column; gap: 4px; }
+  .mobile-nav__link {
+    display: block;
+    padding: 10px 12px;
+    font-weight: 600;
+    border-radius: 6px;
+  }
+  .mobile-nav__link:hover { background: var(--bg-gray); color: var(--green); }
+  .mobile-nav__phone { margin-top: 16px; font-weight: 700; font-size: 1.1rem; color: var(--green); }
+
+  @media (max-width: 960px) {
+    .nav { display: none; }
+    .header__contacts { display: none; }
+    .burger { display: flex; margin-left: auto; }
+  }
+</style>

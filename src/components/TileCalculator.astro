@@ -1,0 +1,547 @@
+---
+import { tileCalcConfig } from '../data/site';
+const cfg = JSON.stringify(tileCalcConfig);
+---
+
+<section class="calc-section section">
+  <div class="container">
+    <h2 class="calc-title">Калькулятор дзеркального панно</h2>
+    <p class="calc-sub">Введіть розміри вашої стіни — отримайте варіанти розкрою та вартість</p>
+
+    <div class="calc-inputs">
+      <label class="calc-field">
+        <span class="calc-field__icon">↔</span>
+        <span class="calc-field__label">Ширина</span>
+        <input type="number" id="wallW" value="1500" min="200" max="6000" step="10" />
+        <span class="calc-field__unit">мм</span>
+      </label>
+      <label class="calc-field">
+        <span class="calc-field__icon">↕</span>
+        <span class="calc-field__label">Висота</span>
+        <input type="number" id="wallH" value="2700" min="200" max="6000" step="10" />
+        <span class="calc-field__unit">мм</span>
+      </label>
+      <label class="calc-field">
+        <span class="calc-field__icon">◻</span>
+        <span class="calc-field__label">Фацет</span>
+        <select id="facet">
+          <option value="0">0</option>
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+        </select>
+        <span class="calc-field__unit">мм</span>
+      </label>
+      <label class="calc-field calc-field--color">
+        <span class="calc-field__icon">◉</span>
+        <span class="calc-field__label">Колір</span>
+        <select id="color">
+          <option value="silver">Серебро</option>
+          <option value="bronze">Бронза</option>
+          <option value="graphite">Графіт</option>
+        </select>
+        <span class="calc-field__swatch" id="colorSwatch"></span>
+      </label>
+    </div>
+
+    <div class="calc-results" id="calcResults">
+      <div class="calc-variant" id="variant2">
+        <div class="variant-header">
+          <button class="variant-nav" id="prevVar2">‹</button>
+          <span class="variant-title">Рис. 2</span>
+          <button class="variant-nav" id="nextVar2">›</button>
+        </div>
+        <div class="variant-svg-wrap">
+          <svg class="panel-svg" id="svg2" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <div class="variant-dims" id="dims2"></div>
+        <div class="variant-info" id="info2"></div>
+        <button class="btn btn--primary calc-order-btn" data-variant="2">🛒 Замовити</button>
+      </div>
+
+      <div class="calc-variant" id="variant3">
+        <div class="variant-header">
+          <button class="variant-nav" id="prevVar3">‹</button>
+          <span class="variant-title">Рис. 3</span>
+          <button class="variant-nav" id="nextVar3">›</button>
+        </div>
+        <div class="variant-svg-wrap">
+          <svg class="panel-svg" id="svg3" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <div class="variant-dims" id="dims3"></div>
+        <div class="variant-info" id="info3"></div>
+        <button class="btn btn--primary calc-order-btn" data-variant="3">🛒 Замовити</button>
+      </div>
+    </div>
+
+    <!-- Модальне вікно замовлення -->
+    <div class="order-modal" id="orderModal">
+      <div class="order-modal__box">
+        <button class="order-modal__close" id="closeModal">✕</button>
+        <h3 id="modalTitle">Зеркальне панно</h3>
+        <table class="order-table" id="orderTable"></table>
+        <div class="order-modal__form">
+          <p class="order-modal__want-cheaper">
+            <label>
+              <input type="checkbox" id="wantCheaper" />
+              Хочу дешевше! <span class="info-icon" title="Ми підберемо оптимальний варіант для вашого бюджету">ℹ</span>
+            </label>
+          </p>
+          <input type="text" placeholder="Ім'я та Прізвище" class="order-modal__input" id="modalName" />
+          <input type="tel" placeholder="Телефон" class="order-modal__input" id="modalPhone" />
+          <button class="btn btn--primary" id="submitOrder" style="width:100%">Відправити замовлення</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ cfg }}>
+const CONFIG = JSON.parse(cfg);
+
+// ---- Математика ----
+function calcVariants(W, H, facet, color) {
+  const pricePerM2 = color === 'silver' ? CONFIG.silverPrice : CONFIG.colorPrice;
+  const variants = [];
+
+  // Перебираємо можливу кількість плиток по ширині
+  for (let N = 3; N <= 12; N++) {
+    const d1 = W / N; // горизонтальна діагональ ромба
+
+    // Рис. 2: квадратний ромб (d1 = d2)
+    const d2_fig2 = d1;
+    const rowPitch2 = d1 / 2;
+    const rows2 = Math.floor(H / rowPitch2);
+    const actualH2 = rows2 * rowPitch2;
+    if (actualH2 < 200) continue;
+    const tileSize2 = Math.round(Math.sqrt(d1 * d1 + d2_fig2 * d2_fig2) / 2);
+    if (tileSize2 < 80) continue; // занадто маленька плитка
+
+    // Рис. 3: прямокутний ромб (висота точна)
+    const M3 = Math.round(H / d1);
+    if (M3 < 1) continue;
+    const d2_fig3 = H / M3;
+    const tileSize3 = Math.round(Math.sqrt(d1 * d1 + d2_fig3 * d2_fig3) / 2);
+
+    // Калькуляція ціни
+    const area2 = (W * actualH2) / 1e6;
+    const area3 = (W * H) / 1e6;
+
+    // Фактор розмітки залежить від розміру плитки (калібровано)
+    const tileRatio2 = (tileSize2 - 177) / 177;
+    const tileRatio3 = (tileSize3 - 177) / 177;
+    const markup2 = Math.max(1.0, CONFIG.fig2Markup - tileRatio2 * 0.163);
+    const markup3 = Math.max(1.0, CONFIG.fig3Markup - tileRatio3 * 0.171);
+
+    const basePrice2 = Math.round(area2 * pricePerM2 * markup2);
+    const finalPrice2 = Math.round(basePrice2 * (1 - CONFIG.fig2Discount));
+
+    const basePrice3 = Math.round(area3 * pricePerM2 * markup3);
+    const finalPrice3 = Math.round(basePrice3 * (1 - CONFIG.fig3Discount));
+
+    // Кількість плиток (для інформації в модалці)
+    const tileArea2 = (tileSize2 * tileSize2) / 1e6;
+    const tileArea3 = (tileSize3 * tileSize3) / 1e6;
+    const totalTiles2 = Math.ceil(area2 / tileArea2);
+    const totalTiles3 = Math.ceil(area3 / tileArea3);
+    const fullTiles2 = Math.round(totalTiles2 * 0.87);
+    const triTiles2 = Math.round(totalTiles2 * 0.12);
+    const fullTiles3 = Math.round(totalTiles3 * 0.87);
+    const triTiles3 = Math.round(totalTiles3 * 0.12);
+
+    variants.push({
+      N,
+      fig2: {
+        d1: Math.round(d1), d2: Math.round(d2_fig2),
+        tileSize: tileSize2,
+        actualH: Math.round(actualH2),
+        area: area2,
+        basePrice: basePrice2,
+        finalPrice: finalPrice2,
+        discount: CONFIG.fig2Discount,
+        fullTiles: fullTiles2, triTiles: triTiles2,
+        tilePrice: Math.round(tileSize2 * tileSize2 / 1e6 * pricePerM2 * markup2),
+        triPrice: Math.round(tileSize2 * tileSize2 / 1e6 * pricePerM2 * markup2 * CONFIG.triangleCoef),
+      },
+      fig3: {
+        d1: Math.round(d1), d2: Math.round(d2_fig3),
+        tileSize: tileSize3,
+        actualH: H,
+        area: area3,
+        basePrice: basePrice3,
+        finalPrice: finalPrice3,
+        discount: CONFIG.fig3Discount,
+        fullTiles: fullTiles3, triTiles: triTiles3,
+        tilePrice: Math.round(tileSize3 * tileSize3 / 1e6 * pricePerM2 * markup3),
+        triPrice: Math.round(tileSize3 * tileSize3 / 1e6 * pricePerM2 * markup3 * CONFIG.triangleCoef),
+      },
+    });
+  }
+  return variants;
+}
+
+// ---- SVG ----
+function drawPanel(svgEl, W, H, d1, d2) {
+  const VW = 200, VH = 300;
+  const scale = Math.min(VW / W, VH / H) * 0.9;
+  const pW = W * scale, pH = H * scale;
+  const ox = (VW - pW) / 2, oy = (VH - pH) / 2;
+
+  const cellW = d1 * scale;
+  const cellH = d2 * scale;
+
+  let paths = '';
+  // Малюємо сітку ромбів (зсунута укладка)
+  const cols = Math.ceil(W / d1) + 2;
+  const rows = Math.ceil(H / (d2 / 2)) + 2;
+
+  for (let r = -1; r <= rows; r++) {
+    for (let c = -1; c <= cols; c++) {
+      const cx = ox + (c + (r % 2 === 0 ? 0.5 : 0)) * cellW;
+      const cy = oy + r * (cellH / 2);
+      // Ромб: 4 точки
+      const pts = [
+        [cx, cy - cellH / 2],
+        [cx + cellW / 2, cy],
+        [cx, cy + cellH / 2],
+        [cx - cellW / 2, cy],
+      ];
+      const d = `M${pts[0][0]},${pts[0][1]} L${pts[1][0]},${pts[1][1]} L${pts[2][0]},${pts[2][1]} L${pts[3][0]},${pts[3][1]} Z`;
+      paths += `<path d="${d}" fill="#d0d0d0" stroke="#999" stroke-width="0.5" />`;
+    }
+  }
+
+  // Рамка панелі (clipPath)
+  const clipId = `clip-${Math.random().toString(36).slice(2)}`;
+  svgEl.innerHTML = `
+    <defs>
+      <clipPath id="${clipId}">
+        <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" />
+      </clipPath>
+    </defs>
+    <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" fill="#f5f5f5" />
+    <g clip-path="url(#${clipId})">${paths}</g>
+    <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" fill="none" stroke="#333" stroke-width="1.5" />
+    <!-- розміри -->
+    <line x1="${ox}" y1="${oy - 6}" x2="${ox + pW}" y2="${oy - 6}" stroke="#2196f3" stroke-width="1" />
+    <text x="${ox + pW / 2}" y="${oy - 9}" text-anchor="middle" font-size="9" fill="#2196f3" font-family="Arial">${W} мм</text>
+    <line x1="${ox + pW + 6}" y1="${oy}" x2="${ox + pW + 6}" y2="${oy + pH}" stroke="#2196f3" stroke-width="1" />
+    <text x="${ox + pW + 10}" y="${oy + pH / 2}" text-anchor="start" font-size="9" fill="#2196f3" font-family="Arial" transform="rotate(90,${ox + pW + 10},${oy + pH / 2})">${H} мм</text>
+  `;
+}
+
+// ---- Форматування ціни ----
+function fmt(n) {
+  return n.toLocaleString('uk-UA') + ' грн';
+}
+function fmtOld(n) {
+  return `<s>${n.toLocaleString('uk-UA')} грн</s>`;
+}
+
+// ---- Рендер ----
+let allVariants = [];
+let idxes = [0, 0];
+
+function render() {
+  const W = parseInt(document.getElementById('wallW').value) || 1500;
+  const H = parseInt(document.getElementById('wallH').value) || 2700;
+  const facet = parseInt(document.getElementById('facet').value);
+  const color = document.getElementById('color').value;
+
+  allVariants = calcVariants(W, H, facet, color);
+  idxes = [0, 0];
+  renderVariants(W, H);
+}
+
+function renderVariants(W, H) {
+  if (!allVariants.length) return;
+
+  const v2 = allVariants[Math.min(idxes[0], allVariants.length - 1)].fig2;
+  const v3 = allVariants[Math.min(idxes[1], allVariants.length - 1)].fig3;
+
+  // SVG
+  drawPanel(document.getElementById('svg2'), W, v2.actualH, v2.d1, v2.d2);
+  drawPanel(document.getElementById('svg3'), W, v3.actualH, v3.d1, v3.d2);
+
+  // Розміри
+  document.getElementById('dims2').innerHTML = `
+    <span>Розмір плитки: <b>${v2.tileSize}×${v2.tileSize} мм</b></span>
+    <span>Діагоналі: <b>${v2.d1}×${v2.d2} мм</b></span>
+  `;
+  document.getElementById('dims3').innerHTML = `
+    <span>Розмір плитки: <b>${v3.tileSize}×${v3.tileSize} мм</b></span>
+    <span>Діагоналі: <b>${v3.d1}×${v3.d2} мм</b></span>
+  `;
+
+  // Ціна
+  document.getElementById('info2').innerHTML = `
+    <div class="price-line">${fmtOld(v2.basePrice)} <span class="price-final">${fmt(v2.finalPrice)}</span></div>
+    <div class="discount-badge">Знижка -${Math.round(v2.discount * 100)}%</div>
+  `;
+  document.getElementById('info3').innerHTML = `
+    <div class="price-line">${fmtOld(v3.basePrice)} <span class="price-final">${fmt(v3.finalPrice)}</span></div>
+    <div class="discount-badge discount-badge--big">Знижка -${Math.round(v3.discount * 100)}%</div>
+  `;
+
+  // Збережемо для модалки
+  document.getElementById('variant2').dataset.v = JSON.stringify(v2);
+  document.getElementById('variant3').dataset.v = JSON.stringify(v3);
+}
+
+function navigate(figIdx, dir) {
+  const W = parseInt(document.getElementById('wallW').value) || 1500;
+  const H = parseInt(document.getElementById('wallH').value) || 2700;
+  idxes[figIdx] = Math.max(0, Math.min(allVariants.length - 1, idxes[figIdx] + dir));
+  renderVariants(W, H);
+}
+
+// ---- Модалка ----
+function openModal(variantNum) {
+  const elId = variantNum === '2' ? 'variant2' : 'variant3';
+  const v = JSON.parse(document.getElementById(elId).dataset.v || '{}');
+  const W = parseInt(document.getElementById('wallW').value) || 1500;
+  const colorSel = document.getElementById('color');
+  const colorLabel = colorSel.options[colorSel.selectedIndex].text;
+
+  document.getElementById('modalTitle').textContent =
+    `Дзеркальне панно ${W}×${v.actualH} мм`;
+
+  const rows = [
+    ['◻', `${v.tileSize}×${v.tileSize} мм`, `${v.d1 > 0 ? v.d1 : '-'} мм`, colorLabel, v.fullTiles + ' шт.', fmt(Math.round(v.fullTiles * v.tilePrice))],
+    ['◺', `${v.tileSize}×${v.tileSize} мм`, `${v.d1 > 0 ? v.d1 : '-'} мм`, colorLabel, v.triTiles + ' шт.', fmt(Math.round(v.triTiles * v.triPrice))],
+  ];
+
+  document.getElementById('orderTable').innerHTML = `
+    <thead>
+      <tr><th>Форма</th><th>Розмір</th><th>Фацет</th><th>Колір</th><th>К-во</th><th>Ціна</th></tr>
+    </thead>
+    <tbody>
+      ${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}
+      <tr class="order-total">
+        <td colspan="4">Скидка -${Math.round(v.discount * 100)}%</td>
+        <td colspan="2"><b>${fmt(v.finalPrice)}</b></td>
+      </tr>
+    </tbody>
+  `;
+
+  document.getElementById('orderModal').classList.add('open');
+}
+
+// ---- Ініціалізація ----
+document.addEventListener('DOMContentLoaded', () => {
+  render();
+
+  ['wallW', 'wallH', 'facet', 'color'].forEach(id =>
+    document.getElementById(id).addEventListener('input', render)
+  );
+
+  document.getElementById('prevVar2').addEventListener('click', () => navigate(0, -1));
+  document.getElementById('nextVar2').addEventListener('click', () => navigate(0, 1));
+  document.getElementById('prevVar3').addEventListener('click', () => navigate(1, -1));
+  document.getElementById('nextVar3').addEventListener('click', () => navigate(1, 1));
+
+  document.querySelectorAll('.calc-order-btn').forEach(btn => {
+    btn.addEventListener('click', () => openModal(btn.dataset.variant));
+  });
+
+  document.getElementById('closeModal').addEventListener('click', () =>
+    document.getElementById('orderModal').classList.remove('open')
+  );
+  document.getElementById('orderModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('orderModal'))
+      document.getElementById('orderModal').classList.remove('open');
+  });
+
+  // Кольоровий зразок
+  const swatchColors = { silver: '#c0c0c0', bronze: '#cd7f32', graphite: '#555' };
+  const colorSel = document.getElementById('color');
+  const swatch = document.getElementById('colorSwatch');
+  const updateSwatch = () => { swatch.style.background = swatchColors[colorSel.value]; };
+  colorSel.addEventListener('change', updateSwatch);
+  updateSwatch();
+
+  document.getElementById('submitOrder').addEventListener('click', () => {
+    const name = document.getElementById('modalName').value.trim();
+    const phone = document.getElementById('modalPhone').value.trim();
+    if (!name || !phone) { alert('Будь ласка, вкажіть ім\'я та телефон'); return; }
+    alert('Дякуємо! Ми зв\'яжемося з вами найближчим часом.');
+    document.getElementById('orderModal').classList.remove('open');
+  });
+});
+</script>
+
+<style>
+  .calc-section { background: var(--bg-gray); }
+  .calc-title { margin-bottom: 6px; }
+  .calc-sub { color: var(--text-muted); margin-bottom: 32px; }
+
+  .calc-inputs {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+
+  .calc-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    min-width: 180px;
+    flex: 1;
+  }
+  .calc-field:focus-within { border-color: var(--green); }
+  .calc-field__icon { font-size: 1rem; color: var(--green); }
+  .calc-field__label { font-size: 0.82rem; color: var(--text-muted); white-space: nowrap; }
+  .calc-field input, .calc-field select {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: var(--font);
+    font-size: 1rem;
+    font-weight: 600;
+    background: transparent;
+    min-width: 60px;
+  }
+  .calc-field__unit { font-size: 0.82rem; color: var(--text-muted); }
+  .calc-field__swatch {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    flex-shrink: 0;
+  }
+
+  .calc-results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .calc-variant {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .variant-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .variant-title { font-weight: 700; font-size: 1rem; }
+  .variant-nav {
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    width: 32px; height: 32px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--green);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .variant-nav:hover { border-color: var(--green); background: var(--green); color: #fff; }
+
+  .variant-svg-wrap {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    justify-content: center;
+  }
+  .panel-svg { width: 100%; max-width: 260px; height: 220px; }
+
+  .variant-dims {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+  .variant-dims b { color: var(--text); }
+
+  .price-line { font-size: 1rem; }
+  .price-line s { color: #aaa; font-size: 0.9rem; }
+  .price-final { font-size: 1.3rem; font-weight: 700; color: var(--green); margin-left: 8px; }
+  .discount-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #ffebee;
+    color: #c62828;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .discount-badge--big { background: #e8f5e9; color: #2e7d32; }
+
+  .calc-order-btn { width: 100%; margin-top: auto; }
+
+  /* Модалка */
+  .order-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    padding: 20px;
+    overflow-y: auto;
+    align-items: center;
+    justify-content: center;
+  }
+  .order-modal.open { display: flex; }
+  .order-modal__box {
+    background: #fff;
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 560px;
+    width: 100%;
+    position: relative;
+  }
+  .order-modal__close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #999;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+  }
+  .order-modal__close:hover { background: #f5f5f5; color: var(--text); }
+  .order-modal__box h3 { margin-bottom: 20px; }
+
+  .order-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.88rem; }
+  .order-table th { text-align: left; padding: 8px 6px; background: var(--bg-gray); font-weight: 600; }
+  .order-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); }
+  .order-total td { font-weight: 600; background: #f9f9f9; }
+
+  .order-modal__form { display: flex; flex-direction: column; gap: 12px; }
+  .order-modal__input {
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-family: var(--font);
+    font-size: 0.95rem;
+    outline: none;
+  }
+  .order-modal__input:focus { border-color: var(--green); }
+  .order-modal__want-cheaper label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.95rem; }
+  .info-icon { color: var(--green); cursor: help; }
+
+  @media (max-width: 700px) {
+    .calc-results { grid-template-columns: 1fr; }
+    .calc-field { min-width: 140px; }
+  }
+</style>

@@ -1,0 +1,89 @@
+---
+import { site, nav } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer__grid">
+    <div class="footer__brand">
+      <a href="/" class="logo">
+        <span class="logo__euro">Euro</span><span class="logo__plitka">Plitka</span>
+      </a>
+      <p>Дзеркальна плитка та LED дзеркала в Києві. Виготовлення та монтаж.</p>
+      <div class="footer__socials">
+        {site.social.instagram && (
+          <a href={site.social.instagram} target="_blank" rel="noopener">Instagram</a>
+        )}
+        {site.social.telegram && (
+          <a href={site.social.telegram} target="_blank" rel="noopener">Telegram</a>
+        )}
+      </div>
+    </div>
+
+    <div>
+      <h4>Навігація</h4>
+      <ul>
+        {nav.map((item) => (
+          <li><a href={item.path}>{item.label}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
+      <h4>Калькулятори</h4>
+      <ul>
+        <li><a href="/">Калькулятор панно</a></li>
+        <li><a href="/led-dzerkalo/">Калькулятор LED дзеркала</a></li>
+      </ul>
+      <h4 style="margin-top:1.5rem">Контакти</h4>
+      <ul class="footer__contacts">
+        <li><a href={`tel:${site.phone.tel}`}>{site.phone.display}</a></li>
+        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+        <li>{site.address}</li>
+        <li>{site.workingHours}</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container footer__bottom">
+    <span>© {year} {site.name}. Всі права захищені.</span>
+  </div>
+</footer>
+
+<style>
+  .footer { background: #1a1a1a; color: #aaa; padding-top: 56px; margin-top: 64px; }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1.2fr;
+    gap: 40px;
+    padding-bottom: 40px;
+  }
+  .footer h4 {
+    color: #fff;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+  .footer ul { display: flex; flex-direction: column; gap: 8px; }
+  .footer a { color: #aaa; font-size: 0.95rem; }
+  .footer a:hover { color: var(--green-light); }
+  .logo { font-size: 1.3rem; font-weight: 800; display: block; margin-bottom: 12px; }
+  .logo__euro { color: var(--green-light); }
+  .logo__plitka { color: #fff; }
+  .footer__brand p { font-size: 0.92rem; line-height: 1.6; max-width: 30ch; }
+  .footer__socials { display: flex; gap: 16px; margin-top: 16px; }
+  .footer__socials a { font-weight: 700; color: #fff; }
+  .footer__contacts a { font-weight: 600; color: #fff; }
+  .footer__bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 20px 20px;
+    font-size: 0.85rem;
+    color: #666;
+  }
+  @media (max-width: 768px) {
+    .footer__grid { grid-template-columns: 1fr 1fr; }
+    .footer__brand { grid-column: 1/-1; }
+  }
+  @media (max-width: 480px) { .footer__grid { grid-template-columns: 1fr; } }
+</style>

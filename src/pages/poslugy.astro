@@ -1,0 +1,66 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Послуги" description="Послуги Євро Плитка: виготовлення та монтаж дзеркальної плитки, LED дзеркал в Києві.">
+  <div class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Головна</a><span>›</span><span>Послуги</span></div>
+      <h1>Наші послуги</h1>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="services-list">
+        <div class="service-item">
+          <div class="service-item__num">01</div>
+          <div>
+            <h2>Дзеркальна плитка з фацетом</h2>
+            <p>Виготовляємо дзеркальну плитку у кольорах серебро, бронза, графіт з фацетом 0-20 мм. Точний лазерний розкрій.</p>
+          </div>
+        </div>
+        <div class="service-item">
+          <div class="service-item__num">02</div>
+          <div>
+            <h2>Дзеркальні панно</h2>
+            <p>Проектуємо та виготовляємо дзеркальні панно для стін будь-якого розміру. Калькулятор доступний на головній сторінці.</p>
+          </div>
+        </div>
+        <div class="service-item">
+          <div class="service-item__num">03</div>
+          <div>
+            <h2>LED дзеркала</h2>
+            <p>Виготовляємо LED дзеркала фонової та фронтальної підсвітки будь-яких розмірів. Опції: підігрів, сенсор, дімер.</p>
+          </div>
+        </div>
+        <div class="service-item">
+          <div class="service-item__num">04</div>
+          <div>
+            <h2>Монтаж та встановлення</h2>
+            <p>Досвідчена бригада встановить дзеркальну плитку або LED дзеркало акуратно та швидко. Гарантія на роботу.</p>
+          </div>
+        </div>
+        <div class="service-item">
+          <div class="service-item__num">05</div>
+          <div>
+            <h2>Доставка по Києву</h2>
+            <p>Доставляємо вироби в зручний для вас час. Акуратна упаковка гарантує цілісність дзеркальних виробів.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .services-list { display: flex; flex-direction: column; gap: 0; }
+  .service-item {
+    display: flex; gap: 32px; padding: 36px 0;
+    border-bottom: 1px solid var(--border); align-items: flex-start;
+  }
+  .service-item:last-child { border-bottom: none; }
+  .service-item__num { font-size: 2.5rem; font-weight: 800; color: var(--green); opacity: 0.3; line-height: 1; flex-shrink: 0; min-width: 56px; }
+  .service-item h2 { font-size: 1.2rem; margin-bottom: 8px; }
+  .service-item p { color: var(--text-muted); max-width: 60ch; }
+</style>
