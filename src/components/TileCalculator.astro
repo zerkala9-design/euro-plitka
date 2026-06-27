@@ -327,8 +327,8 @@ function drawPanel(mode, panel, info) {
         <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" />
       </clipPath>
     </defs>
-    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="#1a1610" />
-    <g clip-path="url(#${clipId})" stroke="#4a4030" stroke-width="0.7" opacity="0.9">${lines}</g>
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="#f9f8f4" />
+    <g clip-path="url(#${clipId})" stroke="#c9a84c" stroke-width="0.6" opacity="0.7">${lines}</g>
     ${coveredRect}${cuttedRect}
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
     <line x1="${ox}" y1="${oy-7}" x2="${ox+dW}" y2="${oy-7}" stroke="#c9a84c" stroke-width="1"/>
@@ -482,8 +482,8 @@ renderAll();
 </script>
 
 <style>
-  .calc-section { background: var(--bg-gray); }
-  .calc-title { margin-bottom: 6px; color: var(--text); }
+  .calc-section { background: var(--bg-gray); padding: 80px 0; }
+  .calc-title { margin-bottom: 6px; color: var(--text); font-family: var(--font-heading); }
   .calc-sub { color: var(--text-muted); margin-bottom: 28px; }
 
   .calc-inputs {
@@ -519,7 +519,7 @@ renderAll();
     color: var(--text);
     min-width: 50px;
   }
-  .calc-field select option { background: #1e1e1e; color: var(--text); }
+  .calc-field select option { background: var(--white); color: var(--text); }
   .calc-field__unit { font-size: 0.8rem; color: var(--text-muted); }
   .calc-field__swatch {
     width: 18px; height: 18px;
@@ -535,16 +535,17 @@ renderAll();
   }
 
   .calc-panel {
-    background: var(--bg-card);
+    background: var(--white);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 18px;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: var(--shadow);
   }
-  .calc-panel:hover { border-color: var(--border-gold); }
+  .calc-panel:hover { border-color: var(--gold-border); box-shadow: var(--shadow-md); }
 
   .panel-header {
     display: flex;
@@ -555,8 +556,8 @@ renderAll();
   .panel-mode { font-size: 0.75rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
 
   .panel-preview {
-    background: #111;
-    border: 1px solid #222;
+    background: var(--bg-gray);
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 10px;
     display: flex;
@@ -572,7 +573,7 @@ renderAll();
     justify-content: center;
   }
   .zoom-btn {
-    background: var(--bg-input);
+    background: var(--white);
     border: 1px solid var(--border);
     border-radius: 6px;
     width: 34px; height: 34px;
@@ -582,7 +583,7 @@ renderAll();
     display: flex; align-items: center; justify-content: center;
     transition: all 0.2s;
   }
-  .zoom-btn:hover:not(:disabled) { border-color: var(--gold); background: var(--gold); color: #0c0c0c; }
+  .zoom-btn:hover:not(:disabled) { border-color: var(--gold); background: var(--gold-pale); }
   .zoom-btn:disabled { opacity: 0.35; cursor: default; }
 
   .panel-info {
@@ -592,7 +593,7 @@ renderAll();
     font-size: 0.82rem;
     color: var(--text-muted);
   }
-  .panel-info b { color: #ccc; }
+  .panel-info b { color: var(--text); }
 
   .panel-price .price-total {
     font-size: 1.35rem;
@@ -616,13 +617,14 @@ renderAll();
   }
   .order-modal.open { display: flex; }
   .order-modal__box {
-    background: #161616;
+    background: var(--white);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 32px;
     max-width: 600px;
     width: 100%;
     position: relative;
+    box-shadow: var(--shadow-lg);
   }
   .order-modal__close {
     position: absolute; top: 14px; right: 14px;
@@ -631,13 +633,13 @@ renderAll();
     display: flex; align-items: center; justify-content: center;
     border-radius: 50%;
   }
-  .order-modal__close:hover { background: #222; color: var(--text); }
+  .order-modal__close:hover { background: var(--bg-gray); color: var(--text); }
   .order-modal__box h3 { margin-bottom: 18px; color: var(--text); }
 
   .order-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 0.85rem; }
-  .order-table th { text-align: left; padding: 7px 5px; background: #1e1e1e; font-weight: 600; color: #aaa; }
-  .order-table td { padding: 7px 5px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
-  .order-total td { font-weight: 600; background: #1a1a1a; color: var(--text); }
+  .order-table th { text-align: left; padding: 7px 5px; background: var(--bg-gray); font-weight: 600; color: var(--text-muted); }
+  .order-table td { padding: 7px 5px; border-bottom: 1px solid var(--border); color: var(--text-mid); }
+  .order-total td { font-weight: 600; background: var(--gold-pale); color: var(--text); }
 
   .order-modal__form { display: flex; flex-direction: column; gap: 10px; }
   .order-modal__input {
@@ -651,7 +653,7 @@ renderAll();
     font-family: var(--font);
   }
   .order-modal__input:focus { border-color: var(--gold); }
-  .order-modal__input::placeholder { color: #444; }
+  .order-modal__input::placeholder { color: var(--text-muted); }
 
   @media (max-width: 900px) {
     .calc-panels { grid-template-columns: 1fr; }
