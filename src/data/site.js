@@ -13,40 +13,39 @@ export const site = {
 };
 
 export const nav = [
-  { label: 'Головна',          path: '/' },
+  { label: 'Головна',           path: '/' },
   { label: 'Дзеркальна плитка', path: '/dzerkalna-plitka/' },
-  { label: 'LED дзеркала',     path: '/led-dzerkalo/' },
-  { label: 'Послуги',          path: '/poslugy/' },
-  { label: 'Про нас',          path: '/pro-nas/' },
-  { label: 'Доставка та оплата', path: '/dostavka/' },
-  { label: 'Контакти',         path: '/kontakty/' },
+  { label: 'LED дзеркала',      path: '/led-dzerkalo/' },
+  { label: 'Послуги',           path: '/poslugy/' },
+  { label: 'Про нас',           path: '/pro-nas/' },
+  { label: 'Доставка та оплата',path: '/dostavka/' },
+  { label: 'Контакти',          path: '/kontakty/' },
 ];
 
-// Ціни калькулятора плитки (грн/м²)
 export const tileCalcConfig = {
   silverPrice: 2120,
   colorPrice: 3270,
-  triangleCoef: 0.7,
-  // Розмірні фактори для розрахунку ціни (калібровані)
-  fig2Markup: 1.515,
-  fig3Markup: 1.968,
-  fig2Discount: 0.08,
-  fig3Discount: 0.12,
+  trianglePrice: 1.5,
+  facetsPrices: [0, 35, 55, 75, 95],
+  extraPrice: 1.0,
+  defaultPrice: 1.0,
+  gridAuto: 400,
+  gridRatio: { ideal: 1.35, max: 1.5 },
+  tileMin: 150,
+  tileMax: 600,
 };
 
-// Ціни LED-дзеркал
 export const ledCalcConfig = {
-  // базова ціна: area (см²) × pricePerCm2
   pricePerCm2: { back: 0.875, front: 1.05 },
   lightColors: [
-    { id: 'warm',    label: 'Тепле 3000K',    color: '#ffd580' },
+    { id: 'warm',    label: 'Тепле 3000K',     color: '#ffd580' },
     { id: 'neutral', label: 'Нейтральне 4000K', color: '#fff5cc' },
-    { id: 'cold',    label: 'Холодне 6000K',   color: '#e8f4ff' },
+    { id: 'cold',    label: 'Холодне 6000K',    color: '#e8f4ff' },
   ],
   options: [
-    { id: 'heat',   label: 'Підігрів',  price: 400 },
-    { id: 'sensor', label: 'Сенсор',    price: 300 },
-    { id: 'dimmer', label: 'Дімер',     price: 200 },
+    { id: 'heat',   label: 'Підігрів', price: 400 },
+    { id: 'sensor', label: 'Сенсор',   price: 300 },
+    { id: 'dimmer', label: 'Дімер',    price: 200 },
   ],
   mounting: 500,
   delivery: 200,
