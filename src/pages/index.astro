@@ -4,156 +4,316 @@ import TileCalculator from '../components/TileCalculator.astro';
 ---
 
 <Layout
-  title="Дзеркальна плитка Київ — калькулятор панно онлайн"
-  description="Калькулятор дзеркального панно онлайн. Введіть розміри стіни — отримайте варіанти розкрою та вартість. Дзеркальна плитка в Києві від виробника."
+  title="Дзеркальна плитка Київ — панно, монтаж, калькулятор"
+  description="Дзеркальна плитка в Київ від виробника. Виготовлення панно на замовлення, монтаж, онлайн-калькулятор розкрою. Срібло, бронза, графіт. Фацет 5–20 мм."
 >
+
+  <!-- HERO -->
   <section class="hero">
-    <div class="container hero__inner">
-      <div class="hero__text">
-        <p class="hero__eyebrow">Дзеркальна плитка в Києві</p>
-        <h1>Розкрийте простір<br />дзеркальним панно</h1>
-        <p class="hero__desc">
-          Виготовляємо та монтуємо дзеркальну плитку з фацетом. Розрахуйте вартість онлайн прямо зараз.
-        </p>
-        <div class="hero__actions">
-          <a href="#calculator" class="btn btn--primary">Розрахувати вартість</a>
-          <a href="/led-dzerkalo/" class="btn btn--outline">LED дзеркала</a>
+    <div class="container">
+      <div class="hero__layout">
+        <div class="hero__content">
+          <div class="badge">Виробник у Києві</div>
+          <h1 class="hero__title">Дзеркальна плитка<br>на замовлення</h1>
+          <p class="hero__text">Панно, фасади, декор. Власне виробництво — срібло, бронза, графіт, з фацетом або без.</p>
+          <div class="hero__actions">
+            <a href="#calculator" class="btn btn--primary btn--lg">Розрахувати вартість</a>
+            <a href="tel:+380995283637" class="btn btn--dark btn--lg">+38 (099) 528-36-37</a>
+          </div>
+          <div class="hero__stats">
+            <div class="hero__stat">
+              <span class="hero__stat-num">10+</span>
+              <span class="hero__stat-label">років на ринку</span>
+            </div>
+            <div class="hero__stat">
+              <span class="hero__stat-num">500+</span>
+              <span class="hero__stat-label">виконаних об'єктів</span>
+            </div>
+            <div class="hero__stat">
+              <span class="hero__stat-num">3</span>
+              <span class="hero__stat-label">кольори дзеркала</span>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="hero__badges">
-        <div class="badge">
-          <span class="badge__num">10+</span>
-          <span class="badge__text">років досвіду</span>
-        </div>
-        <div class="badge">
-          <span class="badge__num">500+</span>
-          <span class="badge__text">виконаних проєктів</span>
-        </div>
-        <div class="badge">
-          <span class="badge__num">3-7</span>
-          <span class="badge__text">днів виготовлення</span>
+        <div class="hero__visual">
+          <div class="hero__mirror-grid">
+            {Array.from({length: 9}).map((_, i) => (
+              <div class={`mirror-tile mirror-tile--${['silver','bronze','graphite'][i % 3]}`}></div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <div id="calculator">
-    <TileCalculator />
-  </div>
-
-  <section class="section">
+  <!-- ПЕРЕВАГИ -->
+  <section class="section section--white">
     <div class="container">
-      <h2 class="section-heading">Чому обирають нас</h2>
-      <div class="grid-4 advantages">
-        <div class="advantage">
-          <div class="advantage__icon">🏭</div>
+      <div class="section-header--center">
+        <div class="badge">Чому обирають нас</div>
+        <h2>Виробництво та монтаж під ключ</h2>
+        <div class="divider divider--center"></div>
+      </div>
+      <div class="grid-4">
+        <div class="feature">
+          <div class="feature-icon">✂️</div>
           <h3>Власне виробництво</h3>
-          <p>Виготовляємо плитку самостійно — без посередників і переплат.</p>
+          <p>Різка, фацетування та шліфовка на власному обладнанні в Києві</p>
         </div>
-        <div class="advantage">
-          <div class="advantage__icon">📐</div>
-          <h3>Точний розкрій</h3>
-          <p>Автоматизований розрахунок кількості матеріалу — мінімум відходів.</p>
+        <div class="feature">
+          <div class="feature-icon">📐</div>
+          <h3>Точний розрахунок</h3>
+          <p>Онлайн-калькулятор показує 3 варіанти розкрою та вартість матеріалу</p>
         </div>
-        <div class="advantage">
-          <div class="advantage__icon">🔧</div>
-          <h3>Монтаж під ключ</h3>
-          <p>Наша бригада встановить панно акуратно та швидко.</p>
+        <div class="feature">
+          <div class="feature-icon">🚚</div>
+          <h3>Доставка по Україні</h3>
+          <p>Відправляємо Новою поштою в будь-яке місто, упаковка захищає від бою</p>
         </div>
-        <div class="advantage">
-          <div class="advantage__icon">🚚</div>
-          <h3>Доставка по Києву</h3>
-          <p>Доставляємо в зручний для вас час у межах міста.</p>
+        <div class="feature">
+          <div class="feature-icon">🔧</div>
+          <h3>Монтаж у Києві</h3>
+          <p>Виїзд майстра, монтаж на клей або кріплення, гарантія 2 роки</p>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="cta-section section">
+  <!-- КАЛЬКУЛЯТОР -->
+  <section class="section section--gray" id="calculator">
     <div class="container">
-      <div class="cta-box">
-        <div>
-          <h2>Потрібна консультація?</h2>
-          <p>Зв'яжіться з нами — безкоштовно підберемо оптимальний варіант для вашого простору.</p>
+      <div class="section-header--center">
+        <div class="badge">Онлайн-калькулятор</div>
+        <h2>Розрахуйте вартість панно</h2>
+        <div class="divider divider--center"></div>
+        <p>Введіть розміри стіни — отримайте 3 варіанти розкрою та точну ціну</p>
+      </div>
+    </div>
+    <TileCalculator />
+  </section>
+
+  <!-- ПРОДУКЦІЯ -->
+  <section class="section section--white">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge">Асортимент</div>
+        <h2>Дзеркальна плитка</h2>
+        <div class="divider"></div>
+        <p>Три кольори, п'ять розмірів фацету — підберемо під будь-який інтер'єр</p>
+      </div>
+      <div class="grid-3 products">
+        <div class="product-card">
+          <div class="product-card__preview product-card__preview--silver"></div>
+          <div class="product-card__body">
+            <h3>Серебро</h3>
+            <p>Класична срібна дзеркальна плитка для ванних кімнат та вітальень.</p>
+            <div class="product-card__price">від 2 120 грн/м²</div>
+            <a href="/dzerkalna-plitka/" class="btn btn--outline" style="width:100%">Детальніше</a>
+          </div>
         </div>
-        <div class="cta-box__actions">
-          <a href="tel:+380995283637" class="btn btn--primary">📞 Зателефонувати</a>
-          <a href="https://t.me/europlitka" target="_blank" class="btn btn--outline">Telegram</a>
+        <div class="product-card product-card--featured">
+          <div class="product-badge">Популярне</div>
+          <div class="product-card__preview product-card__preview--bronze"></div>
+          <div class="product-card__body">
+            <h3>Бронза</h3>
+            <p>Тепле бронзове дзеркало — стильне рішення для сучасних інтер'єрів.</p>
+            <div class="product-card__price">від 3 270 грн/м²</div>
+            <a href="/dzerkalna-plitka/" class="btn btn--primary" style="width:100%">Детальніше</a>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="product-card__preview product-card__preview--graphite"></div>
+          <div class="product-card__body">
+            <h3>Графіт</h3>
+            <p>Темне графітове дзеркало для акцентних стін та зон відпочинку.</p>
+            <div class="product-card__price">від 3 270 грн/м²</div>
+            <a href="/dzerkalna-plitka/" class="btn btn--outline" style="width:100%">Детальніше</a>
+          </div>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- ЯК МИ ПРАЦЮЄМО -->
+  <section class="section section--gray">
+    <div class="container">
+      <div class="how-layout">
+        <div class="how-text">
+          <div class="badge">Процес роботи</div>
+          <h2>Від замовлення до монтажу</h2>
+          <div class="divider"></div>
+          <div class="steps">
+            <div class="step">
+              <div class="step__num"></div>
+              <div class="step__body">
+                <h3>Замовлення та розрахунок</h3>
+                <p>Вкажіть розміри в калькуляторі або зателефонуйте — визначимо кількість та вартість</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step__num"></div>
+              <div class="step__body">
+                <h3>Виробництво</h3>
+                <p>Ріжемо, фацетуємо та пакуємо на власному виробництві. Термін 3–7 днів</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step__num"></div>
+              <div class="step__body">
+                <h3>Доставка або самовивіз</h3>
+                <p>Нова пошта по всій Україні або самовивіз з Києва</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step__num"></div>
+              <div class="step__body">
+                <h3>Монтаж (за потреби)</h3>
+                <p>Виїзд майстра в Києві та передмісті. Гарантія 2 роки</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="how-visual">
+          <div class="mirror-demo__grid">
+            {Array.from({length: 16}).map((_, i) => (
+              <div class={`mirror-demo__tile mirror-demo__tile--${i % 4 === 0 ? 'bronze' : i % 4 === 2 ? 'graphite' : 'silver'}`}></div>
+            ))}
+          </div>
+          <div class="mirror-demo__label">Приклад панно 4×4</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-banner">
+    <div class="container">
+      <div class="badge badge--dark" style="margin-bottom:20px">Безкоштовна консультація</div>
+      <h2>Готові обговорити ваш проєкт?</h2>
+      <p>Зателефонуйте або напишіть — відповімо протягом 15 хвилин у робочий час</p>
+      <div class="cta-banner__actions">
+        <a href="tel:+380995283637" class="btn btn--primary btn--lg">+38 (099) 528-36-37</a>
+        <a href="https://t.me/europlitka" class="btn btn--lg" target="_blank" rel="noopener" style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,0.3)">Написати в Telegram</a>
+      </div>
+    </div>
+  </section>
+
 </Layout>
 
 <style>
   .hero {
-    background: linear-gradient(160deg, #080808 0%, #0f0f0f 60%, #0d0b06 100%);
-    color: #fff;
-    padding: 80px 0 72px;
-    border-bottom: 1px solid rgba(201,168,76,0.12);
+    background: var(--white);
+    padding: 80px 0;
+    overflow: hidden;
   }
-  .hero__inner { display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: center; }
-  .hero__eyebrow {
-    color: var(--gold);
-    font-size: 0.78rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    margin-bottom: 18px;
-    display: flex;
+  .hero__layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
     align-items: center;
-    gap: 10px;
   }
-  .hero__eyebrow::before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--gold); }
-  .hero h1 { color: #fff; margin-bottom: 16px; }
-  .hero__desc { color: #777; font-size: 1.05rem; max-width: 48ch; margin-bottom: 32px; line-height: 1.7; }
-  .hero__actions { display: flex; gap: 12px; flex-wrap: wrap; }
-  .hero__badges { display: flex; flex-direction: column; gap: 12px; }
-  .badge {
-    background: rgba(201,168,76,0.05);
-    border: 1px solid rgba(201,168,76,0.18);
-    border-radius: 10px;
-    padding: 16px 24px;
-    text-align: center;
-    min-width: 130px;
+  .hero__title { margin: 20px 0 20px; line-height: 1.1; }
+  .hero__text { font-size: 1.1rem; margin-bottom: 36px; max-width: 440px; }
+  .hero__actions { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero__stats {
+    display: flex; gap: 36px; margin-top: 52px;
+    padding-top: 36px; border-top: 1px solid var(--border); flex-wrap: wrap;
   }
-  .badge__num { display: block; font-size: 1.8rem; font-weight: 800; color: var(--gold); }
-  .badge__text { font-size: 0.72rem; color: #555; text-transform: uppercase; letter-spacing: 0.1em; }
-
-  .section-heading { margin-bottom: 36px; }
-
-  .advantage {
-    text-align: center;
-    padding: 28px 20px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: var(--bg-card);
-    transition: border-color 0.25s;
+  .hero__stat-num {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 2.2rem; font-weight: 800; color: var(--gold);
+    line-height: 1; margin-bottom: 4px;
   }
-  .advantage:hover { border-color: rgba(201,168,76,0.3); }
-  .advantage__icon { font-size: 2rem; margin-bottom: 14px; }
-  .advantage h3 { margin-bottom: 8px; color: #ddd; }
-  .advantage p { font-size: 0.88rem; color: var(--text-muted); }
+  .hero__stat-label { font-size: 0.82rem; color: var(--text-muted); }
 
-  .cta-box {
-    background: linear-gradient(135deg, #130f02 0%, #1c1608 100%);
-    border: 1px solid rgba(201,168,76,0.2);
-    border-radius: 16px;
-    padding: 48px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 32px;
-    flex-wrap: wrap;
+  .hero__visual { display: flex; justify-content: center; align-items: center; }
+  .hero__mirror-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 360px;
+    transform: rotate(-4deg);
+    box-shadow: var(--shadow-lg);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
   }
-  .cta-box h2 { color: #fff; margin-bottom: 8px; }
-  .cta-box p { color: #777; max-width: 50ch; }
-  .cta-box__actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .mirror-tile { aspect-ratio: 1; position: relative; }
+  .mirror-tile::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%);
+  }
+  .mirror-tile--silver { background: linear-gradient(135deg, #e8e8e8, #b0b0b0, #d8d8d8); }
+  .mirror-tile--bronze { background: linear-gradient(135deg, #d4a84b, #8b6914, #c9a040); }
+  .mirror-tile--graphite { background: linear-gradient(135deg, #666, #333, #555); }
 
-  @media (max-width: 768px) {
-    .hero__inner { grid-template-columns: 1fr; }
-    .hero__badges { flex-direction: row; flex-wrap: wrap; }
-    .badge { flex: 1; min-width: 100px; }
-    .cta-box { padding: 32px 24px; }
+  .feature { padding: 24px; }
+  .feature h3 { margin-bottom: 10px; font-size: 1rem; }
+  .feature p { font-size: 0.9rem; }
+
+  .product-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s; position: relative;
+  }
+  .product-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+  .product-card--featured { border-color: var(--gold-border); box-shadow: 0 4px 24px rgba(184,144,58,0.12); }
+  .product-badge {
+    position: absolute; top: 16px; right: 16px;
+    background: var(--gold); color: #fff;
+    font-size: 0.75rem; font-weight: 700; padding: 4px 12px;
+    border-radius: 100px;
+  }
+  .product-card__preview { height: 180px; position: relative; }
+  .product-card__preview::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 70%);
+  }
+  .product-card__preview--silver { background: linear-gradient(160deg, #eee 0%, #b0b0b0 50%, #d0d0d0 100%); }
+  .product-card__preview--bronze { background: linear-gradient(160deg, #d4a84b 0%, #8b6914 50%, #c9a040 100%); }
+  .product-card__preview--graphite { background: linear-gradient(160deg, #777 0%, #333 50%, #555 100%); }
+  .product-card__body { padding: 28px; }
+  .product-card__body h3 { margin-bottom: 10px; }
+  .product-card__body p { font-size: 0.92rem; margin-bottom: 18px; }
+  .product-card__price { font-weight: 700; color: var(--gold); font-size: 1.1rem; margin-bottom: 18px; }
+
+  .how-layout {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: center;
+  }
+  .how-text .badge { margin-bottom: 16px; display: inline-block; }
+  .how-text h2 { margin-bottom: 0; }
+  .how-text .divider { margin: 20px 0 36px; }
+
+  .how-visual { display: flex; flex-direction: column; align-items: center; }
+  .mirror-demo__grid {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 6px; width: 280px;
+    border-radius: var(--radius); overflow: hidden;
+    box-shadow: var(--shadow-lg); margin-bottom: 14px;
+  }
+  .mirror-demo__tile { aspect-ratio: 1; position: relative; }
+  .mirror-demo__tile::after {
+    content: ''; position: absolute;
+    top: 0; left: 0; width: 40%; height: 40%;
+    background: rgba(255,255,255,0.22);
+    border-radius: 0 0 50% 0;
+  }
+  .mirror-demo__tile--silver { background: linear-gradient(135deg, #e0e0e0, #b8b8b8); }
+  .mirror-demo__tile--bronze { background: linear-gradient(135deg, #d4a84b, #9a7420); }
+  .mirror-demo__tile--graphite { background: linear-gradient(135deg, #666, #3a3a3a); }
+  .mirror-demo__label { font-size: 0.82rem; color: var(--text-muted); }
+
+  @media (max-width: 960px) {
+    .hero__layout { grid-template-columns: 1fr; gap: 48px; }
+    .hero__visual { order: -1; }
+    .hero__mirror-grid { width: 260px; }
+    .how-layout { grid-template-columns: 1fr; gap: 48px; }
+    .how-visual { order: -1; }
+  }
+  @media (max-width: 640px) {
+    .hero { padding: 48px 0; }
+    .hero__mirror-grid { width: 220px; }
   }
 </style>
