@@ -3,7 +3,7 @@ import { site, nav } from '../data/site';
 const current = Astro.url.pathname;
 ---
 
-<header class="header">
+<header class="header" id="header">
   <div class="container header__inner">
     <a href="/" class="logo">
       <span class="logo__euro">Euro</span><span class="logo__plitka">Plitka</span>
@@ -26,9 +26,7 @@ const current = Astro.url.pathname;
 
     <div class="header__contacts">
       <a href={`tel:${site.phone.tel}`} class="header__phone">{site.phone.display}</a>
-      <a href={`https://t.me/${site.social.telegram.split('/').pop()}`} class="btn btn--primary btn__telegram" target="_blank">
-        Telegram
-      </a>
+      <a href={site.social.telegram} class="btn btn--primary" target="_blank" rel="noopener">Telegram</a>
     </div>
 
     <button class="burger" id="burger" aria-label="Меню" aria-expanded="false">
@@ -42,7 +40,10 @@ const current = Astro.url.pathname;
         <li><a href={item.path} class="mobile-nav__link">{item.label}</a></li>
       ))}
     </ul>
-    <a href={`tel:${site.phone.tel}`} class="mobile-nav__phone">{site.phone.display}</a>
+    <div class="mobile-nav__footer">
+      <a href={`tel:${site.phone.tel}`} class="mobile-nav__phone">{site.phone.display}</a>
+      <a href={site.social.telegram} class="btn btn--primary" target="_blank" rel="noopener" style="width:100%;text-align:center">Telegram</a>
+    </div>
   </div>
 </header>
 
@@ -54,6 +55,18 @@ const current = Astro.url.pathname;
     burger.setAttribute('aria-expanded', open ? 'true' : 'false');
     burger.classList.toggle('open', !!open);
   });
+  // close on link click
+  mobileNav?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      mobileNav.classList.remove('open');
+      burger?.classList.remove('open');
+    });
+  });
+  // scroll shadow
+  const header = document.getElementById('header');
+  window.addEventListener('scroll', () => {
+    header?.classList.toggle('scrolled', window.scrollY > 10);
+  });
 </script>
 
 <style>
@@ -61,19 +74,23 @@ const current = Astro.url.pathname;
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(12,12,12,0.96);
-    border-bottom: 1px solid rgba(201,168,76,0.2);
+    background: rgba(255,255,255,0.97);
+    border-bottom: 1px solid var(--border);
     backdrop-filter: blur(12px);
-    box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    transition: box-shadow 0.2s;
   }
+  .header.scrolled { box-shadow: 0 2px 24px rgba(26,24,20,0.1); }
+
   .header__inner {
     display: flex;
     align-items: center;
-    gap: 24px;
-    height: 68px;
+    gap: 28px;
+    height: 70px;
   }
+
   .logo {
-    font-size: 1.4rem;
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
     font-weight: 800;
     white-space: nowrap;
     flex-shrink: 0;
@@ -83,25 +100,30 @@ const current = Astro.url.pathname;
   .logo__plitka { color: var(--text); }
 
   .nav { flex: 1; }
-  .nav__list { display: flex; gap: 2px; flex-wrap: wrap; }
+  .nav__list { display: flex; gap: 2px; list-style: none; }
   .nav__link {
     display: block;
-    padding: 6px 10px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border-radius: 4px;
-    color: var(--text-muted);
-    transition: color 0.2s;
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    color: var(--text-mid);
+    transition: color 0.15s, background 0.15s;
     white-space: nowrap;
-    letter-spacing: 0.02em;
   }
-  .nav__link:hover, .nav__link.active { color: var(--gold); }
-  .nav__link.active { background: rgba(201,168,76,0.08); }
+  .nav__link:hover { color: var(--gold); background: var(--gold-pale); }
+  .nav__link.active { color: var(--gold); font-weight: 600; }
 
-  .header__contacts { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-  .header__phone { font-weight: 700; font-size: 0.95rem; white-space: nowrap; color: var(--text); }
+  .header__contacts { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+  .header__phone {
+    font-weight: 700;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    color: var(--text);
+    transition: color 0.15s;
+  }
   .header__phone:hover { color: var(--gold); }
-  .btn__telegram { font-size: 0.85rem; padding: 8px 16px; }
+  .header__contacts .btn { font-size: 0.875rem; padding: 10px 20px; }
 
   .burger {
     display: none;
@@ -109,9 +131,9 @@ const current = Astro.url.pathname;
     gap: 5px;
     background: none;
     border: none;
-    cursor: pointer;
-    padding: 4px;
+    padding: 6px;
     flex-shrink: 0;
+    margin-left: auto;
   }
   .burger span {
     display: block;
@@ -128,25 +150,28 @@ const current = Astro.url.pathname;
   .mobile-nav {
     display: none;
     flex-direction: column;
-    background: #0f0f0f;
+    background: var(--white);
     border-top: 1px solid var(--border);
-    padding: 16px 20px 24px;
+    padding: 8px 20px 24px;
+    box-shadow: 0 8px 32px rgba(26,24,20,0.1);
   }
   .mobile-nav.open { display: flex; }
-  .mobile-nav ul { display: flex; flex-direction: column; gap: 4px; }
+  .mobile-nav ul { list-style: none; display: flex; flex-direction: column; }
   .mobile-nav__link {
     display: block;
-    padding: 10px 12px;
-    font-weight: 600;
-    border-radius: 6px;
-    color: var(--text-muted);
+    padding: 12px 8px;
+    font-weight: 500;
+    color: var(--text-mid);
+    border-bottom: 1px solid var(--border);
+    transition: color 0.15s;
   }
-  .mobile-nav__link:hover { background: var(--bg-card); color: var(--gold); }
-  .mobile-nav__phone { margin-top: 16px; font-weight: 700; font-size: 1.1rem; color: var(--gold); }
+  .mobile-nav__link:hover { color: var(--gold); }
+  .mobile-nav__footer { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .mobile-nav__phone { font-weight: 700; font-size: 1.15rem; color: var(--text); }
 
-  @media (max-width: 960px) {
+  @media (max-width: 1024px) {
     .nav { display: none; }
     .header__contacts { display: none; }
-    .burger { display: flex; margin-left: auto; }
+    .burger { display: flex; }
   }
 </style>
