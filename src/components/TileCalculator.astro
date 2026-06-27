@@ -10,92 +10,104 @@ const cfg = JSON.stringify(tileCalcConfig);
 
     <div class="calc-inputs">
       <label class="calc-field">
-        <span class="calc-field__icon">↔</span>
         <span class="calc-field__label">Ширина</span>
-        <input type="number" id="wallW" value="1500" min="200" max="6000" step="10" />
+        <input type="number" id="wallW" value="1500" min="300" max="5000" step="10" />
         <span class="calc-field__unit">мм</span>
       </label>
       <label class="calc-field">
-        <span class="calc-field__icon">↕</span>
         <span class="calc-field__label">Висота</span>
-        <input type="number" id="wallH" value="2700" min="200" max="6000" step="10" />
+        <input type="number" id="wallH" value="2700" min="300" max="5000" step="10" />
         <span class="calc-field__unit">мм</span>
       </label>
       <label class="calc-field">
-        <span class="calc-field__icon">◻</span>
         <span class="calc-field__label">Фацет</span>
         <select id="facet">
-          <option value="0">0</option>
-          <option value="5">5</option>
-          <option value="10" selected>10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
+          <option value="1">0 мм</option>
+          <option value="2">5 мм</option>
+          <option value="3" selected>10 мм</option>
+          <option value="4">15 мм</option>
+          <option value="5">20 мм</option>
         </select>
-        <span class="calc-field__unit">мм</span>
       </label>
       <label class="calc-field calc-field--color">
-        <span class="calc-field__icon">◉</span>
         <span class="calc-field__label">Колір</span>
         <select id="color">
-          <option value="silver">Серебро</option>
-          <option value="bronze">Бронза</option>
-          <option value="graphite">Графіт</option>
+          <option value="1">Серебро</option>
+          <option value="2">Бронза</option>
+          <option value="3">Графіт</option>
         </select>
         <span class="calc-field__swatch" id="colorSwatch"></span>
       </label>
     </div>
 
-    <div class="calc-results" id="calcResults">
-      <div class="calc-variant" id="variant2">
-        <div class="variant-heading">
-          <span class="variant-fig">Рис. 2</span>
-          <span class="variant-type">квадрат</span>
+    <div class="calc-panels" id="calcPanels">
+      <!-- cover -->
+      <div class="calc-panel" id="panel-cover">
+        <div class="panel-header">
+          <span class="panel-num">Рис. 1</span>
+          <span class="panel-mode">З перекриттям</span>
         </div>
-        <div class="variant-svg-wrap">
-          <svg class="panel-svg" id="svg2" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="panel-preview">
+          <svg class="panel-svg" id="svg-cover" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div class="panel-covered" id="covered-cover"></div>
         </div>
-        <div class="variant-nav-row">
-          <button class="variant-nav" id="prevVar2">‹</button>
-          <span class="variant-counter" id="counter2"></span>
-          <button class="variant-nav" id="nextVar2">›</button>
+        <div class="panel-zoom">
+          <button class="zoom-btn" id="reset-cover" title="Скинути">↺</button>
+          <button class="zoom-btn" id="zoom-in-cover" title="Збільшити плитку">−</button>
+          <button class="zoom-btn" id="zoom-out-cover" title="Зменшити плитку">+</button>
         </div>
-        <div class="variant-dims" id="dims2"></div>
-        <div class="variant-info" id="info2"></div>
-        <button class="btn btn--primary calc-order-btn" data-variant="2">🛒 Замовити</button>
+        <div class="panel-info" id="info-cover"></div>
+        <div class="panel-price" id="price-cover"></div>
+        <button class="btn btn--primary panel-order" data-mode="cover">🛒 Замовити</button>
       </div>
 
-      <div class="calc-variant" id="variant3">
-        <div class="variant-heading">
-          <span class="variant-fig">Рис. 3</span>
-          <span class="variant-type">ромб</span>
+      <!-- cut -->
+      <div class="calc-panel" id="panel-cut">
+        <div class="panel-header">
+          <span class="panel-num">Рис. 2</span>
+          <span class="panel-mode">З підрізкою</span>
         </div>
-        <div class="variant-svg-wrap">
-          <svg class="panel-svg" id="svg3" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="panel-preview">
+          <svg class="panel-svg" id="svg-cut" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div class="panel-cutted" id="cutted-cut"></div>
         </div>
-        <div class="variant-nav-row">
-          <button class="variant-nav" id="prevVar3">‹</button>
-          <span class="variant-counter" id="counter3"></span>
-          <button class="variant-nav" id="nextVar3">›</button>
+        <div class="panel-zoom">
+          <button class="zoom-btn" id="reset-cut" title="Скинути">↺</button>
+          <button class="zoom-btn" id="zoom-in-cut" title="Збільшити плитку">−</button>
+          <button class="zoom-btn" id="zoom-out-cut" title="Зменшити плитку">+</button>
         </div>
-        <div class="variant-dims" id="dims3"></div>
-        <div class="variant-info" id="info3"></div>
-        <button class="btn btn--primary calc-order-btn" data-variant="3">🛒 Замовити</button>
+        <div class="panel-info" id="info-cut"></div>
+        <div class="panel-price" id="price-cut"></div>
+        <button class="btn btn--primary panel-order" data-mode="cut">🛒 Замовити</button>
+      </div>
+
+      <!-- fit -->
+      <div class="calc-panel" id="panel-fit">
+        <div class="panel-header">
+          <span class="panel-num">Рис. 3</span>
+          <span class="panel-mode">Підгонка</span>
+        </div>
+        <div class="panel-preview">
+          <svg class="panel-svg" id="svg-fit" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <div class="panel-zoom">
+          <button class="zoom-btn" id="reset-fit" title="Скинути">↺</button>
+          <button class="zoom-btn" id="zoom-in-fit" title="Збільшити плитку">−</button>
+          <button class="zoom-btn" id="zoom-out-fit" title="Зменшити плитку">+</button>
+        </div>
+        <div class="panel-info" id="info-fit"></div>
+        <div class="panel-price" id="price-fit"></div>
+        <button class="btn btn--primary panel-order" data-mode="fit">🛒 Замовити</button>
       </div>
     </div>
 
-    <!-- Модальне вікно замовлення -->
+    <!-- Модалка замовлення -->
     <div class="order-modal" id="orderModal">
       <div class="order-modal__box">
         <button class="order-modal__close" id="closeModal">✕</button>
-        <h3 id="modalTitle">Зеркальне панно</h3>
+        <h3 id="modalTitle">Дзеркальне панно</h3>
         <table class="order-table" id="orderTable"></table>
         <div class="order-modal__form">
-          <p class="order-modal__want-cheaper">
-            <label>
-              <input type="checkbox" id="wantCheaper" />
-              Хочу дешевше! <span class="info-icon" title="Ми підберемо оптимальний варіант для вашого бюджету">ℹ</span>
-            </label>
-          </p>
           <input type="text" placeholder="Ім'я та Прізвище" class="order-modal__input" id="modalName" />
           <input type="tel" placeholder="Телефон" class="order-modal__input" id="modalPhone" />
           <button class="btn btn--primary" id="submitOrder" style="width:100%">Відправити замовлення</button>
@@ -106,326 +118,379 @@ const cfg = JSON.stringify(tileCalcConfig);
 </section>
 
 <script define:vars={{ cfg }}>
-const CONFIG = JSON.parse(cfg);
+const CFG = JSON.parse(cfg);
+const MODES = ['cover', 'cut', 'fit'];
+const customCols = { cover: 0, cut: 0, fit: 0 };
+const panelData = {};
 
-// ---- Математика ----
-function calcVariants(W, H, facet, color) {
-  const pricePerM2 = color === 'silver' ? CONFIG.silverPrice : CONFIG.colorPrice;
-  const variants = [];
-
-  // Перебираємо можливу кількість плиток по ширині
-  for (let N = 1; N <= 20; N++) {
-    const d1 = W / N; // горизонтальна діагональ ромба
-
-    // Рис. 2: квадратний ромб (d1 = d2)
-    const d2_fig2 = d1;
-    const rowPitch2 = d1 / 2;
-    const rows2 = Math.floor(H / rowPitch2);
-    const actualH2 = rows2 * rowPitch2;
-    if (actualH2 < 200) continue;
-    const tileSize2 = Math.round(Math.sqrt(d1 * d1 + d2_fig2 * d2_fig2) / 2);
-    if (tileSize2 < 200) continue; // мінімум 200мм
-
-    // Рис. 3: прямокутний ромб (висота точна)
-    const M3 = Math.round(H / d1);
-    if (M3 < 1) continue;
-    const d2_fig3 = H / M3;
-    const tileSize3 = Math.round(Math.sqrt(d1 * d1 + d2_fig3 * d2_fig3) / 2);
-
-    // Калькуляція ціни
-    const area2 = (W * actualH2) / 1e6;
-    const area3 = (W * H) / 1e6;
-
-    // Фактор розмітки залежить від розміру плитки (калібровано)
-    const tileRatio2 = (tileSize2 - 177) / 177;
-    const tileRatio3 = (tileSize3 - 177) / 177;
-    const markup2 = Math.max(1.0, CONFIG.fig2Markup - tileRatio2 * 0.163);
-    const markup3 = Math.max(1.0, CONFIG.fig3Markup - tileRatio3 * 0.171);
-
-    const basePrice2 = Math.round(area2 * pricePerM2 * markup2);
-    const finalPrice2 = Math.round(basePrice2 * (1 - CONFIG.fig2Discount));
-
-    const basePrice3 = Math.round(area3 * pricePerM2 * markup3);
-    const finalPrice3 = Math.round(basePrice3 * (1 - CONFIG.fig3Discount));
-
-    // Кількість плиток (для інформації в модалці)
-    const tileArea2 = (tileSize2 * tileSize2) / 1e6;
-    const tileArea3 = (tileSize3 * tileSize3) / 1e6;
-    const totalTiles2 = Math.ceil(area2 / tileArea2);
-    const totalTiles3 = Math.ceil(area3 / tileArea3);
-    const fullTiles2 = Math.round(totalTiles2 * 0.87);
-    const triTiles2 = Math.round(totalTiles2 * 0.12);
-    const fullTiles3 = Math.round(totalTiles3 * 0.87);
-    const triTiles3 = Math.round(totalTiles3 * 0.12);
-
-    variants.push({
-      N,
-      fig2: {
-        d1: Math.round(d1), d2: Math.round(d2_fig2),
-        tileSize: tileSize2,
-        actualH: Math.round(actualH2),
-        area: area2,
-        basePrice: basePrice2,
-        finalPrice: finalPrice2,
-        discount: CONFIG.fig2Discount,
-        fullTiles: fullTiles2, triTiles: triTiles2,
-        tilePrice: Math.round(tileSize2 * tileSize2 / 1e6 * pricePerM2 * markup2),
-        triPrice: Math.round(tileSize2 * tileSize2 / 1e6 * pricePerM2 * markup2 * CONFIG.triangleCoef),
-      },
-      fig3: {
-        d1: Math.round(d1), d2: Math.round(d2_fig3),
-        tileSize: tileSize3,
-        actualH: H,
-        area: area3,
-        basePrice: basePrice3,
-        finalPrice: finalPrice3,
-        discount: CONFIG.fig3Discount,
-        fullTiles: fullTiles3, triTiles: triTiles3,
-        tilePrice: Math.round(tileSize3 * tileSize3 / 1e6 * pricePerM2 * markup3),
-        triPrice: Math.round(tileSize3 * tileSize3 / 1e6 * pricePerM2 * markup3 * CONFIG.triangleCoef),
-      },
-    });
-  }
-  return variants;
+// --- Ціна (з app.js) ---
+function areaPrice(color) {
+  return Number(color) === 1 ? CFG.silverPrice : CFG.colorPrice;
 }
 
-// ---- SVG ----
-function drawPanel(svgEl, W, H, d1, d2) {
-  // Фіксований viewport, пропорційний стіні, але max висота 420
-  const MAX_W = 260, MAX_H = 420;
-  const ratio = H / W;
-  let pW, pH;
-  if (ratio > MAX_H / MAX_W) {
-    pH = MAX_H; pW = Math.round(pH / ratio);
-  } else {
-    pW = MAX_W; pH = Math.round(pW * ratio);
-  }
+function facetPrice(facet) {
+  return CFG.facetsPrices[Number(facet) - 1] || 0;
+}
 
-  const margin = 26;
-  const VW = pW + margin + 6;
-  const VH = pH + margin + 6;
-  svgEl.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
-  svgEl.style.height = VH + 'px';
+function calcPrice(row) {
+  const w = row.width, h = row.height, qty = row.quantity;
+  let form = row.form;
+  if (row.triangle) form *= CFG.trianglePrice;
+  const ap = areaPrice(row.color);
+  const fp = facetPrice(row.facet);
+  return Math.round((w * h * 1e-6 * ap + (2 * w + 2 * h) * 0.001 * fp) * form * qty * CFG.defaultPrice * CFG.extraPrice);
+}
 
-  const ox = 4, oy = margin;
+// --- Осі (з app.js) ---
+function calcAxisX(input, customC) {
+  const X = {};
+  X.size = Number((input.width / 10).toFixed(2));
+  X.grid = Math.round(X.size / (CFG.gridAuto / 10)) + customC;
+  X.tile = X.size / X.grid;
+  return X;
+}
 
-  const scaleX = pW / W;
-  const scaleY = pH / H;
-  const cellW = d1 * scaleX;
-  const cellH = d2 * scaleY;
+function calcAxisY(input) {
+  const Y = {};
+  Y.size = Number((input.height / 10).toFixed(2));
+  Y.grid = Math.round(Y.size / (CFG.gridAuto / 10));
+  Y.tile = Y.size / Y.grid;
+  return Y;
+}
 
-  let paths = '';
-  const cols = Math.ceil(W / d1) + 2;
-  const rows = Math.ceil(H / (d2 / 2)) + 2;
-  for (let r = -1; r <= rows; r++) {
-    for (let c = -1; c <= cols; c++) {
-      const cx = ox + (c + (r % 2 === 0 ? 0.5 : 0)) * cellW;
-      const cy = oy + r * (cellH / 2);
-      const pts = [
-        [cx, cy - cellH / 2],
-        [cx + cellW / 2, cy],
-        [cx, cy + cellH / 2],
-        [cx - cellW / 2, cy],
-      ];
-      const dp = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)} L${pts[1][0].toFixed(1)},${pts[1][1].toFixed(1)} L${pts[2][0].toFixed(1)},${pts[2][1].toFixed(1)} L${pts[3][0].toFixed(1)},${pts[3][1].toFixed(1)} Z`;
-      paths += `<path d="${dp}" fill="#2a2520" stroke="#4a4030" stroke-width="1" />`;
+// --- Генерація панелі (з app.js generatePanel) ---
+function generatePanel(mode, input, customC) {
+  const X = calcAxisX(input, customC);
+  const Y = calcAxisY(input);
+
+  if (mode === 'fit') {
+    X.tile = X.size / X.grid;
+    Y.tile = Y.size / Y.grid;
+    const ratio = Y.tile / X.tile;
+    if (ratio < CFG.gridRatio.ideal || ratio > CFG.gridRatio.max) {
+      Y.tile = X.tile * CFG.gridRatio.ideal;
+      Y.grid = Y.size / Y.tile;
+      Y.tile = Y.size / Math.ceil(Y.grid);
     }
   }
 
-  const clipId = `clip-${Math.random().toString(36).slice(2)}`;
-  const fs = 9;
+  if (mode === 'cover' || mode === 'cut') {
+    X.tile = Y.tile = X.size / X.grid;
+    Y.grid = Math.floor(Y.size / X.tile);
+    if (mode === 'cover') {
+      Y.covered = Y.size - X.tile * Y.grid;
+    }
+    if (mode === 'cut') {
+      const cutLine = X.tile * Y.grid;
+      const remainder = Y.size - cutLine;
+      const halfTile = Math.ceil(X.tile / 2);
+      let finalLine = cutLine;
+      if (remainder >= halfTile) finalLine = cutLine + halfTile;
+      Y.sizeO = Y.size;
+      Y.size = Number(finalLine.toFixed(0));
+      Y.cutted = Y.sizeO - Y.size;
+    }
+  }
+
+  return { mode, input, X, Y };
+}
+
+// --- Генерація рядків (з app.js generateRows) ---
+function generateRows(panel) {
+  const { X, Y } = panel;
+  const d1 = 10 * X.tile; // діагональ X у мм
+  const d2 = 10 * Y.tile; // діагональ Y у мм
+  const tileSide = Math.sqrt((d1 / 2) ** 2 + (d2 / 2) ** 2); // сторона ромба у мм
+
+  const cols = Math.round(X.size / X.tile);
+  const rowCount = Math.round(Y.size / Y.tile);
+  const r = Y.size / Y.tile;
+
+  let c = (cols - 1) * rowCount + (rowCount - 1) * cols; // цілі плитки
+  let u = 2 * (cols + rowCount);                          // крайові трикутники
+  let d = 0, p = 0, m = 0;
+
+  if (panel.mode === 'cover' && r > rowCount) {
+    const v = Number((r - rowCount).toFixed(2));
+    if (v < 0.5) c += cols;
+  }
+
+  if (panel.mode === 'cut') {
+    const h = Math.round(10 * r) / 10;
+    if (rowCount - h > 0) { c -= cols - 1; u -= 3; m = 2; }
+  }
+
+  const f = (Math.abs(X.tile - Y.tile) < 0.001) ? 1 : 1.3;
+
+  if (panel.mode === 'fit' && Math.abs(X.tile - Y.tile) >= 0.001) {
+    u = 0;
+    d = 2 * cols;
+    p = 2 * rowCount;
+  }
+
+  const colorVal = Number(panel.input.color);
+  const facetVal = Number(panel.input.facet);
+  const rows = [];
+
+  function addRow(qty, isTri, w, h, form) {
+    if (!qty) return;
+    const row = { form, triangle: isTri, width: w, height: h, facet: facetVal, color: colorVal, quantity: qty };
+    row.price = calcPrice(row);
+    rows.push(row);
+  }
+
+  const sw = Math.round(tileSide);
+  const halfSide = Number((d1 / 2).toFixed(0));
+
+  addRow(c, false, sw, sw, f);
+  addRow(u, true,  sw, sw, f);
+  addRow(d, true,  sw, sw, f);
+  addRow(p, true,  sw, sw, f);
+  addRow(m, true,  halfSide, halfSide, f);
+
+  const total = rows.reduce((s, r) => s + r.price, 0);
+
+  return {
+    rows,
+    total,
+    tileSize: sw,
+    d1: Math.round(d1),
+    d2: Math.round(d2),
+    cols,
+    rowCount,
+    isSquare: f === 1,
+  };
+}
+
+// --- SVG малювання (діагональна сітка, як в оригіналі) ---
+function drawPanel(mode, panel, info) {
+  const svgEl = document.getElementById('svg-' + mode);
+  const { X, Y } = panel;
+
+  const MAX_W = 260, MAX_H = 380;
+  const ratio = Y.size / X.size;
+  let dW, dH;
+  if (ratio > MAX_H / MAX_W) {
+    dH = MAX_H; dW = dH / ratio;
+  } else {
+    dW = MAX_W; dH = dW * ratio;
+  }
+  dW = Math.round(dW); dH = Math.round(dH);
+
+  const MARGIN_TOP = 22, MARGIN_RIGHT = 22;
+  const VW = dW + MARGIN_RIGHT + 4;
+  const VH = dH + MARGIN_TOP + 4;
+
+  svgEl.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
+  svgEl.style.width = VW + 'px';
+  svgEl.style.height = VH + 'px';
+
+  const ox = 2, oy = MARGIN_TOP;
+  const scaleX = dW / X.size;
+  const scaleY = dH / Y.size;
+  const tW = X.tile * scaleX;
+  const tH = Y.tile * scaleY;
+
+  // Малюємо діагональні лінії у кожній клітинці (як оригінал)
+  let lines = '';
+  const cols = Math.ceil(X.size / X.tile) + 1;
+  const rows = Math.ceil(Y.size / Y.tile) + 1;
+  for (let n = 0; n <= rows; n++) {
+    for (let r = 0; r <= cols; r++) {
+      const x0 = ox + r * tW, y0 = oy + n * tH;
+      const x1 = ox + (r + 1) * tW, y1 = oy + (n + 1) * tH;
+      lines += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" />`;
+      lines += `<line x1="${x0.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y0.toFixed(1)}" />`;
+    }
+  }
+
+  const clipId = 'cl-' + mode;
+  const fs = 8;
+
+  // Covered (cover-режим): нижній рядок тайлів виходить за межу панелі
+  let coveredRect = '';
+  if (mode === 'cover' && Y.covered) {
+    const covPx = Y.covered * scaleY;
+    coveredRect = `<rect x="${ox}" y="${oy + dH}" width="${dW}" height="${covPx.toFixed(1)}" fill="rgba(201,168,76,0.08)" stroke="#c9a84c" stroke-width="0.8" stroke-dasharray="3,2"/>`;
+  }
+
+  // Cutted (cut-режим): смуга знизу яка відрізається
+  let cuttedRect = '';
+  if (mode === 'cut' && Y.cutted) {
+    const cutPx = Y.cutted * scaleY;
+    cuttedRect = `<rect x="${ox}" y="${oy + dH}" width="${dW}" height="${cutPx.toFixed(1)}" fill="rgba(80,80,80,0.25)" stroke="#555" stroke-width="0.8"/>`;
+  }
+
   svgEl.innerHTML = `
     <defs>
       <clipPath id="${clipId}">
-        <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" />
+        <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" />
       </clipPath>
     </defs>
-    <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" fill="#1a1610" />
-    <g clip-path="url(#${clipId})">${paths}</g>
-    <rect x="${ox}" y="${oy}" width="${pW}" height="${pH}" fill="none" stroke="#c9a84c" stroke-width="1.5" />
-    <!-- ширина: лінія зверху -->
-    <line x1="${ox}" y1="${oy - 8}" x2="${ox + pW}" y2="${oy - 8}" stroke="#c9a84c" stroke-width="1.2" />
-    <line x1="${ox}" y1="${oy - 12}" x2="${ox}" y2="${oy - 4}" stroke="#c9a84c" stroke-width="1.2" />
-    <line x1="${ox + pW}" y1="${oy - 12}" x2="${ox + pW}" y2="${oy - 4}" stroke="#c9a84c" stroke-width="1.2" />
-    <text x="${ox + pW / 2}" y="${oy - 11}" text-anchor="middle" font-size="${fs}" fill="#c9a84c" font-family="Arial,sans-serif" font-weight="700">${W} мм</text>
-    <!-- висота: лінія справа -->
-    <line x1="${ox + pW + 8}" y1="${oy}" x2="${ox + pW + 8}" y2="${oy + pH}" stroke="#c9a84c" stroke-width="1.2" />
-    <line x1="${ox + pW + 4}" y1="${oy}" x2="${ox + pW + 12}" y2="${oy}" stroke="#c9a84c" stroke-width="1.2" />
-    <line x1="${ox + pW + 4}" y1="${oy + pH}" x2="${ox + pW + 12}" y2="${oy + pH}" stroke="#c9a84c" stroke-width="1.2" />
-    <text x="${ox + pW + 11}" y="${oy + pH / 2}" text-anchor="middle" font-size="${fs}" fill="#c9a84c" font-family="Arial,sans-serif" font-weight="700" transform="rotate(90,${ox + pW + 11},${oy + pH / 2})">${H} мм</text>
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="#1a1610" />
+    <g clip-path="url(#${clipId})" stroke="#4a4030" stroke-width="0.7" opacity="0.9">${lines}</g>
+    ${coveredRect}${cuttedRect}
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
+    <line x1="${ox}" y1="${oy-7}" x2="${ox+dW}" y2="${oy-7}" stroke="#c9a84c" stroke-width="1"/>
+    <line x1="${ox}" y1="${oy-11}" x2="${ox}" y2="${oy-3}" stroke="#c9a84c" stroke-width="1"/>
+    <line x1="${ox+dW}" y1="${oy-11}" x2="${ox+dW}" y2="${oy-3}" stroke="#c9a84c" stroke-width="1"/>
+    <text x="${ox+dW/2}" y="${oy-9}" text-anchor="middle" font-size="${fs}" fill="#c9a84c" font-family="Arial,sans-serif" font-weight="700">${panel.input.width} мм</text>
+    <line x1="${ox+dW+7}" y1="${oy}" x2="${ox+dW+7}" y2="${oy+dH}" stroke="#c9a84c" stroke-width="1"/>
+    <line x1="${ox+dW+3}" y1="${oy}" x2="${ox+dW+11}" y2="${oy}" stroke="#c9a84c" stroke-width="1"/>
+    <line x1="${ox+dW+3}" y1="${oy+dH}" x2="${ox+dW+11}" y2="${oy+dH}" stroke="#c9a84c" stroke-width="1"/>
+    <text x="${ox+dW+10}" y="${oy+dH/2}" text-anchor="middle" font-size="${fs}" fill="#c9a84c" font-family="Arial,sans-serif" font-weight="700" transform="rotate(90,${ox+dW+10},${oy+dH/2})">${panel.input.height} мм</text>
   `;
 }
 
-// ---- Форматування ціни ----
-function fmt(n) {
-  return n.toLocaleString('uk-UA') + ' грн';
-}
-function fmtOld(n) {
-  return `<s>${n.toLocaleString('uk-UA')} грн</s>`;
-}
+// --- Відображення інфо та ціни ---
+function fmt(n) { return n.toLocaleString('uk-UA') + ' грн'; }
 
-// ---- Рендер ----
-let allVariants = [];
-let idxes = [0, 0];
+function updatePanelUI(mode, panel, rowData) {
+  const colorNames = ['', 'серебро', 'бронза', 'графіт'];
+  const facetNames = ['', '0', '5', '10', '15', '20'];
 
-function defaultIndex(variants) {
-  // Знаходимо перший варіант де tileSize <= 350мм (як старий сайт — починає з N=4)
-  const idx = variants.findIndex(v => v.fig2.tileSize <= 350);
-  return idx >= 0 ? idx : variants.length - 1;
-}
-
-function render() {
-  const W = parseInt(document.getElementById('wallW').value) || 1500;
-  const H = parseInt(document.getElementById('wallH').value) || 2700;
-  const facet = parseInt(document.getElementById('facet').value);
-  const color = document.getElementById('color').value;
-
-  allVariants = calcVariants(W, H, facet, color);
-  const def = defaultIndex(allVariants);
-  idxes = [def, def];
-  renderVariants(W, H);
-}
-
-function renderVariants(W, H) {
-  if (!allVariants.length) return;
-
-  const v2 = allVariants[Math.min(idxes[0], allVariants.length - 1)].fig2;
-  const v3 = allVariants[Math.min(idxes[1], allVariants.length - 1)].fig3;
-
-  // SVG
-  drawPanel(document.getElementById('svg2'), W, v2.actualH, v2.d1, v2.d2);
-  drawPanel(document.getElementById('svg3'), W, v3.actualH, v3.d1, v3.d2);
-
-  // Розміри
-  document.getElementById('dims2').innerHTML = `
-    <span>Розмір плитки: <b>${v2.tileSize}×${v2.tileSize} мм</b></span>
-    <span>Діагоналі: <b>${v2.d1}×${v2.d2} мм</b></span>
-  `;
-  document.getElementById('dims3').innerHTML = `
-    <span>Розмір плитки: <b>${v3.tileSize}×${v3.tileSize} мм</b></span>
-    <span>Діагоналі: <b>${v3.d1}×${v3.d2} мм</b></span>
+  document.getElementById('info-' + mode).innerHTML = `
+    <span>Плитка: <b>${rowData.tileSize}×${rowData.tileSize} мм</b></span>
+    <span>Діагоналі: <b>${rowData.d1}×${rowData.d2} мм</b></span>
+    <span>Сітка: <b>${rowData.cols}×${rowData.rowCount}</b></span>
   `;
 
-  // Ціна
-  document.getElementById('info2').innerHTML = `
-    <div class="price-line">${fmtOld(v2.basePrice)} <span class="price-final">${fmt(v2.finalPrice)}</span></div>
-    <div class="discount-badge">Знижка -${Math.round(v2.discount * 100)}%</div>
-  `;
-  document.getElementById('info3').innerHTML = `
-    <div class="price-line">${fmtOld(v3.basePrice)} <span class="price-final">${fmt(v3.finalPrice)}</span></div>
-    <div class="discount-badge discount-badge--big">Знижка -${Math.round(v3.discount * 100)}%</div>
+  document.getElementById('price-' + mode).innerHTML = `
+    <span class="price-total">${fmt(rowData.total)}</span>
   `;
 
-  // Лічильник варіантів
-  const total = allVariants.length;
-  document.getElementById('counter2').textContent = `${idxes[0] + 1} / ${total}`;
-  document.getElementById('counter3').textContent = `${idxes[1] + 1} / ${total}`;
-
-  // Збережемо для модалки
-  document.getElementById('variant2').dataset.v = JSON.stringify(v2);
-  document.getElementById('variant3').dataset.v = JSON.stringify(v3);
+  // Зберігаємо для модалки
+  panelData[mode] = { panel, rowData, colorName: colorNames[Number(panel.input.color)] || 'серебро', facetName: facetNames[Number(panel.input.facet)] || '10' };
 }
 
-function navigate(figIdx, dir) {
-  const W = parseInt(document.getElementById('wallW').value) || 1500;
-  const H = parseInt(document.getElementById('wallH').value) || 2700;
-  idxes[figIdx] = Math.max(0, Math.min(allVariants.length - 1, idxes[figIdx] + dir));
-  renderVariants(W, H);
+// --- Головний рендер ---
+function getInput() {
+  return {
+    width:  Math.max(300, Math.min(5000, parseInt(document.getElementById('wallW').value) || 1500)),
+    height: Math.max(300, Math.min(5000, parseInt(document.getElementById('wallH').value) || 2700)),
+    facet:  Number(document.getElementById('facet').value),
+    color:  Number(document.getElementById('color').value),
+  };
 }
 
-// ---- Модалка ----
-function openModal(variantNum) {
-  const elId = variantNum === '2' ? 'variant2' : 'variant3';
-  const v = JSON.parse(document.getElementById(elId).dataset.v || '{}');
-  const W = parseInt(document.getElementById('wallW').value) || 1500;
-  const colorSel = document.getElementById('color');
-  const colorLabel = colorSel.options[colorSel.selectedIndex].text;
+function renderAll() {
+  const input = getInput();
+  MODES.forEach(mode => {
+    const panel = generatePanel(mode, input, customCols[mode]);
+    const rowData = generateRows(panel);
+    drawPanel(mode, panel, rowData);
+    updatePanelUI(mode, panel, rowData);
+    checkZoomLimits(mode, panel);
+  });
+}
 
+function checkZoomLimits(mode, panel) {
+  const tileMin = CFG.tileMin / 10;
+  const tileMax = CFG.tileMax / 10;
+  document.getElementById('zoom-out-' + mode).disabled = panel.X.tile >= tileMax;
+  document.getElementById('zoom-in-' + mode).disabled = panel.X.tile <= tileMin;
+  document.getElementById('reset-' + mode).disabled = customCols[mode] === 0;
+}
+
+// --- Кнопки зуму ---
+MODES.forEach(mode => {
+  document.getElementById('zoom-out-' + mode).addEventListener('click', () => {
+    customCols[mode]++;
+    renderAll();
+  });
+  document.getElementById('zoom-in-' + mode).addEventListener('click', () => {
+    customCols[mode]--;
+    renderAll();
+  });
+  document.getElementById('reset-' + mode).addEventListener('click', () => {
+    customCols[mode] = 0;
+    renderAll();
+  });
+});
+
+// --- Модалка ---
+function openModal(mode) {
+  const { panel, rowData, colorName, facetName } = panelData[mode] || {};
+  if (!rowData) return;
+
+  const modeNames = { cover: 'з перекриттям', cut: 'з підрізкою', fit: 'підгонка' };
   document.getElementById('modalTitle').textContent =
-    `Дзеркальне панно ${W}×${v.actualH} мм`;
+    `Панно ${panel.input.width}×${panel.input.height} мм (${modeNames[mode]})`;
 
-  const rows = [
-    ['◻', `${v.tileSize}×${v.tileSize} мм`, `${v.d1 > 0 ? v.d1 : '-'} мм`, colorLabel, v.fullTiles + ' шт.', fmt(Math.round(v.fullTiles * v.tilePrice))],
-    ['◺', `${v.tileSize}×${v.tileSize} мм`, `${v.d1 > 0 ? v.d1 : '-'} мм`, colorLabel, v.triTiles + ' шт.', fmt(Math.round(v.triTiles * v.triPrice))],
-  ];
+  const formNames = { 1: 'квадрат', 1.3: 'ромб' };
+  const rows = rowData.rows.map(r => {
+    const fName = r.triangle ? 'трикутник' : (formNames[r.form] || 'квадрат');
+    return `<tr>
+      <td>${fName}</td>
+      <td>${r.width}×${r.height}</td>
+      <td>${facetName} мм</td>
+      <td>${colorName}</td>
+      <td>${r.quantity} шт.</td>
+      <td><b>${fmt(r.price)}</b></td>
+    </tr>`;
+  }).join('');
 
   document.getElementById('orderTable').innerHTML = `
-    <thead>
-      <tr><th>Форма</th><th>Розмір</th><th>Фацет</th><th>Колір</th><th>К-во</th><th>Ціна</th></tr>
-    </thead>
-    <tbody>
-      ${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}
-      <tr class="order-total">
-        <td colspan="4">Скидка -${Math.round(v.discount * 100)}%</td>
-        <td colspan="2"><b>${fmt(v.finalPrice)}</b></td>
-      </tr>
-    </tbody>
+    <thead><tr><th>Форма</th><th>Розмір</th><th>Фацет</th><th>Колір</th><th>К-во</th><th>Ціна</th></tr></thead>
+    <tbody>${rows}<tr class="order-total"><td colspan="4">Всього</td><td colspan="2"><b>${fmt(rowData.total)}</b></td></tr></tbody>
   `;
-
   document.getElementById('orderModal').classList.add('open');
 }
 
-// ---- Ініціалізація ----
-document.addEventListener('DOMContentLoaded', () => {
-  render();
-
-  let debounceTimer;
-  ['wallW', 'wallH'].forEach(id => {
-    document.getElementById(id).addEventListener('input', () => {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(render, 300);
-    });
-    document.getElementById(id).addEventListener('change', render);
-  });
-  ['facet', 'color'].forEach(id =>
-    document.getElementById(id).addEventListener('change', render)
-  );
-
-  document.getElementById('prevVar2').addEventListener('click', () => navigate(0, -1));
-  document.getElementById('nextVar2').addEventListener('click', () => navigate(0, 1));
-  document.getElementById('prevVar3').addEventListener('click', () => navigate(1, -1));
-  document.getElementById('nextVar3').addEventListener('click', () => navigate(1, 1));
-
-  document.querySelectorAll('.calc-order-btn').forEach(btn => {
-    btn.addEventListener('click', () => openModal(btn.dataset.variant));
-  });
-
-  document.getElementById('closeModal').addEventListener('click', () =>
-    document.getElementById('orderModal').classList.remove('open')
-  );
-  document.getElementById('orderModal').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('orderModal'))
-      document.getElementById('orderModal').classList.remove('open');
-  });
-
-  // Кольоровий зразок
-  const swatchColors = { silver: '#c0c0c0', bronze: '#cd7f32', graphite: '#555' };
-  const colorSel = document.getElementById('color');
-  const swatch = document.getElementById('colorSwatch');
-  const updateSwatch = () => { swatch.style.background = swatchColors[colorSel.value]; };
-  colorSel.addEventListener('change', updateSwatch);
-  updateSwatch();
-
-  document.getElementById('submitOrder').addEventListener('click', () => {
-    const name = document.getElementById('modalName').value.trim();
-    const phone = document.getElementById('modalPhone').value.trim();
-    if (!name || !phone) { alert('Будь ласка, вкажіть ім\'я та телефон'); return; }
-    alert('Дякуємо! Ми зв\'яжемося з вами найближчим часом.');
-    document.getElementById('orderModal').classList.remove('open');
-  });
+document.querySelectorAll('.panel-order').forEach(btn => {
+  btn.addEventListener('click', () => openModal(btn.dataset.mode));
 });
+document.getElementById('closeModal').addEventListener('click', () =>
+  document.getElementById('orderModal').classList.remove('open')
+);
+document.getElementById('orderModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('orderModal'))
+    document.getElementById('orderModal').classList.remove('open');
+});
+
+document.getElementById('submitOrder').addEventListener('click', () => {
+  const name = document.getElementById('modalName').value.trim();
+  const phone = document.getElementById('modalPhone').value.trim();
+  if (!name || !phone) { alert("Будь ласка, вкажіть ім'я та телефон"); return; }
+  alert('Дякуємо! Ми зв\'яжемося з вами найближчим часом.');
+  document.getElementById('orderModal').classList.remove('open');
+});
+
+// --- Колір swatch ---
+const swatchColors = { 1: '#c0c0c0', 2: '#cd7f32', 3: '#555' };
+const colorSel = document.getElementById('color');
+const swatch = document.getElementById('colorSwatch');
+const updateSwatch = () => { swatch.style.background = swatchColors[colorSel.value] || '#c0c0c0'; };
+colorSel.addEventListener('change', updateSwatch);
+updateSwatch();
+
+// --- Inputs ---
+let debounce;
+['wallW', 'wallH'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(renderAll, 400);
+  });
+  document.getElementById(id).addEventListener('change', renderAll);
+});
+['facet', 'color'].forEach(id =>
+  document.getElementById(id).addEventListener('change', renderAll)
+);
+
+// Ініціалізація
+renderAll();
 </script>
 
 <style>
   .calc-section { background: var(--bg-gray); }
   .calc-title { margin-bottom: 6px; color: var(--text); }
-  .calc-sub { color: var(--text-muted); margin-bottom: 32px; }
+  .calc-sub { color: var(--text-muted); margin-bottom: 28px; }
 
   .calc-inputs {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
   }
 
   .calc-field {
@@ -438,12 +503,11 @@ document.addEventListener('DOMContentLoaded', () => {
     padding: 10px 14px;
     cursor: pointer;
     transition: border-color 0.2s;
-    min-width: 180px;
+    min-width: 160px;
     flex: 1;
   }
   .calc-field:focus-within { border-color: var(--gold); }
-  .calc-field__icon { font-size: 1rem; color: var(--gold); }
-  .calc-field__label { font-size: 0.82rem; color: var(--text-muted); white-space: nowrap; }
+  .calc-field__label { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
   .calc-field input, .calc-field select {
     flex: 1;
     border: none;
@@ -453,108 +517,97 @@ document.addEventListener('DOMContentLoaded', () => {
     font-weight: 600;
     background: transparent;
     color: var(--text);
-    min-width: 60px;
+    min-width: 50px;
   }
   .calc-field select option { background: #1e1e1e; color: var(--text); }
-  .calc-field__unit { font-size: 0.82rem; color: var(--text-muted); }
+  .calc-field__unit { font-size: 0.8rem; color: var(--text-muted); }
   .calc-field__swatch {
-    width: 20px; height: 20px;
+    width: 18px; height: 18px;
     border-radius: 50%;
     border: 1px solid #444;
     flex-shrink: 0;
   }
 
-  .calc-results {
+  .calc-panels {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
   }
 
-  .calc-variant {
+  .calc-panel {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 20px;
-    box-shadow: var(--shadow);
+    padding: 18px;
     display: flex;
     flex-direction: column;
     gap: 12px;
     transition: border-color 0.2s;
   }
-  .calc-variant:hover { border-color: var(--border-gold); }
+  .calc-panel:hover { border-color: var(--border-gold); }
 
-  .variant-heading {
+  .panel-header {
     display: flex;
     align-items: baseline;
     gap: 8px;
-    margin-bottom: 4px;
   }
-  .variant-fig { font-weight: 700; font-size: 1.1rem; color: var(--text); }
-  .variant-type { font-size: 0.78rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+  .panel-num { font-weight: 700; font-size: 1rem; color: var(--text); }
+  .panel-mode { font-size: 0.75rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
 
-  .variant-nav-row {
+  .panel-preview {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 10px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 16px;
-    padding: 4px 0;
+    overflow: hidden;
   }
-  .variant-counter { font-size: 0.88rem; color: var(--text-muted); font-weight: 600; min-width: 40px; text-align: center; }
-  .variant-nav {
-    background: none;
+  .panel-svg { display: block; max-width: 100%; height: auto; }
+
+  .panel-zoom {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+  .zoom-btn {
+    background: var(--bg-input);
     border: 1px solid var(--border);
     border-radius: 6px;
-    width: 36px; height: 36px;
-    font-size: 1.4rem;
+    width: 34px; height: 34px;
+    font-size: 1.1rem;
     cursor: pointer;
     color: var(--gold);
     display: flex; align-items: center; justify-content: center;
     transition: all 0.2s;
   }
-  .variant-nav:hover { border-color: var(--gold); background: var(--gold); color: #0c0c0c; }
+  .zoom-btn:hover:not(:disabled) { border-color: var(--gold); background: var(--gold); color: #0c0c0c; }
+  .zoom-btn:disabled { opacity: 0.35; cursor: default; }
 
-  .variant-svg-wrap {
-    background: #111;
-    border: 1px solid #222;
-    border-radius: 8px;
-    padding: 12px;
-    display: flex;
-    justify-content: center;
-  }
-  .panel-svg { display: block; margin: 0 auto; max-width: 100%; }
-
-  .variant-dims {
+  .panel-info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    font-size: 0.88rem;
+    gap: 3px;
+    font-size: 0.82rem;
     color: var(--text-muted);
   }
-  .variant-dims b { color: #ccc; }
+  .panel-info b { color: #ccc; }
 
-  .price-line { font-size: 1rem; color: var(--text-muted); }
-  .price-line s { color: #444; font-size: 0.9rem; }
-  .price-final { font-size: 1.4rem; font-weight: 700; color: var(--gold); margin-left: 8px; }
-  .discount-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    background: rgba(201,168,76,0.1);
-    color: var(--gold);
-    border-radius: 4px;
-    font-size: 0.82rem;
+  .panel-price .price-total {
+    font-size: 1.35rem;
     font-weight: 700;
-    border: 1px solid rgba(201,168,76,0.25);
+    color: var(--gold);
   }
-  .discount-badge--big { background: rgba(201,168,76,0.15); color: var(--gold-light); border-color: rgba(224,192,112,0.3); }
 
-  .calc-order-btn { width: 100%; margin-top: auto; }
+  .panel-order { margin-top: auto; width: 100%; }
 
   /* Модалка */
   .order-modal {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.65);
     z-index: 1000;
     padding: 20px;
     overflow-y: auto;
@@ -567,48 +620,43 @@ document.addEventListener('DOMContentLoaded', () => {
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 32px;
-    max-width: 560px;
+    max-width: 600px;
     width: 100%;
     position: relative;
   }
   .order-modal__close {
-    position: absolute;
-    top: 16px; right: 16px;
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    color: #999;
-    width: 32px; height: 32px;
+    position: absolute; top: 14px; right: 14px;
+    background: none; border: none; font-size: 1.2rem;
+    cursor: pointer; color: #999; width: 32px; height: 32px;
     display: flex; align-items: center; justify-content: center;
     border-radius: 50%;
   }
   .order-modal__close:hover { background: #222; color: var(--text); }
-  .order-modal__box h3 { margin-bottom: 20px; color: var(--text); }
+  .order-modal__box h3 { margin-bottom: 18px; color: var(--text); }
 
-  .order-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.88rem; }
-  .order-table th { text-align: left; padding: 8px 6px; background: #1e1e1e; font-weight: 600; color: #aaa; }
-  .order-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+  .order-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 0.85rem; }
+  .order-table th { text-align: left; padding: 7px 5px; background: #1e1e1e; font-weight: 600; color: #aaa; }
+  .order-table td { padding: 7px 5px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
   .order-total td { font-weight: 600; background: #1a1a1a; color: var(--text); }
 
-  .order-modal__form { display: flex; flex-direction: column; gap: 12px; }
+  .order-modal__form { display: flex; flex-direction: column; gap: 10px; }
   .order-modal__input {
-    padding: 12px 14px;
+    padding: 11px 14px;
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    font-family: var(--font);
     font-size: 0.95rem;
     outline: none;
     background: var(--bg-input);
     color: var(--text);
+    font-family: var(--font);
   }
   .order-modal__input:focus { border-color: var(--gold); }
   .order-modal__input::placeholder { color: #444; }
-  .order-modal__want-cheaper label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.95rem; color: var(--text-muted); }
-  .info-icon { color: var(--gold); cursor: help; }
 
-  @media (max-width: 700px) {
-    .calc-results { grid-template-columns: 1fr; }
-    .calc-field { min-width: 140px; }
+  @media (max-width: 900px) {
+    .calc-panels { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 500px) {
+    .calc-field { min-width: 130px; }
   }
 </style>
