@@ -1,22 +1,28 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// --- Генератори SVG-візерунків розкрою панно ---
-const PW = 200, PH = 264;
+// --- Кольорові теми панно ---
+const THEMES = {
+  silver:   { c1: '#f6f6f4', c2: '#cfcfcc', line: '#9a9a96', label: 'Срібло' },
+  bronze:   { c1: '#f3e6bc', c2: '#d4a84b', line: '#a9821f', label: 'Бронза' },
+  graphite: { c1: '#dadada', c2: '#8f8f8f', line: '#555555', label: 'Графіт' },
+};
 
-function frame(inner, id) {
+const PW = 200, PH = 200;
+
+function frame(inner, id, color) {
+  const t = THEMES[color];
   return `<svg viewBox="0 0 ${PW} ${PH}" class="cat-svg" xmlns="http://www.w3.org/2000/svg" role="img">
     <defs>
-      <clipPath id="clip-${id}"><rect x="2" y="2" width="${PW-4}" height="${PH-4}" rx="2"/></clipPath>
+      <clipPath id="clip-${id}"><rect x="0" y="0" width="${PW}" height="${PH}"/></clipPath>
       <linearGradient id="grad-${id}" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#f6f6f4"/>
-        <stop offset="50%" stop-color="#d6d6d2"/>
-        <stop offset="100%" stop-color="#f6f6f4"/>
+        <stop offset="0%" stop-color="${t.c1}"/>
+        <stop offset="50%" stop-color="${t.c2}"/>
+        <stop offset="100%" stop-color="${t.c1}"/>
       </linearGradient>
     </defs>
-    <rect x="2" y="2" width="${PW-4}" height="${PH-4}" rx="2" fill="url(#grad-${id})"/>
-    <g clip-path="url(#clip-${id})" stroke="#b89244" stroke-width="1.1" fill="none" opacity="0.85">${inner}</g>
-    <rect x="2" y="2" width="${PW-4}" height="${PH-4}" rx="2" fill="none" stroke="#b89244" stroke-width="2"/>
+    <rect x="0" y="0" width="${PW}" height="${PH}" fill="url(#grad-${id})"/>
+    <g clip-path="url(#clip-${id})" stroke="${t.line}" stroke-width="1.1" fill="none" opacity="0.8">${inner}</g>
   </svg>`;
 }
 
@@ -28,42 +34,33 @@ function diamonds(s) {
   }
   return p;
 }
-
 function squares(s) {
   let p = '';
   for (let x = s; x < PW; x += s) p += `<line x1="${x}" y1="0" x2="${x}" y2="${PH}"/>`;
   for (let y = s; y < PH; y += s) p += `<line x1="0" y1="${y}" x2="${PW}" y2="${y}"/>`;
   return p;
 }
-
 function brick(bw, bh) {
   let p = '', row = 0;
   for (let y = 0; y <= PH; y += bh) {
     p += `<line x1="0" y1="${y}" x2="${PW}" y2="${y}"/>`;
     const off = (row % 2) ? bw / 2 : 0;
-    for (let x = -bw + off; x <= PW; x += bw) {
-      p += `<line x1="${x}" y1="${y}" x2="${x}" y2="${y + bh}"/>`;
-    }
+    for (let x = -bw + off; x <= PW; x += bw) p += `<line x1="${x}" y1="${y}" x2="${x}" y2="${y + bh}"/>`;
     row++;
   }
   return p;
 }
-
 function chevron(w, h) {
   let p = '';
   for (let y = -h; y <= PH; y += h) {
     let d = '';
-    for (let x = -w; x <= PW; x += 2 * w) {
-      d += `M ${x} ${y + h} L ${x + w} ${y} L ${x + 2 * w} ${y + h} `;
-    }
+    for (let x = -w; x <= PW; x += 2 * w) d += `M ${x} ${y + h} L ${x + w} ${y} L ${x + 2 * w} ${y + h} `;
     p += `<path d="${d}"/>`;
   }
   return p;
 }
-
 function hexagons(r) {
-  const w = Math.sqrt(3) * r;
-  const vert = 1.5 * r;
+  const w = Math.sqrt(3) * r, vert = 1.5 * r;
   let p = '', row = 0;
   for (let cy = 0; cy <= PH + r; cy += vert) {
     const off = (row % 2) ? w / 2 : 0;
@@ -80,50 +77,95 @@ function hexagons(r) {
   return p;
 }
 
-const layouts = [
-  { id: 'romb',   name: 'Ромбами',      desc: 'Класичне діагональне укладання — найпопулярніше для панно.', svg: frame(diamonds(30), 'romb') },
-  { id: 'kvadr',  name: 'Квадратами',   desc: 'Пряма сітка, лаконічний сучасний вигляд.',                  svg: frame(squares(34), 'kvadr') },
-  { id: 'cegla',  name: 'Цеглою',       desc: 'Укладання зі зміщенням рядів, як цегляна кладка.',           svg: frame(brick(50, 28), 'cegla') },
-  { id: 'shevr',  name: 'Шевроном',     desc: 'V-подібний візерунок — динамічний акцент на стіні.',         svg: frame(chevron(26, 26), 'shevr') },
-  { id: 'soty',   name: 'Сотами',       desc: 'Шестикутні елементи — оригінальне геометричне рішення.',     svg: frame(hexagons(20), 'soty') },
-  { id: 'velromb',name: 'Великим ромбом',desc: 'Крупне діагональне укладання для великих площин.',          svg: frame(diamonds(50), 'velromb') },
+const PATTERNS = {
+  romb: () => diamonds(28),
+  velromb: () => diamonds(46),
+  kvadr: () => squares(30),
+  cegla: () => brick(46, 26),
+  shevr: () => chevron(24, 24),
+  soty: () => hexagons(18),
+};
+
+const rawProducts = [
+  { name: 'Кристалічний шлях',     pattern: 'romb',    color: 'silver',   price: 1200, pop: 10 },
+  { name: 'Світловий бісер',       pattern: 'soty',    color: 'bronze',   price: 1500, pop: 9 },
+  { name: 'Магічні промені',       pattern: 'shevr',   color: 'graphite', price: 1400, pop: 8 },
+  { name: 'Діамантове відображення',pattern: 'velromb', color: 'bronze',  price: 1650, pop: 7 },
+  { name: 'Сяйво ночі',            pattern: 'kvadr',   color: 'graphite', price: 1300, pop: 6 },
+  { name: 'Срібний дощ',           pattern: 'cegla',   color: 'silver',   price: 1100, pop: 11 },
+  { name: 'Золота грань',          pattern: 'romb',    color: 'bronze',   price: 1700, pop: 5 },
+  { name: 'Геометрія світла',      pattern: 'kvadr',   color: 'silver',   price: 1250, pop: 4 },
+  { name: 'Медові соти',           pattern: 'soty',    color: 'bronze',   price: 1550, pop: 3 },
+  { name: 'Графітова хвиля',       pattern: 'shevr',   color: 'graphite', price: 1450, pop: 2 },
+  { name: 'Перлинна сітка',        pattern: 'kvadr',   color: 'silver',   price: 1200, pop: 12 },
+  { name: 'Бурштинові ромби',      pattern: 'velromb', color: 'bronze',   price: 1600, pop: 1 },
 ];
+
+const products = rawProducts.map((p, i) => ({
+  ...p,
+  svg: frame(PATTERNS[p.pattern](), 'p' + i, p.color),
+  colorLabel: THEMES[p.color].label,
+}));
+
+const fmt = (n) => n.toLocaleString('uk-UA') + ' грн';
 ---
 
 <Layout
-  title="Каталог розкроїв дзеркальних панно"
-  description="Каталог варіантів розкрою дзеркальних панно: ромби, квадрати, цегла, шеврон, соти. Розрахунок вартості онлайн."
+  title="Каталог дзеркальних панно"
+  description="Каталог дзеркальних панно: срібло, бронза, графіт. Різні візерунки розкрою. Розрахунок вартості онлайн."
 >
   <div class="page-hero">
     <div class="container">
       <div class="breadcrumb"><a href="/">Головна</a><span>›</span><span>Каталог</span></div>
       <div class="section-label">Дзеркальні панно</div>
-      <h1>Каталог розкроїв панно</h1>
-      <p class="hero-sub">Оберіть тип укладання — і розрахуйте точну вартість під розміри вашої стіни</p>
+      <h1>Каталог панно</h1>
+      <p class="hero-sub">Оберіть дизайн та колір — і розрахуйте точну вартість під розміри вашої стіни</p>
     </div>
   </div>
 
   <section class="section">
     <div class="container">
-      <div class="cat-grid">
-        {layouts.map((l) => (
-          <article class="cat-card">
-            <div class="cat-card__preview" set:html={l.svg} />
+      <div class="cat-toolbar">
+        <div class="cat-filters" id="colorFilters">
+          <button class="chip chip--active" data-color="all">Всі кольори</button>
+          <button class="chip" data-color="silver">Срібло</button>
+          <button class="chip" data-color="bronze">Бронза</button>
+          <button class="chip" data-color="graphite">Графіт</button>
+        </div>
+        <label class="cat-sort">
+          <span>Сортувати:</span>
+          <select id="sortSelect">
+            <option value="pop">За популярністю</option>
+            <option value="cheap">Спочатку дешевші</option>
+            <option value="exp">Спочатку дорожчі</option>
+            <option value="name">За назвою</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="cat-grid" id="catGrid">
+        {products.map((p) => (
+          <article class="cat-card" data-color={p.color} data-price={p.price} data-pop={p.pop} data-name={p.name}>
+            <div class="cat-card__preview" set:html={p.svg} />
             <div class="cat-card__body">
-              <h3>{l.name}</h3>
-              <p>{l.desc}</p>
-              <a href="/dzerkalna-plitka/#calculator" class="btn btn--outline">Розрахувати вартість</a>
+              <span class="cat-card__color">{p.colorLabel}</span>
+              <h3>{p.name}</h3>
+              <div class="cat-card__foot">
+                <span class="cat-card__price">{fmt(p.price)}</span>
+                <a href="/dzerkalna-plitka/#calculator" class="btn btn--outline btn--sm">Обрати</a>
+              </div>
             </div>
           </article>
         ))}
       </div>
+      <p class="cat-empty" id="catEmpty" hidden>Немає панно цього кольору.</p>
     </div>
   </section>
 
   <section class="cta-banner">
     <div class="container">
-      <h2>Не знайшли потрібний варіант?</h2>
-      <p>Зробимо індивідуальний розкрій панно за вашим ескізом</p>
+      <h2>Потрібен індивідуальний дизайн?</h2>
+      <p>Зробимо панно за вашим ескізом — будь-який візерунок та розмір</p>
       <div class="cta-banner__actions">
         <a href="/kontakty/" class="btn btn--primary btn--lg">Зв'язатися з нами</a>
         <a href="/dzerkalna-plitka/#calculator" class="btn btn--ghost btn--lg">Калькулятор</a>
@@ -132,6 +174,50 @@ const layouts = [
   </section>
 </Layout>
 
+<script>
+  const grid = document.getElementById('catGrid');
+  const cards = Array.from(grid.querySelectorAll('.cat-card'));
+  const empty = document.getElementById('catEmpty');
+  let activeColor = 'all';
+
+  function apply() {
+    // фільтр
+    let visible = 0;
+    cards.forEach((c) => {
+      const ok = activeColor === 'all' || c.dataset.color === activeColor;
+      c.style.display = ok ? '' : 'none';
+      if (ok) visible++;
+    });
+    empty.hidden = visible > 0;
+  }
+
+  function sort(mode) {
+    const sorted = [...cards].sort((a, b) => {
+      if (mode === 'cheap') return a.dataset.price - b.dataset.price;
+      if (mode === 'exp')   return b.dataset.price - a.dataset.price;
+      if (mode === 'name')  return a.dataset.name.localeCompare(b.dataset.name, 'uk');
+      return b.dataset.pop - a.dataset.pop; // популярність
+    });
+    sorted.forEach((c) => grid.appendChild(c));
+  }
+
+  document.getElementById('colorFilters').addEventListener('click', (e) => {
+    const btn = e.target.closest('.chip');
+    if (!btn) return;
+    document.querySelectorAll('#colorFilters .chip').forEach((b) => b.classList.remove('chip--active'));
+    btn.classList.add('chip--active');
+    activeColor = btn.dataset.color;
+    apply();
+  });
+
+  document.getElementById('sortSelect').addEventListener('change', (e) => {
+    sort(e.target.value);
+    apply();
+  });
+
+  sort('pop');
+</script>
+
 <style>
   .page-hero {
     background: var(--bg);
@@ -139,51 +225,63 @@ const layouts = [
     padding: 60px 0 48px;
   }
   .breadcrumb { color: var(--text-muted); margin-bottom: 20px; font-size: 0.88rem; display: flex; gap: 8px; align-items: center; }
-  .breadcrumb a { color: var(--text-muted); }
   .breadcrumb a:hover { color: var(--gold); }
   .page-hero h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text); margin-bottom: 12px; }
   .hero-sub { color: var(--text-muted); font-size: 1.1rem; max-width: 560px; }
-
   .section-label {
     font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
     letter-spacing: 0.14em; color: var(--gold); margin-bottom: 8px;
   }
 
-  .cat-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
+  .cat-toolbar {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px; flex-wrap: wrap; margin-bottom: 32px;
   }
+  .cat-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    padding: 8px 16px; border-radius: 100px;
+    border: 1px solid var(--border); background: var(--white);
+    font-family: var(--font-body); font-size: 0.88rem; font-weight: 600;
+    color: var(--text-mid); transition: all 0.15s;
+  }
+  .chip:hover { border-color: var(--gold-border); color: var(--gold); }
+  .chip--active { background: var(--gold); border-color: var(--gold); color: #fff; }
+
+  .cat-sort { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: var(--text-muted); }
+  .cat-sort select {
+    padding: 8px 12px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); background: var(--white);
+    font-family: var(--font-body); font-size: 0.88rem; font-weight: 600; color: var(--text); outline: none;
+  }
+  .cat-sort select:focus { border-color: var(--gold); }
+
+  .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
   .cat-card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden;
+    display: flex; flex-direction: column;
     transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
     box-shadow: var(--shadow);
   }
-  .cat-card:hover {
-    border-color: var(--gold-border);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-3px);
+  .cat-card:hover { border-color: var(--gold-border); box-shadow: var(--shadow-md); transform: translateY(-3px); }
+  .cat-card__preview { display: block; background: var(--bg-gray); }
+  .cat-card__preview :global(.cat-svg) { width: 100%; height: auto; display: block; }
+  .cat-card__body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .cat-card__color {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--gold);
   }
-  .cat-card__preview {
-    display: flex;
-    justify-content: center;
-    padding: 26px 26px 8px;
-    background: var(--bg-gray);
-  }
-  .cat-card__preview :global(.cat-svg) { width: 150px; height: auto; }
-  .cat-card__body { padding: 22px 24px 26px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
-  .cat-card__body h3 { font-size: 1.2rem; color: var(--text); }
-  .cat-card__body p { font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; flex: 1; margin: 0; }
-  .cat-card__body .btn { margin-top: 6px; }
+  .cat-card__body h3 { font-size: 1.05rem; color: var(--text); font-family: var(--font-body); font-weight: 700; }
+  .cat-card__foot { margin-top: auto; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .cat-card__price { font-size: 1.1rem; font-weight: 800; color: var(--text); }
+  .btn--sm { padding: 8px 16px; font-size: 0.82rem; }
+
+  .cat-empty { text-align: center; color: var(--text-muted); padding: 40px 0; }
 
   .cta-banner .btn--ghost { color: #fff; border-color: rgba(255,255,255,0.35); background: transparent; }
   .cta-banner .btn--ghost:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
 
-  @media (max-width: 900px) { .cat-grid { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 560px) { .cat-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 1000px) { .cat-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 720px) { .cat-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 460px) { .cat-grid { grid-template-columns: 1fr; } }
 </style>
