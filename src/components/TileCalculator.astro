@@ -370,27 +370,44 @@ function renderAll() {
     const rowData = generateRows(panel);
     drawPanel(mode, panel, rowData);
     updatePanelUI(mode, panel, rowData);
-    checkZoomLimits(mode, panel);
+    checkZoomLimits(mode, input);
   });
 }
 
-function checkZoomLimits(mode, panel) {
-  const tileMin = CFG.tileMin / 10;
-  const tileMax = CFG.tileMax / 10;
-  document.getElementById('zoom-out-' + mode).disabled = panel.X.tile >= tileMax;
-  document.getElementById('zoom-in-' + mode).disabled = panel.X.tile <= tileMin;
+// Розмір плитки (діагональна сторона, мм), що буде показано при заданому customC
+function tileSizeFor(mode, input, customC) {
+  const grid = Math.round((input.width / 10) / (CFG.gridAuto / 10)) + customC;
+  if (grid < 1) return Infinity; // занадто велика плитка — заборонено
+  const panel = generatePanel(mode, input, customC);
+  return generateRows(panel).tileSize;
+}
+
+function checkZoomLimits(mode, input) {
+  // обмеження саме за показаним розміром плитки: 200…600 мм
+  const smaller = tileSizeFor(mode, input, customCols[mode] + 1); // − зробити дрібніше
+  const bigger  = tileSizeFor(mode, input, customCols[mode] - 1); // + зробити крупніше
+  document.getElementById('zoom-out-' + mode).disabled = smaller < CFG.tileMin;
+  document.getElementById('zoom-in-' + mode).disabled  = bigger > CFG.tileMax;
   document.getElementById('reset-' + mode).disabled = customCols[mode] === 0;
 }
 
 // --- Кнопки зуму ---
 MODES.forEach(mode => {
+  // зменшити плитку (більше плиток)
   document.getElementById('zoom-out-' + mode).addEventListener('click', () => {
-    customCols[mode]++;
-    renderAll();
+    const input = getInput();
+    if (tileSizeFor(mode, input, customCols[mode] + 1) >= CFG.tileMin) {
+      customCols[mode]++;
+      renderAll();
+    }
   });
+  // збільшити плитку (менше плиток)
   document.getElementById('zoom-in-' + mode).addEventListener('click', () => {
-    customCols[mode]--;
-    renderAll();
+    const input = getInput();
+    if (tileSizeFor(mode, input, customCols[mode] - 1) <= CFG.tileMax) {
+      customCols[mode]--;
+      renderAll();
+    }
   });
   document.getElementById('reset-' + mode).addEventListener('click', () => {
     customCols[mode] = 0;
