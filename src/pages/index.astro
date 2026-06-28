@@ -10,40 +10,36 @@ import TileCalculator from '../components/TileCalculator.astro';
 
   <!-- HERO -->
   <section class="hero">
-    <div class="container">
-      <div class="hero__layout">
-        <div class="hero__content">
-          <div class="badge">Виробник у Києві</div>
-          <h1 class="hero__title">Дзеркальна плитка<br>на замовлення</h1>
-          <p class="hero__text">Панно, фасади, декор. Власне виробництво — срібло, бронза, графіт, з фацетом або без.</p>
-          <div class="hero__actions">
-            <a href="#calculator" class="btn btn--primary btn--lg">Розрахувати вартість</a>
-            <a href="tel:+380995283637" class="btn btn--dark btn--lg">+38 (099) 528-36-37</a>
-          </div>
-          <div class="hero__stats">
-            <div class="hero__stat">
-              <span class="hero__stat-num">10+</span>
-              <span class="hero__stat-label">років на ринку</span>
-            </div>
-            <div class="hero__stat">
-              <span class="hero__stat-num">500+</span>
-              <span class="hero__stat-label">виконаних об'єктів</span>
-            </div>
-            <div class="hero__stat">
-              <span class="hero__stat-num">3</span>
-              <span class="hero__stat-label">кольори дзеркала</span>
-            </div>
-          </div>
+    <div class="hero__bg"></div>
+    <div class="hero__overlay"></div>
+    <div class="container hero__inner">
+      <div class="hero__content">
+        <div class="badge badge--dark">Виробник у Києві</div>
+        <h1 class="hero__title">Дзеркальна плитка<br>та LED дзеркала</h1>
+        <p class="hero__text">Панно, фасади, декор на замовлення. Власне виробництво — срібло, бронза, графіт, з фацетом або без.</p>
+        <div class="hero__actions">
+          <a href="#calculator" class="btn btn--primary btn--lg">Розрахувати вартість</a>
+          <a href="tel:+380995283637" class="btn btn--ghost btn--lg">+38 (099) 528-36-37</a>
         </div>
-        <div class="hero__visual">
-          <div class="hero__mirror-grid">
-            {Array.from({length: 9}).map((_, i) => (
-              <div class={`mirror-tile mirror-tile--${['silver','bronze','graphite'][i % 3]}`}></div>
-            ))}
+        <div class="hero__stats">
+          <div class="hero__stat">
+            <span class="hero__stat-num">10+</span>
+            <span class="hero__stat-label">років на ринку</span>
+          </div>
+          <div class="hero__stat">
+            <span class="hero__stat-num">500+</span>
+            <span class="hero__stat-label">виконаних об'єктів</span>
+          </div>
+          <div class="hero__stat">
+            <span class="hero__stat-num">3</span>
+            <span class="hero__stat-label">кольори дзеркала</span>
           </div>
         </div>
       </div>
     </div>
+    <a href="#calculator" class="hero__scroll" aria-label="Прокрутити вниз">
+      <span></span>
+    </a>
   </section>
 
   <!-- ПЕРЕВАГИ -->
@@ -63,7 +59,7 @@ import TileCalculator from '../components/TileCalculator.astro';
         <div class="feature">
           <div class="feature-icon">📐</div>
           <h3>Точний розрахунок</h3>
-          <p>Онлайн-калькулятор показує 3 варіанти розкрою та вартість матеріалу</p>
+          <p>Онлайн-калькулятор показує 2 варіанти розкрою та вартість матеріалу</p>
         </div>
         <div class="feature">
           <div class="feature-icon">🚚</div>
@@ -86,7 +82,7 @@ import TileCalculator from '../components/TileCalculator.astro';
         <div class="badge">Онлайн-калькулятор</div>
         <h2>Розрахуйте вартість панно</h2>
         <div class="divider divider--center"></div>
-        <p>Введіть розміри стіни — отримайте 3 варіанти розкрою та точну ціну</p>
+        <p>Введіть розміри стіни — отримайте 2 варіанти розкрою та точну ціну</p>
       </div>
     </div>
     <TileCalculator />
@@ -202,51 +198,93 @@ import TileCalculator from '../components/TileCalculator.astro';
 
 <style>
   .hero {
-    background: var(--white);
-    padding: 80px 0;
-    overflow: hidden;
-  }
-  .hero__layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 64px;
+    position: relative;
+    min-height: 92vh;
+    display: flex;
     align-items: center;
+    overflow: hidden;
+    color: #fff;
   }
-  .hero__title { margin: 20px 0 20px; line-height: 1.1; }
-  .hero__text { font-size: 1.1rem; margin-bottom: 36px; max-width: 440px; }
+  .hero__bg {
+    position: absolute; inset: 0;
+    background: url('/hero-interior.jpg') center/cover no-repeat;
+    transform: scale(1.05);
+    animation: heroZoom 18s ease-in-out infinite alternate;
+  }
+  @keyframes heroZoom {
+    from { transform: scale(1.05); }
+    to   { transform: scale(1.15); }
+  }
+  .hero__overlay {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, rgba(20,18,12,0.92) 0%, rgba(20,18,12,0.7) 45%, rgba(20,18,12,0.25) 100%),
+      linear-gradient(0deg, rgba(20,18,12,0.6) 0%, transparent 40%);
+  }
+  .hero__inner { position: relative; z-index: 2; padding: 100px 24px; }
+  .hero__content { max-width: 620px; }
+  .hero__title {
+    margin: 22px 0 22px;
+    line-height: 1.08;
+    color: #fff;
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    letter-spacing: -0.01em;
+  }
+  .hero__text {
+    font-size: 1.15rem;
+    margin-bottom: 38px;
+    max-width: 480px;
+    color: rgba(255,255,255,0.82);
+  }
   .hero__actions { display: flex; gap: 14px; flex-wrap: wrap; }
   .hero__stats {
-    display: flex; gap: 36px; margin-top: 52px;
-    padding-top: 36px; border-top: 1px solid var(--border); flex-wrap: wrap;
+    display: flex; gap: 44px; margin-top: 56px;
+    padding-top: 36px;
+    border-top: 1px solid rgba(255,255,255,0.18);
+    flex-wrap: wrap;
   }
   .hero__stat-num {
     display: block;
     font-family: var(--font-heading);
-    font-size: 2.2rem; font-weight: 800; color: var(--gold);
-    line-height: 1; margin-bottom: 4px;
+    font-size: 2.4rem; font-weight: 800; color: var(--gold-light);
+    line-height: 1; margin-bottom: 6px;
   }
-  .hero__stat-label { font-size: 0.82rem; color: var(--text-muted); }
+  .hero__stat-label { font-size: 0.82rem; color: rgba(255,255,255,0.6); }
 
-  .hero__visual { display: flex; justify-content: center; align-items: center; }
-  .hero__mirror-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    width: 360px;
-    transform: rotate(-4deg);
-    box-shadow: var(--shadow-lg);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
+  .btn--ghost {
+    background: transparent;
+    color: #fff;
+    border-color: rgba(255,255,255,0.35);
   }
-  .mirror-tile { aspect-ratio: 1; position: relative; }
-  .mirror-tile::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%);
+  .btn--ghost:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: #fff;
+    transform: translateY(-1px);
   }
-  .mirror-tile--silver { background: linear-gradient(135deg, #e8e8e8, #b0b0b0, #d8d8d8); }
-  .mirror-tile--bronze { background: linear-gradient(135deg, #d4a84b, #8b6914, #c9a040); }
-  .mirror-tile--graphite { background: linear-gradient(135deg, #666, #333, #555); }
+
+  .hero__scroll {
+    position: absolute;
+    bottom: 28px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    width: 26px; height: 42px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 14px;
+    display: flex; justify-content: center;
+  }
+  .hero__scroll span {
+    width: 4px; height: 8px;
+    background: #fff;
+    border-radius: 2px;
+    margin-top: 7px;
+    animation: scrollDot 1.6s ease-in-out infinite;
+  }
+  @keyframes scrollDot {
+    0% { opacity: 0; transform: translateY(0); }
+    40% { opacity: 1; }
+    80% { opacity: 0; transform: translateY(12px); }
+    100% { opacity: 0; }
+  }
 
   .feature { padding: 24px; }
   .feature h3 { margin-bottom: 10px; font-size: 1rem; }
@@ -306,14 +344,15 @@ import TileCalculator from '../components/TileCalculator.astro';
   .mirror-demo__label { font-size: 0.82rem; color: var(--text-muted); }
 
   @media (max-width: 960px) {
-    .hero__layout { grid-template-columns: 1fr; gap: 48px; }
-    .hero__visual { order: -1; }
-    .hero__mirror-grid { width: 260px; }
     .how-layout { grid-template-columns: 1fr; gap: 48px; }
     .how-visual { order: -1; }
   }
   @media (max-width: 640px) {
-    .hero { padding: 48px 0; }
-    .hero__mirror-grid { width: 220px; }
+    .hero { min-height: 88vh; }
+    .hero__inner { padding: 80px 24px; }
+    .hero__stats { gap: 28px; margin-top: 40px; }
+    .hero__overlay {
+      background: linear-gradient(0deg, rgba(20,18,12,0.92) 0%, rgba(20,18,12,0.55) 60%, rgba(20,18,12,0.4) 100%);
+    }
   }
 </style>

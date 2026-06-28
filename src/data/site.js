@@ -14,7 +14,7 @@ export const site = {
 
 export const nav = [
   { label: 'Головна',           path: '/' },
-  { label: 'Дзеркальна плитка', path: '/dzerkalna-plitka/' },
+  { label: 'Каталог',           path: '/katalog/' },
   { label: 'LED дзеркала',      path: '/led-dzerkalo/' },
   { label: 'Послуги',           path: '/poslugy/' },
   { label: 'Про нас',           path: '/pro-nas/' },
@@ -31,7 +31,7 @@ export const tileCalcConfig = {
   defaultPrice: 1.0,
   gridAuto: 400,
   gridRatio: { ideal: 1.35, max: 1.5 },
-  tileMin: 150,
+  tileMin: 200,
   tileMax: 600,
 };
 

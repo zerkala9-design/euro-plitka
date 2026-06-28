@@ -32,7 +32,7 @@ const cfg = JSON.stringify(tileCalcConfig);
       <label class="calc-field calc-field--color">
         <span class="calc-field__label">Колір</span>
         <select id="color">
-          <option value="1">Серебро</option>
+          <option value="1">Срібло</option>
           <option value="2">Бронза</option>
           <option value="3">Графіт</option>
         </select>
@@ -41,31 +41,10 @@ const cfg = JSON.stringify(tileCalcConfig);
     </div>
 
     <div class="calc-panels" id="calcPanels">
-      <!-- cover -->
-      <div class="calc-panel" id="panel-cover">
-        <div class="panel-header">
-          <span class="panel-num">Рис. 1</span>
-          <span class="panel-mode">З перекриттям</span>
-        </div>
-        <div class="panel-preview">
-          <svg class="panel-svg" id="svg-cover" xmlns="http://www.w3.org/2000/svg"></svg>
-          <div class="panel-covered" id="covered-cover"></div>
-        </div>
-        <div class="panel-zoom">
-          <button class="zoom-btn" id="reset-cover" title="Скинути">↺</button>
-          <button class="zoom-btn" id="zoom-in-cover" title="Збільшити плитку">−</button>
-          <button class="zoom-btn" id="zoom-out-cover" title="Зменшити плитку">+</button>
-        </div>
-        <div class="panel-info" id="info-cover"></div>
-        <div class="panel-price" id="price-cover"></div>
-        <button class="btn btn--primary panel-order" data-mode="cover">🛒 Замовити</button>
-      </div>
-
       <!-- cut -->
       <div class="calc-panel" id="panel-cut">
         <div class="panel-header">
-          <span class="panel-num">Рис. 2</span>
-          <span class="panel-mode">З підрізкою</span>
+          <span class="panel-mode">Розкрій квадратами</span>
         </div>
         <div class="panel-preview">
           <svg class="panel-svg" id="svg-cut" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -84,8 +63,7 @@ const cfg = JSON.stringify(tileCalcConfig);
       <!-- fit -->
       <div class="calc-panel" id="panel-fit">
         <div class="panel-header">
-          <span class="panel-num">Рис. 3</span>
-          <span class="panel-mode">Підгонка</span>
+          <span class="panel-mode">Розкрій ромбами</span>
         </div>
         <div class="panel-preview">
           <svg class="panel-svg" id="svg-fit" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -119,9 +97,16 @@ const cfg = JSON.stringify(tileCalcConfig);
 
 <script define:vars={{ cfg }}>
 const CFG = JSON.parse(cfg);
-const MODES = ['cover', 'cut', 'fit'];
-const customCols = { cover: 0, cut: 0, fit: 0 };
+const MODES = ['cut', 'fit'];
+const customCols = { cut: 0, fit: 0 };
 const panelData = {};
+
+// Кольори превʼю панно за кольором дзеркала (як в оригіналі)
+const TILE_THEME = {
+  1: { c1: '#f2f2f2', c2: '#c8c8c8', line: '#9a9a9a' }, // Серебро
+  2: { c1: '#f0e0b0', c2: '#d4a84b', line: '#a9821f' }, // Бронза
+  3: { c1: '#d6d6d6', c2: '#8f8f8f', line: '#5a5a5a' }, // Графіт
+};
 
 // --- Ціна (з app.js) ---
 function areaPrice(color) {
@@ -267,7 +252,7 @@ function drawPanel(mode, panel, info) {
   const svgEl = document.getElementById('svg-' + mode);
   const { X, Y } = panel;
 
-  const MAX_W = 260, MAX_H = 380;
+  const MAX_W = 380, MAX_H = 360;
   const ratio = Y.size / X.size;
   let dW, dH;
   if (ratio > MAX_H / MAX_W) {
@@ -277,7 +262,7 @@ function drawPanel(mode, panel, info) {
   }
   dW = Math.round(dW); dH = Math.round(dH);
 
-  const MARGIN_TOP = 22, MARGIN_RIGHT = 22;
+  const MARGIN_TOP = 30, MARGIN_RIGHT = 34;
   const VW = dW + MARGIN_RIGHT + 4;
   const VH = dH + MARGIN_TOP + 4;
 
@@ -305,20 +290,18 @@ function drawPanel(mode, panel, info) {
   }
 
   const clipId = 'cl-' + mode;
-  const fs = 8;
+  const gradId = 'gr-' + mode;
+  const fs = 13;
+  const dimColor = '#9a7420';
 
-  // Covered (cover-режим): нижній рядок тайлів виходить за межу панелі
-  let coveredRect = '';
-  if (mode === 'cover' && Y.covered) {
-    const covPx = Y.covered * scaleY;
-    coveredRect = `<rect x="${ox}" y="${oy + dH}" width="${dW}" height="${covPx.toFixed(1)}" fill="rgba(201,168,76,0.08)" stroke="#c9a84c" stroke-width="0.8" stroke-dasharray="3,2"/>`;
-  }
+  // Колір превʼю за обраним кольором дзеркала
+  const theme = TILE_THEME[Number(panel.input.color)] || TILE_THEME[1];
 
   // Cutted (cut-режим): смуга знизу яка відрізається
   let cuttedRect = '';
   if (mode === 'cut' && Y.cutted) {
     const cutPx = Y.cutted * scaleY;
-    cuttedRect = `<rect x="${ox}" y="${oy + dH}" width="${dW}" height="${cutPx.toFixed(1)}" fill="rgba(80,80,80,0.25)" stroke="#555" stroke-width="0.8"/>`;
+    cuttedRect = `<rect x="${ox}" y="${oy + dH}" width="${dW}" height="${cutPx.toFixed(1)}" fill="rgba(80,80,80,0.22)" stroke="#888" stroke-width="0.8"/>`;
   }
 
   svgEl.innerHTML = `
@@ -326,19 +309,24 @@ function drawPanel(mode, panel, info) {
       <clipPath id="${clipId}">
         <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" />
       </clipPath>
+      <linearGradient id="${gradId}" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="${theme.c1}"/>
+        <stop offset="55%" stop-color="${theme.c2}"/>
+        <stop offset="100%" stop-color="${theme.c1}"/>
+      </linearGradient>
     </defs>
-    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="#1a1610" />
-    <g clip-path="url(#${clipId})" stroke="#4a4030" stroke-width="0.7" opacity="0.9">${lines}</g>
-    ${coveredRect}${cuttedRect}
-    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
-    <line x1="${ox}" y1="${oy-7}" x2="${ox+dW}" y2="${oy-7}" stroke="#c9a84c" stroke-width="1"/>
-    <line x1="${ox}" y1="${oy-11}" x2="${ox}" y2="${oy-3}" stroke="#c9a84c" stroke-width="1"/>
-    <line x1="${ox+dW}" y1="${oy-11}" x2="${ox+dW}" y2="${oy-3}" stroke="#c9a84c" stroke-width="1"/>
-    <text x="${ox+dW/2}" y="${oy-9}" text-anchor="middle" font-size="${fs}" fill="#c9a84c" font-family="Arial,sans-serif" font-weight="700">${panel.input.width} мм</text>
-    <line x1="${ox+dW+7}" y1="${oy}" x2="${ox+dW+7}" y2="${oy+dH}" stroke="#c9a84c" stroke-width="1"/>
-    <line x1="${ox+dW+3}" y1="${oy}" x2="${ox+dW+11}" y2="${oy}" stroke="#c9a84c" stroke-width="1"/>
-    <line x1="${ox+dW+3}" y1="${oy+dH}" x2="${ox+dW+11}" y2="${oy+dH}" stroke="#c9a84c" stroke-width="1"/>
-    <text x="${ox+dW+10}" y="${oy+dH/2}" text-anchor="middle" font-size="${fs}" fill="#c9a84c" font-family="Arial,sans-serif" font-weight="700" transform="rotate(90,${ox+dW+10},${oy+dH/2})">${panel.input.height} мм</text>
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId})" />
+    <g clip-path="url(#${clipId})" stroke="${theme.line}" stroke-width="0.9" opacity="0.8">${lines}</g>
+    ${cuttedRect}
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="${theme.line}" stroke-width="1.8"/>
+    <line x1="${ox}" y1="${oy-12}" x2="${ox+dW}" y2="${oy-12}" stroke="${dimColor}" stroke-width="1.4"/>
+    <line x1="${ox}" y1="${oy-17}" x2="${ox}" y2="${oy-6}" stroke="${dimColor}" stroke-width="1.4"/>
+    <line x1="${ox+dW}" y1="${oy-17}" x2="${ox+dW}" y2="${oy-6}" stroke="${dimColor}" stroke-width="1.4"/>
+    <text x="${ox+dW/2}" y="${oy-15}" text-anchor="middle" font-size="${fs}" fill="${dimColor}" font-family="Inter,Arial,sans-serif" font-weight="700">${panel.input.width} мм</text>
+    <line x1="${ox+dW+12}" y1="${oy}" x2="${ox+dW+12}" y2="${oy+dH}" stroke="${dimColor}" stroke-width="1.4"/>
+    <line x1="${ox+dW+6}" y1="${oy}" x2="${ox+dW+18}" y2="${oy}" stroke="${dimColor}" stroke-width="1.4"/>
+    <line x1="${ox+dW+6}" y1="${oy+dH}" x2="${ox+dW+18}" y2="${oy+dH}" stroke="${dimColor}" stroke-width="1.4"/>
+    <text x="${ox+dW+16}" y="${oy+dH/2}" text-anchor="middle" font-size="${fs}" fill="${dimColor}" font-family="Inter,Arial,sans-serif" font-weight="700" transform="rotate(90,${ox+dW+16},${oy+dH/2})">${panel.input.height} мм</text>
   `;
 }
 
@@ -346,7 +334,7 @@ function drawPanel(mode, panel, info) {
 function fmt(n) { return n.toLocaleString('uk-UA') + ' грн'; }
 
 function updatePanelUI(mode, panel, rowData) {
-  const colorNames = ['', 'серебро', 'бронза', 'графіт'];
+  const colorNames = ['', 'срібло', 'бронза', 'графіт'];
   const facetNames = ['', '0', '5', '10', '15', '20'];
 
   document.getElementById('info-' + mode).innerHTML = `
@@ -360,7 +348,7 @@ function updatePanelUI(mode, panel, rowData) {
   `;
 
   // Зберігаємо для модалки
-  panelData[mode] = { panel, rowData, colorName: colorNames[Number(panel.input.color)] || 'серебро', facetName: facetNames[Number(panel.input.facet)] || '10' };
+  panelData[mode] = { panel, rowData, colorName: colorNames[Number(panel.input.color)] || 'срібло', facetName: facetNames[Number(panel.input.facet)] || '10' };
 }
 
 // --- Головний рендер ---
@@ -380,27 +368,44 @@ function renderAll() {
     const rowData = generateRows(panel);
     drawPanel(mode, panel, rowData);
     updatePanelUI(mode, panel, rowData);
-    checkZoomLimits(mode, panel);
+    checkZoomLimits(mode, input);
   });
 }
 
-function checkZoomLimits(mode, panel) {
-  const tileMin = CFG.tileMin / 10;
-  const tileMax = CFG.tileMax / 10;
-  document.getElementById('zoom-out-' + mode).disabled = panel.X.tile >= tileMax;
-  document.getElementById('zoom-in-' + mode).disabled = panel.X.tile <= tileMin;
+// Розмір плитки (діагональна сторона, мм), що буде показано при заданому customC
+function tileSizeFor(mode, input, customC) {
+  const grid = Math.round((input.width / 10) / (CFG.gridAuto / 10)) + customC;
+  if (grid < 1) return Infinity; // занадто велика плитка — заборонено
+  const panel = generatePanel(mode, input, customC);
+  return generateRows(panel).tileSize;
+}
+
+function checkZoomLimits(mode, input) {
+  // обмеження саме за показаним розміром плитки: 200…600 мм
+  const smaller = tileSizeFor(mode, input, customCols[mode] + 1); // − зробити дрібніше
+  const bigger  = tileSizeFor(mode, input, customCols[mode] - 1); // + зробити крупніше
+  document.getElementById('zoom-out-' + mode).disabled = smaller < CFG.tileMin;
+  document.getElementById('zoom-in-' + mode).disabled  = bigger > CFG.tileMax;
   document.getElementById('reset-' + mode).disabled = customCols[mode] === 0;
 }
 
 // --- Кнопки зуму ---
 MODES.forEach(mode => {
+  // зменшити плитку (більше плиток)
   document.getElementById('zoom-out-' + mode).addEventListener('click', () => {
-    customCols[mode]++;
-    renderAll();
+    const input = getInput();
+    if (tileSizeFor(mode, input, customCols[mode] + 1) >= CFG.tileMin) {
+      customCols[mode]++;
+      renderAll();
+    }
   });
+  // збільшити плитку (менше плиток)
   document.getElementById('zoom-in-' + mode).addEventListener('click', () => {
-    customCols[mode]--;
-    renderAll();
+    const input = getInput();
+    if (tileSizeFor(mode, input, customCols[mode] - 1) <= CFG.tileMax) {
+      customCols[mode]--;
+      renderAll();
+    }
   });
   document.getElementById('reset-' + mode).addEventListener('click', () => {
     customCols[mode] = 0;
@@ -482,8 +487,8 @@ renderAll();
 </script>
 
 <style>
-  .calc-section { background: var(--bg-gray); }
-  .calc-title { margin-bottom: 6px; color: var(--text); }
+  .calc-section { background: var(--bg-gray); padding: 80px 0; }
+  .calc-title { margin-bottom: 6px; color: var(--text); font-family: var(--font-heading); }
   .calc-sub { color: var(--text-muted); margin-bottom: 28px; }
 
   .calc-inputs {
@@ -507,7 +512,7 @@ renderAll();
     flex: 1;
   }
   .calc-field:focus-within { border-color: var(--gold); }
-  .calc-field__label { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
+  .calc-field__label { font-size: 0.95rem; font-weight: 600; color: var(--text-mid); white-space: nowrap; }
   .calc-field input, .calc-field select {
     flex: 1;
     border: none;
@@ -519,7 +524,7 @@ renderAll();
     color: var(--text);
     min-width: 50px;
   }
-  .calc-field select option { background: #1e1e1e; color: var(--text); }
+  .calc-field select option { background: var(--white); color: var(--text); }
   .calc-field__unit { font-size: 0.8rem; color: var(--text-muted); }
   .calc-field__swatch {
     width: 18px; height: 18px;
@@ -530,39 +535,30 @@ renderAll();
 
   .calc-panels {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 48px;
   }
 
   .calc-panel {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    transition: border-color 0.2s;
+    gap: 14px;
+    text-align: center;
   }
-  .calc-panel:hover { border-color: var(--border-gold); }
 
   .panel-header {
     display: flex;
+    justify-content: center;
     align-items: baseline;
     gap: 8px;
   }
-  .panel-num { font-weight: 700; font-size: 1rem; color: var(--text); }
-  .panel-mode { font-size: 0.75rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .panel-mode { font-size: 0.85rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
 
   .panel-preview {
-    background: #111;
-    border: 1px solid #222;
-    border-radius: 8px;
-    padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: hidden;
+    overflow: visible;
   }
   .panel-svg { display: block; max-width: 100%; height: auto; }
 
@@ -572,7 +568,7 @@ renderAll();
     justify-content: center;
   }
   .zoom-btn {
-    background: var(--bg-input);
+    background: var(--white);
     border: 1px solid var(--border);
     border-radius: 6px;
     width: 34px; height: 34px;
@@ -582,21 +578,21 @@ renderAll();
     display: flex; align-items: center; justify-content: center;
     transition: all 0.2s;
   }
-  .zoom-btn:hover:not(:disabled) { border-color: var(--gold); background: var(--gold); color: #0c0c0c; }
+  .zoom-btn:hover:not(:disabled) { border-color: var(--gold); background: var(--gold-pale); }
   .zoom-btn:disabled { opacity: 0.35; cursor: default; }
 
   .panel-info {
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    font-size: 0.82rem;
-    color: var(--text-muted);
+    gap: 6px;
+    font-size: 0.95rem;
+    color: var(--text-mid);
   }
-  .panel-info b { color: #ccc; }
+  .panel-info b { color: var(--text); font-weight: 700; }
 
   .panel-price .price-total {
-    font-size: 1.35rem;
-    font-weight: 700;
+    font-size: 1.6rem;
+    font-weight: 800;
     color: var(--gold);
   }
 
@@ -616,13 +612,14 @@ renderAll();
   }
   .order-modal.open { display: flex; }
   .order-modal__box {
-    background: #161616;
+    background: var(--white);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 32px;
     max-width: 600px;
     width: 100%;
     position: relative;
+    box-shadow: var(--shadow-lg);
   }
   .order-modal__close {
     position: absolute; top: 14px; right: 14px;
@@ -631,13 +628,13 @@ renderAll();
     display: flex; align-items: center; justify-content: center;
     border-radius: 50%;
   }
-  .order-modal__close:hover { background: #222; color: var(--text); }
+  .order-modal__close:hover { background: var(--bg-gray); color: var(--text); }
   .order-modal__box h3 { margin-bottom: 18px; color: var(--text); }
 
   .order-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 0.85rem; }
-  .order-table th { text-align: left; padding: 7px 5px; background: #1e1e1e; font-weight: 600; color: #aaa; }
-  .order-table td { padding: 7px 5px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
-  .order-total td { font-weight: 600; background: #1a1a1a; color: var(--text); }
+  .order-table th { text-align: left; padding: 7px 5px; background: var(--bg-gray); font-weight: 600; color: var(--text-muted); }
+  .order-table td { padding: 7px 5px; border-bottom: 1px solid var(--border); color: var(--text-mid); }
+  .order-total td { font-weight: 600; background: var(--gold-pale); color: var(--text); }
 
   .order-modal__form { display: flex; flex-direction: column; gap: 10px; }
   .order-modal__input {
@@ -651,7 +648,7 @@ renderAll();
     font-family: var(--font);
   }
   .order-modal__input:focus { border-color: var(--gold); }
-  .order-modal__input::placeholder { color: #444; }
+  .order-modal__input::placeholder { color: var(--text-muted); }
 
   @media (max-width: 900px) {
     .calc-panels { grid-template-columns: 1fr; }
