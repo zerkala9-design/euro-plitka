@@ -32,7 +32,7 @@ const cfg = JSON.stringify(tileCalcConfig);
       <label class="calc-field calc-field--color">
         <span class="calc-field__label">Колір</span>
         <select id="color">
-          <option value="1">Серебро</option>
+          <option value="1">Срібло</option>
           <option value="2">Бронза</option>
           <option value="3">Графіт</option>
         </select>
@@ -45,7 +45,7 @@ const cfg = JSON.stringify(tileCalcConfig);
       <div class="calc-panel" id="panel-cut">
         <div class="panel-header">
           <span class="panel-num">Рис. 1</span>
-          <span class="panel-mode">З підрізкою</span>
+          <span class="panel-mode">Розкрій квадратами</span>
         </div>
         <div class="panel-preview">
           <svg class="panel-svg" id="svg-cut" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -65,7 +65,7 @@ const cfg = JSON.stringify(tileCalcConfig);
       <div class="calc-panel" id="panel-fit">
         <div class="panel-header">
           <span class="panel-num">Рис. 2</span>
-          <span class="panel-mode">Підгонка</span>
+          <span class="panel-mode">Розкрій ромбами</span>
         </div>
         <div class="panel-preview">
           <svg class="panel-svg" id="svg-fit" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -335,7 +335,7 @@ function drawPanel(mode, panel, info) {
 function fmt(n) { return n.toLocaleString('uk-UA') + ' грн'; }
 
 function updatePanelUI(mode, panel, rowData) {
-  const colorNames = ['', 'серебро', 'бронза', 'графіт'];
+  const colorNames = ['', 'срібло', 'бронза', 'графіт'];
   const facetNames = ['', '0', '5', '10', '15', '20'];
 
   document.getElementById('info-' + mode).innerHTML = `
@@ -349,7 +349,7 @@ function updatePanelUI(mode, panel, rowData) {
   `;
 
   // Зберігаємо для модалки
-  panelData[mode] = { panel, rowData, colorName: colorNames[Number(panel.input.color)] || 'серебро', facetName: facetNames[Number(panel.input.facet)] || '10' };
+  panelData[mode] = { panel, rowData, colorName: colorNames[Number(panel.input.color)] || 'срібло', facetName: facetNames[Number(panel.input.facet)] || '10' };
 }
 
 // --- Головний рендер ---
