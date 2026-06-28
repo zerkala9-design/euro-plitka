@@ -44,7 +44,6 @@ const cfg = JSON.stringify(tileCalcConfig);
       <!-- cut -->
       <div class="calc-panel" id="panel-cut">
         <div class="panel-header">
-          <span class="panel-num">Рис. 1</span>
           <span class="panel-mode">Розкрій квадратами</span>
         </div>
         <div class="panel-preview">
@@ -64,7 +63,6 @@ const cfg = JSON.stringify(tileCalcConfig);
       <!-- fit -->
       <div class="calc-panel" id="panel-fit">
         <div class="panel-header">
-          <span class="panel-num">Рис. 2</span>
           <span class="panel-mode">Розкрій ромбами</span>
         </div>
         <div class="panel-preview">
@@ -254,7 +252,7 @@ function drawPanel(mode, panel, info) {
   const svgEl = document.getElementById('svg-' + mode);
   const { X, Y } = panel;
 
-  const MAX_W = 320, MAX_H = 460;
+  const MAX_W = 380, MAX_H = 360;
   const ratio = Y.size / X.size;
   let dW, dH;
   if (ratio > MAX_H / MAX_W) {
@@ -538,41 +536,29 @@ renderAll();
   .calc-panels {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    max-width: 760px;
-    margin: 0 auto;
+    gap: 48px;
   }
 
   .calc-panel {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-shadow: var(--shadow);
+    gap: 14px;
+    text-align: center;
   }
-  .calc-panel:hover { border-color: var(--gold-border); box-shadow: var(--shadow-md); }
 
   .panel-header {
     display: flex;
+    justify-content: center;
     align-items: baseline;
     gap: 8px;
   }
-  .panel-num { font-weight: 700; font-size: 1rem; color: var(--text); }
-  .panel-mode { font-size: 0.75rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .panel-mode { font-size: 0.85rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
 
   .panel-preview {
-    background: var(--bg-gray);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: hidden;
+    overflow: visible;
   }
   .panel-svg { display: block; max-width: 100%; height: auto; }
 
