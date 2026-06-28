@@ -1,164 +1,47 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// --- Кольорові теми панно ---
-const THEMES = {
-  silver:   { c1: '#f6f6f4', c2: '#cfcfcc', line: '#9a9a96', label: 'Срібло' },
-  bronze:   { c1: '#f3e6bc', c2: '#d4a84b', line: '#a9821f', label: 'Бронза' },
-  graphite: { c1: '#dadada', c2: '#8f8f8f', line: '#555555', label: 'Графіт' },
-};
-
-const PW = 200, PH = 200;
-
-function frame(inner, id, color) {
-  const t = THEMES[color];
-  return `<svg viewBox="0 0 ${PW} ${PH}" class="cat-svg" xmlns="http://www.w3.org/2000/svg" role="img">
-    <defs>
-      <clipPath id="clip-${id}"><rect x="0" y="0" width="${PW}" height="${PH}"/></clipPath>
-      <linearGradient id="grad-${id}" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="${t.c1}"/>
-        <stop offset="50%" stop-color="${t.c2}"/>
-        <stop offset="100%" stop-color="${t.c1}"/>
-      </linearGradient>
-    </defs>
-    <rect x="0" y="0" width="${PW}" height="${PH}" fill="url(#grad-${id})"/>
-    <g clip-path="url(#clip-${id})" stroke="${t.line}" stroke-width="1.1" fill="none" opacity="0.8">${inner}</g>
-  </svg>`;
-}
-
-function diamonds(s) {
-  let p = '';
-  for (let k = -PH; k <= PW + PH; k += s) {
-    p += `<line x1="${k}" y1="0" x2="${k + PH}" y2="${PH}"/>`;
-    p += `<line x1="${k}" y1="0" x2="${k - PH}" y2="${PH}"/>`;
-  }
-  return p;
-}
-function squares(s) {
-  let p = '';
-  for (let x = s; x < PW; x += s) p += `<line x1="${x}" y1="0" x2="${x}" y2="${PH}"/>`;
-  for (let y = s; y < PH; y += s) p += `<line x1="0" y1="${y}" x2="${PW}" y2="${y}"/>`;
-  return p;
-}
-function brick(bw, bh) {
-  let p = '', row = 0;
-  for (let y = 0; y <= PH; y += bh) {
-    p += `<line x1="0" y1="${y}" x2="${PW}" y2="${y}"/>`;
-    const off = (row % 2) ? bw / 2 : 0;
-    for (let x = -bw + off; x <= PW; x += bw) p += `<line x1="${x}" y1="${y}" x2="${x}" y2="${y + bh}"/>`;
-    row++;
-  }
-  return p;
-}
-function chevron(w, h) {
-  let p = '';
-  for (let y = -h; y <= PH; y += h) {
-    let d = '';
-    for (let x = -w; x <= PW; x += 2 * w) d += `M ${x} ${y + h} L ${x + w} ${y} L ${x + 2 * w} ${y + h} `;
-    p += `<path d="${d}"/>`;
-  }
-  return p;
-}
-function hexagons(r) {
-  const w = Math.sqrt(3) * r, vert = 1.5 * r;
-  let p = '', row = 0;
-  for (let cy = 0; cy <= PH + r; cy += vert) {
-    const off = (row % 2) ? w / 2 : 0;
-    for (let cx = off - w; cx <= PW + w; cx += w) {
-      const pts = [];
-      for (let a = 0; a < 6; a++) {
-        const ang = Math.PI / 180 * (60 * a - 90);
-        pts.push(`${(cx + r * Math.cos(ang)).toFixed(1)},${(cy + r * Math.sin(ang)).toFixed(1)}`);
-      }
-      p += `<polygon points="${pts.join(' ')}"/>`;
-    }
-    row++;
-  }
-  return p;
-}
-
-const PATTERNS = {
-  romb: () => diamonds(28),
-  velromb: () => diamonds(46),
-  kvadr: () => squares(30),
-  cegla: () => brick(46, 26),
-  shevr: () => chevron(24, 24),
-  soty: () => hexagons(18),
-};
-
-const rawProducts = [
-  { name: 'Кристалічний шлях',     pattern: 'romb',    color: 'silver',   price: 1200, pop: 10 },
-  { name: 'Світловий бісер',       pattern: 'soty',    color: 'bronze',   price: 1500, pop: 9 },
-  { name: 'Магічні промені',       pattern: 'shevr',   color: 'graphite', price: 1400, pop: 8 },
-  { name: 'Діамантове відображення',pattern: 'velromb', color: 'bronze',  price: 1650, pop: 7 },
-  { name: 'Сяйво ночі',            pattern: 'kvadr',   color: 'graphite', price: 1300, pop: 6 },
-  { name: 'Срібний дощ',           pattern: 'cegla',   color: 'silver',   price: 1100, pop: 11 },
-  { name: 'Золота грань',          pattern: 'romb',    color: 'bronze',   price: 1700, pop: 5 },
-  { name: 'Геометрія світла',      pattern: 'kvadr',   color: 'silver',   price: 1250, pop: 4 },
-  { name: 'Медові соти',           pattern: 'soty',    color: 'bronze',   price: 1550, pop: 3 },
-  { name: 'Графітова хвиля',       pattern: 'shevr',   color: 'graphite', price: 1450, pop: 2 },
-  { name: 'Перлинна сітка',        pattern: 'kvadr',   color: 'silver',   price: 1200, pop: 12 },
-  { name: 'Бурштинові ромби',      pattern: 'velromb', color: 'bronze',   price: 1600, pop: 1 },
+const products = [
+  { img: '/panno-1.jpg', name: 'Класичні ромби',     desc: 'Діагональне укладання — елегантна класика для передпокою.', price: 'від 2 120 грн/м²' },
+  { img: '/panno-2.jpg', name: 'Абстракція',          desc: 'Асиметричні лінії — сучасний акцент на всю стіну.',         price: 'від 2 450 грн/м²' },
+  { img: '/panno-3.jpg', name: 'Шеврон',              desc: 'V-подібний візерунок — динамічний геометричний дизайн.',    price: 'від 2 300 грн/м²' },
+  { img: '/panno-4.jpg', name: 'Геометрія',           desc: 'Трикутні грані — стильне рішення для мінімалістичних інтерʼєрів.', price: 'від 2 450 грн/м²' },
+  { img: '/panno-5.jpg', name: 'Діагональні лінії',   desc: 'Лаконічні діагоналі — простір та чистота форм.',            price: 'від 2 300 грн/м²' },
 ];
-
-const products = rawProducts.map((p, i) => ({
-  ...p,
-  svg: frame(PATTERNS[p.pattern](), 'p' + i, p.color),
-  colorLabel: THEMES[p.color].label,
-}));
-
-const fmt = (n) => n.toLocaleString('uk-UA') + ' грн';
 ---
 
 <Layout
   title="Каталог дзеркальних панно"
-  description="Каталог дзеркальних панно: срібло, бронза, графіт. Різні візерунки розкрою. Розрахунок вартості онлайн."
+  description="Каталог дзеркальних панно для передпокою та вітальні. Різні візерунки розкрою. Розрахунок вартості онлайн."
 >
   <div class="page-hero">
     <div class="container">
       <div class="breadcrumb"><a href="/">Головна</a><span>›</span><span>Каталог</span></div>
       <div class="section-label">Дзеркальні панно</div>
       <h1>Каталог панно</h1>
-      <p class="hero-sub">Оберіть дизайн та колір — і розрахуйте точну вартість під розміри вашої стіни</p>
+      <p class="hero-sub">Оберіть дизайн — і розрахуйте точну вартість під розміри вашої стіни</p>
     </div>
   </div>
 
   <section class="section">
     <div class="container">
-      <div class="cat-toolbar">
-        <div class="cat-filters" id="colorFilters">
-          <button class="chip chip--active" data-color="all">Всі кольори</button>
-          <button class="chip" data-color="silver">Срібло</button>
-          <button class="chip" data-color="bronze">Бронза</button>
-          <button class="chip" data-color="graphite">Графіт</button>
-        </div>
-        <label class="cat-sort">
-          <span>Сортувати:</span>
-          <select id="sortSelect">
-            <option value="pop">За популярністю</option>
-            <option value="cheap">Спочатку дешевші</option>
-            <option value="exp">Спочатку дорожчі</option>
-            <option value="name">За назвою</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="cat-grid" id="catGrid">
+      <div class="cat-grid">
         {products.map((p) => (
-          <article class="cat-card" data-color={p.color} data-price={p.price} data-pop={p.pop} data-name={p.name}>
-            <div class="cat-card__preview" set:html={p.svg} />
+          <article class="cat-card">
+            <div class="cat-card__media">
+              <img src={p.img} alt={`Дзеркальне панно — ${p.name}`} loading="lazy" />
+            </div>
             <div class="cat-card__body">
-              <span class="cat-card__color">{p.colorLabel}</span>
               <h3>{p.name}</h3>
+              <p>{p.desc}</p>
               <div class="cat-card__foot">
-                <span class="cat-card__price">{fmt(p.price)}</span>
-                <a href="/dzerkalna-plitka/#calculator" class="btn btn--outline btn--sm">Обрати</a>
+                <span class="cat-card__price">{p.price}</span>
+                <a href="/dzerkalna-plitka/#calculator" class="btn btn--outline btn--sm">Розрахувати</a>
               </div>
             </div>
           </article>
         ))}
       </div>
-      <p class="cat-empty" id="catEmpty" hidden>Немає панно цього кольору.</p>
     </div>
   </section>
 
@@ -173,50 +56,6 @@ const fmt = (n) => n.toLocaleString('uk-UA') + ' грн';
     </div>
   </section>
 </Layout>
-
-<script>
-  const grid = document.getElementById('catGrid');
-  const cards = Array.from(grid.querySelectorAll('.cat-card'));
-  const empty = document.getElementById('catEmpty');
-  let activeColor = 'all';
-
-  function apply() {
-    // фільтр
-    let visible = 0;
-    cards.forEach((c) => {
-      const ok = activeColor === 'all' || c.dataset.color === activeColor;
-      c.style.display = ok ? '' : 'none';
-      if (ok) visible++;
-    });
-    empty.hidden = visible > 0;
-  }
-
-  function sort(mode) {
-    const sorted = [...cards].sort((a, b) => {
-      if (mode === 'cheap') return a.dataset.price - b.dataset.price;
-      if (mode === 'exp')   return b.dataset.price - a.dataset.price;
-      if (mode === 'name')  return a.dataset.name.localeCompare(b.dataset.name, 'uk');
-      return b.dataset.pop - a.dataset.pop; // популярність
-    });
-    sorted.forEach((c) => grid.appendChild(c));
-  }
-
-  document.getElementById('colorFilters').addEventListener('click', (e) => {
-    const btn = e.target.closest('.chip');
-    if (!btn) return;
-    document.querySelectorAll('#colorFilters .chip').forEach((b) => b.classList.remove('chip--active'));
-    btn.classList.add('chip--active');
-    activeColor = btn.dataset.color;
-    apply();
-  });
-
-  document.getElementById('sortSelect').addEventListener('change', (e) => {
-    sort(e.target.value);
-    apply();
-  });
-
-  sort('pop');
-</script>
 
 <style>
   .page-hero {
@@ -233,29 +72,7 @@ const fmt = (n) => n.toLocaleString('uk-UA') + ' грн';
     letter-spacing: 0.14em; color: var(--gold); margin-bottom: 8px;
   }
 
-  .cat-toolbar {
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 16px; flex-wrap: wrap; margin-bottom: 32px;
-  }
-  .cat-filters { display: flex; gap: 8px; flex-wrap: wrap; }
-  .chip {
-    padding: 8px 16px; border-radius: 100px;
-    border: 1px solid var(--border); background: var(--white);
-    font-family: var(--font-body); font-size: 0.88rem; font-weight: 600;
-    color: var(--text-mid); transition: all 0.15s;
-  }
-  .chip:hover { border-color: var(--gold-border); color: var(--gold); }
-  .chip--active { background: var(--gold); border-color: var(--gold); color: #fff; }
-
-  .cat-sort { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: var(--text-muted); }
-  .cat-sort select {
-    padding: 8px 12px; border-radius: var(--radius-sm);
-    border: 1px solid var(--border); background: var(--white);
-    font-family: var(--font-body); font-size: 0.88rem; font-weight: 600; color: var(--text); outline: none;
-  }
-  .cat-sort select:focus { border-color: var(--gold); }
-
-  .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
   .cat-card {
     background: var(--white); border: 1px solid var(--border);
     border-radius: var(--radius-lg); overflow: hidden;
@@ -263,25 +80,20 @@ const fmt = (n) => n.toLocaleString('uk-UA') + ' грн';
     transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
     box-shadow: var(--shadow);
   }
-  .cat-card:hover { border-color: var(--gold-border); box-shadow: var(--shadow-md); transform: translateY(-3px); }
-  .cat-card__preview { display: block; background: var(--bg-gray); }
-  .cat-card__preview :global(.cat-svg) { width: 100%; height: auto; display: block; }
-  .cat-card__body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
-  .cat-card__color {
-    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.1em; color: var(--gold);
-  }
-  .cat-card__body h3 { font-size: 1.05rem; color: var(--text); font-family: var(--font-body); font-weight: 700; }
-  .cat-card__foot { margin-top: auto; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .cat-card__price { font-size: 1.1rem; font-weight: 800; color: var(--text); }
-  .btn--sm { padding: 8px 16px; font-size: 0.82rem; }
-
-  .cat-empty { text-align: center; color: var(--text-muted); padding: 40px 0; }
+  .cat-card:hover { border-color: var(--gold-border); box-shadow: var(--shadow-md); transform: translateY(-4px); }
+  .cat-card__media { aspect-ratio: 4 / 5; overflow: hidden; background: var(--bg-gray); }
+  .cat-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s; }
+  .cat-card:hover .cat-card__media img { transform: scale(1.04); }
+  .cat-card__body { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .cat-card__body h3 { font-size: 1.2rem; color: var(--text); }
+  .cat-card__body p { font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; flex: 1; margin: 0; }
+  .cat-card__foot { margin-top: auto; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .cat-card__price { font-size: 1rem; font-weight: 800; color: var(--gold); }
+  .btn--sm { padding: 9px 18px; font-size: 0.82rem; }
 
   .cta-banner .btn--ghost { color: #fff; border-color: rgba(255,255,255,0.35); background: transparent; }
   .cta-banner .btn--ghost:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
 
-  @media (max-width: 1000px) { .cat-grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 720px) { .cat-grid { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 460px) { .cat-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) { .cat-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .cat-grid { grid-template-columns: 1fr; } }
 </style>
