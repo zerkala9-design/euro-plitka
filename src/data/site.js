@@ -14,7 +14,7 @@ export const site = {
 
 export const nav = [
   { label: 'Головна',           path: '/' },
-  { label: 'Дзеркальна плитка', path: '/dzerkalna-plitka/' },
+  { label: 'Каталог',           path: '/katalog/' },
   { label: 'LED дзеркала',      path: '/led-dzerkalo/' },
   { label: 'Послуги',           path: '/poslugy/' },
   { label: 'Про нас',           path: '/pro-nas/' },

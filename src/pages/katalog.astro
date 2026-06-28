@@ -1,0 +1,189 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// --- Генератори SVG-візерунків розкрою панно ---
+const PW = 200, PH = 264;
+
+function frame(inner, id) {
+  return `<svg viewBox="0 0 ${PW} ${PH}" class="cat-svg" xmlns="http://www.w3.org/2000/svg" role="img">
+    <defs>
+      <clipPath id="clip-${id}"><rect x="2" y="2" width="${PW-4}" height="${PH-4}" rx="2"/></clipPath>
+      <linearGradient id="grad-${id}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#f6f6f4"/>
+        <stop offset="50%" stop-color="#d6d6d2"/>
+        <stop offset="100%" stop-color="#f6f6f4"/>
+      </linearGradient>
+    </defs>
+    <rect x="2" y="2" width="${PW-4}" height="${PH-4}" rx="2" fill="url(#grad-${id})"/>
+    <g clip-path="url(#clip-${id})" stroke="#b89244" stroke-width="1.1" fill="none" opacity="0.85">${inner}</g>
+    <rect x="2" y="2" width="${PW-4}" height="${PH-4}" rx="2" fill="none" stroke="#b89244" stroke-width="2"/>
+  </svg>`;
+}
+
+function diamonds(s) {
+  let p = '';
+  for (let k = -PH; k <= PW + PH; k += s) {
+    p += `<line x1="${k}" y1="0" x2="${k + PH}" y2="${PH}"/>`;
+    p += `<line x1="${k}" y1="0" x2="${k - PH}" y2="${PH}"/>`;
+  }
+  return p;
+}
+
+function squares(s) {
+  let p = '';
+  for (let x = s; x < PW; x += s) p += `<line x1="${x}" y1="0" x2="${x}" y2="${PH}"/>`;
+  for (let y = s; y < PH; y += s) p += `<line x1="0" y1="${y}" x2="${PW}" y2="${y}"/>`;
+  return p;
+}
+
+function brick(bw, bh) {
+  let p = '', row = 0;
+  for (let y = 0; y <= PH; y += bh) {
+    p += `<line x1="0" y1="${y}" x2="${PW}" y2="${y}"/>`;
+    const off = (row % 2) ? bw / 2 : 0;
+    for (let x = -bw + off; x <= PW; x += bw) {
+      p += `<line x1="${x}" y1="${y}" x2="${x}" y2="${y + bh}"/>`;
+    }
+    row++;
+  }
+  return p;
+}
+
+function chevron(w, h) {
+  let p = '';
+  for (let y = -h; y <= PH; y += h) {
+    let d = '';
+    for (let x = -w; x <= PW; x += 2 * w) {
+      d += `M ${x} ${y + h} L ${x + w} ${y} L ${x + 2 * w} ${y + h} `;
+    }
+    p += `<path d="${d}"/>`;
+  }
+  return p;
+}
+
+function hexagons(r) {
+  const w = Math.sqrt(3) * r;
+  const vert = 1.5 * r;
+  let p = '', row = 0;
+  for (let cy = 0; cy <= PH + r; cy += vert) {
+    const off = (row % 2) ? w / 2 : 0;
+    for (let cx = off - w; cx <= PW + w; cx += w) {
+      const pts = [];
+      for (let a = 0; a < 6; a++) {
+        const ang = Math.PI / 180 * (60 * a - 90);
+        pts.push(`${(cx + r * Math.cos(ang)).toFixed(1)},${(cy + r * Math.sin(ang)).toFixed(1)}`);
+      }
+      p += `<polygon points="${pts.join(' ')}"/>`;
+    }
+    row++;
+  }
+  return p;
+}
+
+const layouts = [
+  { id: 'romb',   name: 'Ромбами',      desc: 'Класичне діагональне укладання — найпопулярніше для панно.', svg: frame(diamonds(30), 'romb') },
+  { id: 'kvadr',  name: 'Квадратами',   desc: 'Пряма сітка, лаконічний сучасний вигляд.',                  svg: frame(squares(34), 'kvadr') },
+  { id: 'cegla',  name: 'Цеглою',       desc: 'Укладання зі зміщенням рядів, як цегляна кладка.',           svg: frame(brick(50, 28), 'cegla') },
+  { id: 'shevr',  name: 'Шевроном',     desc: 'V-подібний візерунок — динамічний акцент на стіні.',         svg: frame(chevron(26, 26), 'shevr') },
+  { id: 'soty',   name: 'Сотами',       desc: 'Шестикутні елементи — оригінальне геометричне рішення.',     svg: frame(hexagons(20), 'soty') },
+  { id: 'velromb',name: 'Великим ромбом',desc: 'Крупне діагональне укладання для великих площин.',          svg: frame(diamonds(50), 'velromb') },
+];
+---
+
+<Layout
+  title="Каталог розкроїв дзеркальних панно"
+  description="Каталог варіантів розкрою дзеркальних панно: ромби, квадрати, цегла, шеврон, соти. Розрахунок вартості онлайн."
+>
+  <div class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Головна</a><span>›</span><span>Каталог</span></div>
+      <div class="section-label">Дзеркальні панно</div>
+      <h1>Каталог розкроїв панно</h1>
+      <p class="hero-sub">Оберіть тип укладання — і розрахуйте точну вартість під розміри вашої стіни</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="cat-grid">
+        {layouts.map((l) => (
+          <article class="cat-card">
+            <div class="cat-card__preview" set:html={l.svg} />
+            <div class="cat-card__body">
+              <h3>{l.name}</h3>
+              <p>{l.desc}</p>
+              <a href="/dzerkalna-plitka/#calculator" class="btn btn--outline">Розрахувати вартість</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-banner">
+    <div class="container">
+      <h2>Не знайшли потрібний варіант?</h2>
+      <p>Зробимо індивідуальний розкрій панно за вашим ескізом</p>
+      <div class="cta-banner__actions">
+        <a href="/kontakty/" class="btn btn--primary btn--lg">Зв'язатися з нами</a>
+        <a href="/dzerkalna-plitka/#calculator" class="btn btn--ghost btn--lg">Калькулятор</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 60px 0 48px;
+  }
+  .breadcrumb { color: var(--text-muted); margin-bottom: 20px; font-size: 0.88rem; display: flex; gap: 8px; align-items: center; }
+  .breadcrumb a { color: var(--text-muted); }
+  .breadcrumb a:hover { color: var(--gold); }
+  .page-hero h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text); margin-bottom: 12px; }
+  .hero-sub { color: var(--text-muted); font-size: 1.1rem; max-width: 560px; }
+
+  .section-label {
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--gold); margin-bottom: 8px;
+  }
+
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  .cat-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    box-shadow: var(--shadow);
+  }
+  .cat-card:hover {
+    border-color: var(--gold-border);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+  }
+  .cat-card__preview {
+    display: flex;
+    justify-content: center;
+    padding: 26px 26px 8px;
+    background: var(--bg-gray);
+  }
+  .cat-card__preview :global(.cat-svg) { width: 150px; height: auto; }
+  .cat-card__body { padding: 22px 24px 26px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .cat-card__body h3 { font-size: 1.2rem; color: var(--text); }
+  .cat-card__body p { font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; flex: 1; margin: 0; }
+  .cat-card__body .btn { margin-top: 6px; }
+
+  .cta-banner .btn--ghost { color: #fff; border-color: rgba(255,255,255,0.35); background: transparent; }
+  .cta-banner .btn--ghost:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
+
+  @media (max-width: 900px) { .cat-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .cat-grid { grid-template-columns: 1fr; } }
+</style>
