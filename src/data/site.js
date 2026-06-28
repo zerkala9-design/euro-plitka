@@ -31,7 +31,7 @@ export const tileCalcConfig = {
   defaultPrice: 1.0,
   gridAuto: 400,
   gridRatio: { ideal: 1.35, max: 1.5 },
-  tileMin: 150,
+  tileMin: 200,
   tileMax: 600,
 };
 
