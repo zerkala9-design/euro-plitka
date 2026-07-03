@@ -305,112 +305,119 @@ document.getElementById('submitLedOrder').addEventListener('click', () => {
 recalc();
 </script>
 
-<style>
-  .led-calc {
+<style is:global>
+  #ledCalc {
     display: grid;
     grid-template-columns: 1fr 360px;
     gap: 32px;
     align-items: start;
   }
 
-  .led-step { margin-bottom: 28px; }
-  .led-step__title {
-    font-size: 1rem;
+  #ledCalc .led-step { margin-bottom: 28px; }
+  #ledCalc .led-step__title {
+    font-size: 1.05rem;
     font-weight: 700;
     margin-bottom: 14px;
     color: var(--text);
   }
 
   /* Тип дзеркала */
-  .led-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .led-type-card {
+  #ledCalc .led-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  #ledCalc .led-type-card {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    padding: 16px;
+    padding: 18px;
     border: 2px solid var(--border);
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s;
     text-align: center;
+    background: var(--white);
   }
-  .led-type-card input { display: none; }
-  .led-type-card__img { font-size: 2.5rem; }
-  .led-type-card span { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
-  .led-type-card.selected, .led-type-card:has(input:checked) {
-    border-color: var(--green);
-    background: rgba(46,125,50,0.05);
+  #ledCalc .led-type-card:hover { border-color: var(--gold-border); }
+  #ledCalc .led-type-card input { display: none; }
+  #ledCalc .led-type-card__img { font-size: 2.5rem; }
+  #ledCalc .led-type-card span { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+  #ledCalc .led-type-card.selected, #ledCalc .led-type-card:has(input:checked) {
+    border-color: var(--gold);
+    background: var(--gold-pale);
   }
-  .led-type-card.selected span, .led-type-card:has(input:checked) span { color: var(--green); }
+  #ledCalc .led-type-card.selected span, #ledCalc .led-type-card:has(input:checked) span { color: var(--gold); }
 
   /* Розмір */
-  .led-size-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .led-size-field { display: flex; flex-direction: column; gap: 6px; }
-  .led-size-field > span { font-size: 0.85rem; color: var(--text-muted); }
-  .led-size-input {
+  #ledCalc .led-size-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  #ledCalc .led-size-field { display: flex; flex-direction: column; gap: 6px; }
+  #ledCalc .led-size-field > span { font-size: 0.88rem; font-weight: 600; color: var(--text-mid); }
+  #ledCalc .led-size-input {
     display: flex;
     align-items: center;
     gap: 8px;
     border: 1.5px solid var(--border);
     border-radius: var(--radius);
-    padding: 10px 12px;
+    padding: 11px 14px;
+    background: var(--white);
   }
-  .led-size-input:focus-within { border-color: var(--green); }
-  .led-size-input input {
-    flex: 1; border: none; outline: none;
-    font-family: var(--font); font-size: 1.1rem; font-weight: 600;
+  #ledCalc .led-size-input:focus-within { border-color: var(--gold); }
+  #ledCalc .led-size-input input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-family: var(--font); font-size: 1.1rem; font-weight: 600; color: var(--text);
     min-width: 60px;
   }
-  .led-size-input span { font-size: 0.85rem; color: var(--text-muted); }
+  #ledCalc .led-size-input span { font-size: 0.85rem; color: var(--text-muted); }
 
   /* Колір світла */
-  .led-light-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .led-light-card {
+  #ledCalc .led-light-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  #ledCalc .led-light-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    padding: 12px 8px;
+    gap: 8px;
+    padding: 14px 8px;
     border: 2px solid var(--border);
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, background 0.2s;
     text-align: center;
+    background: var(--white);
   }
-  .led-light-card input { display: none; }
-  .led-light-card:has(input:checked) { border-color: var(--green); }
-  .led-light-swatch {
-    width: 40px; height: 20px;
-    border-radius: 4px;
-    border: 1px solid rgba(0,0,0,0.1);
+  #ledCalc .led-light-card input { display: none; }
+  #ledCalc .led-light-card:hover { border-color: var(--gold-border); }
+  #ledCalc .led-light-card:has(input:checked) { border-color: var(--gold); background: var(--gold-pale); }
+  #ledCalc .led-light-swatch {
+    width: 44px; height: 22px;
+    border-radius: 5px;
+    border: 1px solid rgba(0,0,0,0.12);
   }
-  .led-light-name { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  #ledCalc .led-light-name { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-mid); }
 
   /* Опції */
-  .led-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .led-option {
+  #ledCalc .led-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  #ledCalc .led-option {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    padding: 12px 14px;
+    padding: 14px 16px;
     border: 1.5px solid var(--border);
     border-radius: var(--radius);
+    background: var(--white);
   }
-  .led-option__label { font-weight: 600; font-size: 0.9rem; }
-  .led-option__price { font-size: 0.8rem; color: var(--green); }
+  #ledCalc .led-option__info { display: flex; flex-direction: column; gap: 2px; }
+  #ledCalc .led-option__label { font-weight: 600; font-size: 0.92rem; color: var(--text); }
+  #ledCalc .led-option__price { font-size: 0.8rem; font-weight: 600; color: var(--gold); }
 
   /* Toggle switch */
-  .led-toggle-switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; cursor: pointer; }
-  .led-toggle-switch input { opacity: 0; width: 0; height: 0; }
-  .led-toggle-track {
+  #ledCalc .led-toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; cursor: pointer; }
+  #ledCalc .led-toggle-switch input { opacity: 0; width: 0; height: 0; }
+  #ledCalc .led-toggle-track {
     position: absolute; inset: 0;
-    background: #ccc;
+    background: #d5d3cc;
     border-radius: 24px;
     transition: background 0.2s;
   }
-  .led-toggle-track::after {
+  #ledCalc .led-toggle-track::after {
     content: '';
     position: absolute;
     left: 3px; top: 3px;
@@ -418,83 +425,86 @@ recalc();
     background: #fff;
     border-radius: 50%;
     transition: transform 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
   }
-  .led-toggle-switch input:checked ~ .led-toggle-track { background: var(--green); }
-  .led-toggle-switch input:checked ~ .led-toggle-track::after { transform: translateX(18px); }
+  #ledCalc .led-toggle-switch input:checked ~ .led-toggle-track { background: var(--gold); }
+  #ledCalc .led-toggle-switch input:checked ~ .led-toggle-track::after { transform: translateX(20px); }
 
   /* Кількість */
-  .led-qty { display: flex; align-items: center; gap: 12px; }
-  .led-qty__btn {
-    width: 36px; height: 36px;
+  #ledCalc .led-qty { display: flex; align-items: center; gap: 14px; }
+  #ledCalc .led-qty__btn {
+    width: 38px; height: 38px;
     border: 2px solid var(--border);
     border-radius: 50%;
-    background: none;
+    background: var(--white);
     font-size: 1.2rem;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transition: all 0.2s;
   }
-  .led-qty__btn:hover { border-color: var(--green); color: var(--green); }
-  .led-qty__val { font-size: 1.2rem; font-weight: 700; min-width: 24px; text-align: center; }
-  .led-qty__unit { color: var(--text-muted); }
+  #ledCalc .led-qty__btn:hover { border-color: var(--gold); color: var(--gold); }
+  #ledCalc .led-qty__val { font-size: 1.3rem; font-weight: 700; min-width: 28px; text-align: center; }
+  #ledCalc .led-qty__unit { color: var(--text-muted); }
 
   /* Монтаж / доставка */
-  .led-service-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .led-service-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
-  .led-toggle.active { border-color: var(--green); color: var(--green); background: rgba(46,125,50,0.05); }
-  .btn--sm { padding: 8px 14px; font-size: 0.85rem; }
+  #ledCalc .led-service-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  #ledCalc .led-service-label { font-size: 0.85rem; font-weight: 600; color: var(--text-mid); margin-bottom: 8px; }
+  #ledCalc .led-toggle.active { border-color: var(--gold); color: var(--gold); background: var(--gold-pale); }
 
   /* Правий блок */
-  .led-calc__right { position: sticky; top: 80px; }
+  #ledCalc .led-calc__right { position: sticky; top: 90px; display: flex; flex-direction: column; }
 
-  .led-summary {
-    background: #fff;
+  #ledCalc .led-summary {
+    background: var(--white);
     border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 20px;
+    border-radius: 12px;
+    padding: 22px;
     margin-bottom: 16px;
+    box-shadow: var(--shadow);
   }
-  .led-summary h3 { margin-bottom: 14px; font-size: 1rem; }
-  .led-summary__row {
+  #ledCalc .led-summary h3 { margin-bottom: 14px; font-size: 1.05rem; color: var(--text); }
+  #ledCalc .led-summary__row {
     display: flex;
     justify-content: space-between;
-    padding: 6px 0;
-    font-size: 0.9rem;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 0.92rem;
     border-bottom: 1px solid var(--border);
   }
-  .led-summary__row:last-child { border-bottom: none; }
-  .led-summary__row span:first-child { color: var(--text-muted); }
-  .led-summary__row span:last-child { font-weight: 600; }
+  #ledCalc .led-summary__row:last-child { border-bottom: none; }
+  #ledCalc .led-summary__row span:first-child { color: var(--text-muted); }
+  #ledCalc .led-summary__row span:last-child { font-weight: 700; color: var(--text); text-align: right; }
 
-  .led-service-row--price { margin-bottom: 16px; }
+  #ledCalc .led-service-row--price { margin-bottom: 16px; }
 
-  .led-price-box {
-    background: var(--green);
+  #ledCalc .led-price-box {
+    background: linear-gradient(135deg, #1a1810 0%, #2a2618 100%);
     color: #fff;
-    border-radius: 10px;
-    padding: 20px;
+    border-radius: 12px;
+    padding: 22px;
   }
-  .led-price-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; opacity: 0.8; }
-  .led-breakdown-row {
+  #ledCalc .led-price-label { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 14px; color: var(--gold-light); }
+  #ledCalc .led-breakdown-row {
     display: flex;
     justify-content: space-between;
+    gap: 12px;
     font-size: 0.9rem;
-    padding: 3px 0;
-    opacity: 0.85;
+    padding: 4px 0;
+    color: rgba(255,255,255,0.75);
   }
-  .led-price-total {
+  #ledCalc .led-price-total {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid rgba(255,255,255,0.3);
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.18);
     font-weight: 700;
   }
-  .led-price-total__val { font-size: 1.8rem; font-weight: 800; }
+  #ledCalc .led-price-total__val { font-size: 1.9rem; font-weight: 800; color: var(--gold-light); }
 
-  /* Модалка (shared styles from TileCalculator) */
-  .order-modal {
+  /* Модалка замовлення LED */
+  #ledOrderModal {
     display: none;
     position: fixed;
     inset: 0;
@@ -505,38 +515,39 @@ recalc();
     align-items: center;
     justify-content: center;
   }
-  .order-modal.open { display: flex; }
-  .order-modal__box {
-    background: #fff;
+  #ledOrderModal.open { display: flex; }
+  #ledOrderModal .order-modal__box {
+    background: var(--white);
     border-radius: 12px;
     padding: 32px;
     max-width: 480px;
     width: 100%;
     position: relative;
+    box-shadow: var(--shadow-lg);
   }
-  .order-modal__close {
+  #ledOrderModal .order-modal__close {
     position: absolute; top: 16px; right: 16px;
-    background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #999;
+    background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);
     width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%;
   }
-  .order-modal__close:hover { background: #f5f5f5; }
-  .order-modal__box h3 { margin-bottom: 16px; }
-  .order-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-  .order-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); }
-  .order-total td { font-weight: 700; background: #f9f9f9; }
-  .order-modal__form { display: flex; flex-direction: column; gap: 10px; }
-  .order-modal__input {
+  #ledOrderModal .order-modal__close:hover { background: var(--bg-gray); color: var(--text); }
+  #ledOrderModal h3 { margin-bottom: 16px; color: var(--text); }
+  #ledOrderModal .order-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  #ledOrderModal .order-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); color: var(--text-mid); }
+  #ledOrderModal .order-total td { font-weight: 700; background: var(--gold-pale); color: var(--text); }
+  #ledOrderModal .order-modal__form { display: flex; flex-direction: column; gap: 10px; }
+  #ledOrderModal .order-modal__input {
     padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius);
-    font-family: var(--font); font-size: 0.95rem; outline: none;
+    font-family: var(--font); font-size: 0.95rem; outline: none; background: var(--bg-input); color: var(--text);
   }
-  .order-modal__input:focus { border-color: var(--green); }
+  #ledOrderModal .order-modal__input:focus { border-color: var(--gold); }
 
   @media (max-width: 900px) {
-    .led-calc { grid-template-columns: 1fr; }
-    .led-calc__right { position: static; }
+    #ledCalc { grid-template-columns: 1fr; }
+    #ledCalc .led-calc__right { position: static; }
   }
   @media (max-width: 500px) {
-    .led-light-grid { grid-template-columns: 1fr 1fr; }
-    .led-options-grid { grid-template-columns: 1fr; }
+    #ledCalc .led-light-grid { grid-template-columns: 1fr 1fr; }
+    #ledCalc .led-options-grid { grid-template-columns: 1fr; }
   }
 </style>
