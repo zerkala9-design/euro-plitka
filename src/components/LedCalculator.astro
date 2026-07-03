@@ -12,13 +12,13 @@ const cfg = JSON.stringify(ledCalcConfig);
       <div class="led-type-grid">
         <label class="led-type-card" data-type="back">
           <input type="radio" name="mirrorType" value="back" checked />
-          <img class="led-type-card__photo" src="/led-back.png" alt="Фонова LED-підсвітка" loading="lazy" />
+          <img class="led-type-card__photo" id="typeImgBack" src="/led-back-rect.png" alt="Фонова LED-підсвітка" loading="lazy" />
           <span>ФОНОВА</span>
           <small>Світло по контуру ззаду</small>
         </label>
         <label class="led-type-card" data-type="front">
           <input type="radio" name="mirrorType" value="front" />
-          <img class="led-type-card__photo" src="/led-front.png" alt="Фронтальна LED-підсвітка" loading="lazy" />
+          <img class="led-type-card__photo" id="typeImgFront" src="/led-front-rect.png" alt="Фронтальна LED-підсвітка" loading="lazy" />
           <span>ФРОНТАЛЬНА</span>
           <small>Світло на лицьовій частині</small>
         </label>
@@ -249,6 +249,10 @@ function updateSizeUI() {
   document.getElementById('fieldH').style.display = isCircle ? 'none' : '';
   document.getElementById('labelW').textContent = isCircle ? 'Діаметр (мм)' : 'Ширина (мм)';
   if (isCircle) state.H = state.W;
+  // фото типів підсвітки відповідно до форми
+  const variant = isCircle ? 'circle' : 'rect';
+  document.getElementById('typeImgBack').src = `/led-back-${variant}.png`;
+  document.getElementById('typeImgFront').src = `/led-front-${variant}.png`;
 }
 
 function recalc() {
