@@ -1,129 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// --- Геометрія сцени ---
-const VW = 440, VH = 540;
-const MX = 150, MY = 46, MW = 214, MH = 408; // дзеркальне панно
-
-// Лінія за частками від коробки панно
-const F = (ax, ay, bx, by) =>
-  `<line x1="${(MX + ax * MW).toFixed(1)}" y1="${(MY + ay * MH).toFixed(1)}" x2="${(MX + bx * MW).toFixed(1)}" y2="${(MY + by * MH).toFixed(1)}"/>`;
-
-const patterns = {
-  romb() {
-    let p = F(0.5, 0, 0.5, 1);
-    const s = 46;
-    for (let k = MX - MH; k <= MX + MW; k += s) {
-      p += `<line x1="${k}" y1="${MY}" x2="${k + MH}" y2="${MY + MH}"/>`;
-      p += `<line x1="${k}" y1="${MY}" x2="${k - MH}" y2="${MY + MH}"/>`;
-    }
-    return p;
-  },
-  abstract() {
-    return [
-      F(0.5, 0, 0.5, 1),
-      F(0, 0.16, 0.55, 0.04), F(0.55, 0.04, 1, 0.26),
-      F(0, 0.46, 0.72, 0.2),
-      F(0.34, 1, 0.6, 0.4), F(0.6, 0.4, 1, 0.62),
-      F(0.08, 0.78, 0.5, 0.56), F(0.5, 0.56, 0.92, 0.88),
-    ].join('');
-  },
-  chevron() {
-    let p = F(0.5, 0, 0.5, 1);
-    const h = 70;
-    for (let y = MY - h; y <= MY + MH; y += h) {
-      p += `<path d="M ${MX} ${y + h * 0.5} L ${MX + MW / 2} ${y} L ${MX + MW} ${y + h * 0.5}" fill="none"/>`;
-    }
-    return p;
-  },
-  triangles() {
-    return [
-      F(0, 0.1, 1, 0.46),
-      F(1, 0.12, 0.16, 0.62),
-      F(0, 0.56, 0.82, 0.96),
-      F(0.22, 0, 0.66, 0.5),
-      F(0.52, 0.46, 0.52, 1),
-    ].join('');
-  },
-  diagonal() {
-    return [
-      F(0.5, 0, 0.5, 1),
-      F(0, 0.34, 1, 0.7),
-      F(0.15, 1, 0.85, 0.54),
-      F(0.55, 0.5, 0.95, 0.78),
-    ].join('');
-  },
-};
-
-function scene(linesFn, id) {
-  const lines = patterns[linesFn]();
-  // дерев'яні рейки зліва
-  let slats = '';
-  for (let x = 34; x <= 92; x += 7) slats += `<line x1="${x}" y1="46" x2="${x}" y2="462" stroke="#b9a585" stroke-width="2"/>`;
-  return `<svg viewBox="0 0 ${VW} ${VH}" class="cat-svg" xmlns="http://www.w3.org/2000/svg" role="img">
-    <defs>
-      <linearGradient id="wall-${id}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#efe9e1"/><stop offset="100%" stop-color="#e7ded2"/>
-      </linearGradient>
-      <linearGradient id="mir-${id}" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#e9e6e0"/>
-        <stop offset="45%" stop-color="#cfcdc7"/>
-        <stop offset="100%" stop-color="#dedbd4"/>
-      </linearGradient>
-      <clipPath id="mc-${id}"><rect x="${MX}" y="${MY}" width="${MW}" height="${MH}" rx="3"/></clipPath>
-    </defs>
-
-    <rect x="0" y="0" width="${VW}" height="${VH}" fill="url(#wall-${id})"/>
-    <!-- підсвітка стелі -->
-    <rect x="142" y="30" width="230" height="10" fill="#fff4dc" opacity="0.7"/>
-    <!-- підлога -->
-    <polygon points="0,468 ${VW},468 ${VW},${VH} 0,${VH}" fill="#e7dac4"/>
-    <rect x="0" y="464" width="${VW}" height="6" fill="#f2ebdf"/>
-
-    <!-- дерев'яні рейки -->
-    <rect x="30" y="46" width="66" height="416" fill="#c7b393"/>
-    ${slats}
-
-    <!-- консоль -->
-    <rect x="18" y="362" width="108" height="20" rx="3" fill="#b89a72"/>
-    <rect x="18" y="382" width="108" height="5" fill="#9c815c" opacity="0.5"/>
-    <!-- ваза + рослина -->
-    <rect x="44" y="320" width="26" height="42" rx="6" fill="#efe9df"/>
-    <path d="M57 322 C 50 300 44 292 40 286 M57 322 C 64 302 70 296 76 290 M57 322 C 57 300 57 292 57 282"
-          stroke="#8a9a72" stroke-width="2" fill="none" stroke-linecap="round"/>
-
-    <!-- дзеркальне панно -->
-    <rect x="${MX}" y="${MY}" width="${MW}" height="${MH}" rx="3" fill="url(#mir-${id})"/>
-    <!-- легке відображення -->
-    <g clip-path="url(#mc-${id})">
-      <rect x="${MX + 30}" y="${MY}" width="46" height="${MH}" fill="#ffffff" opacity="0.10"/>
-      <rect x="${MX + MW * 0.62}" y="${MY + MH * 0.55}" width="${MW * 0.3}" height="${MH * 0.45}" fill="#d8d2c8" opacity="0.5"/>
-    </g>
-    <g clip-path="url(#mc-${id})" stroke="#a6a7a1" stroke-width="2" opacity="0.85" fill="none">${lines}</g>
-    <rect x="${MX}" y="${MY}" width="${MW}" height="${MH}" rx="3" fill="none" stroke="#cfcabf" stroke-width="2.5"/>
-    <!-- LED-підсвітка зверху панно -->
-    <rect x="${MX}" y="${MY}" width="${MW}" height="3" fill="#fff3d6" opacity="0.85"/>
-
-    <!-- пуф -->
-    <ellipse cx="372" cy="476" rx="46" ry="30" fill="#ddd5c6"/>
-    <ellipse cx="372" cy="462" rx="46" ry="26" fill="#e7e0d2"/>
-  </svg>`;
-}
-
 const products = [
-  { id: 'romb',      pattern: 'romb',      name: 'Класичні ромби',     desc: 'Діагональне укладання — елегантна класика для передпокою.', price: 'від 2 120 грн/м²' },
-  { id: 'abstract',  pattern: 'abstract',  name: 'Абстракція',          desc: 'Асиметричні лінії — сучасний акцент на всю стіну.',         price: 'від 2 450 грн/м²' },
-  { id: 'chevron',   pattern: 'chevron',   name: 'Шеврон',              desc: 'V-подібний візерунок — динамічний геометричний дизайн.',    price: 'від 2 300 грн/м²' },
-  { id: 'triangles', pattern: 'triangles', name: 'Геометрія',           desc: 'Трикутні грані — стильне рішення для мінімалістичних інтерʼєрів.', price: 'від 2 450 грн/м²' },
-  { id: 'diagonal',  pattern: 'diagonal',  name: 'Діагональні лінії',   desc: 'Лаконічні діагоналі — простір та чистота форм.',            price: 'від 2 300 грн/м²' },
+  { img: '/panno-abstract.png', name: 'Абстракція',         desc: 'Асиметричні лінії — сучасний акцент на всю стіну.',              price: 'від 2 450 грн/м²' },
+  { img: '/panno-chevron.png',  name: 'Шеврон',             desc: 'V-подібний візерунок — динамічний геометричний дизайн.',         price: 'від 2 300 грн/м²' },
+  { img: '/panno-geometry.png', name: 'Геометрія',          desc: 'Трикутні грані — стильне рішення для мінімалістичних інтерʼєрів.', price: 'від 2 450 грн/м²' },
+  { img: '/panno-diagonal.png', name: 'Діагональні лінії',  desc: 'Лаконічні діагоналі — простір та чистота форм.',                 price: 'від 2 300 грн/м²' },
 ];
-
-const cards = products.map((p) => ({ ...p, svg: scene(p.pattern, p.id) }));
 ---
 
 <Layout
   title="Каталог дзеркальних панно"
-  description="Каталог дзеркальних панно для передпокою та вітальні. Ромби, шеврон, абстракція, геометрія. Розрахунок вартості онлайн."
+  description="Каталог дзеркальних панно для передпокою та вітальні. Абстракція, шеврон, геометрія, діагоналі. Розрахунок вартості онлайн."
 >
   <div class="page-hero">
     <div class="container">
@@ -137,9 +25,11 @@ const cards = products.map((p) => ({ ...p, svg: scene(p.pattern, p.id) }));
   <section class="section">
     <div class="container">
       <div class="cat-grid">
-        {cards.map((p) => (
+        {products.map((p) => (
           <article class="cat-card">
-            <div class="cat-card__media" set:html={p.svg} />
+            <div class="cat-card__media">
+              <img src={p.img} alt={`Дзеркальне панно — ${p.name}`} loading="lazy" />
+            </div>
             <div class="cat-card__body">
               <h3>{p.name}</h3>
               <p>{p.desc}</p>
@@ -181,7 +71,7 @@ const cards = products.map((p) => ({ ...p, svg: scene(p.pattern, p.id) }));
     letter-spacing: 0.14em; color: var(--gold); margin-bottom: 8px;
   }
 
-  .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
   .cat-card {
     background: var(--white); border: 1px solid var(--border);
     border-radius: var(--radius-lg); overflow: hidden;
@@ -190,19 +80,19 @@ const cards = products.map((p) => ({ ...p, svg: scene(p.pattern, p.id) }));
     box-shadow: var(--shadow);
   }
   .cat-card:hover { border-color: var(--gold-border); box-shadow: var(--shadow-md); transform: translateY(-4px); }
-  .cat-card__media { background: var(--bg-gray); overflow: hidden; }
-  .cat-card__media :global(.cat-svg) { width: 100%; height: auto; display: block; transition: transform 0.4s; }
-  .cat-card:hover .cat-card__media :global(.cat-svg) { transform: scale(1.03); }
-  .cat-card__body { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-  .cat-card__body h3 { font-size: 1.2rem; color: var(--text); }
-  .cat-card__body p { font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; flex: 1; margin: 0; }
+  .cat-card__media { aspect-ratio: 4 / 5; overflow: hidden; background: var(--bg-gray); }
+  .cat-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s; }
+  .cat-card:hover .cat-card__media img { transform: scale(1.04); }
+  .cat-card__body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .cat-card__body h3 { font-size: 1.15rem; color: var(--text); }
+  .cat-card__body p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; flex: 1; margin: 0; }
   .cat-card__foot { margin-top: auto; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-  .cat-card__price { font-size: 1rem; font-weight: 800; color: var(--gold); }
-  .btn--sm { padding: 9px 18px; font-size: 0.82rem; }
+  .cat-card__price { font-size: 0.95rem; font-weight: 800; color: var(--gold); }
+  .btn--sm { padding: 9px 16px; font-size: 0.8rem; }
 
   .cta-banner .btn--ghost { color: #fff; border-color: rgba(255,255,255,0.35); background: transparent; }
   .cta-banner .btn--ghost:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
 
-  @media (max-width: 900px) { .cat-grid { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 560px) { .cat-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 1000px) { .cat-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 460px) { .cat-grid { grid-template-columns: 1fr; } }
 </style>
