@@ -45,7 +45,6 @@ export const ledCalcConfig = {
   options: [
     { id: 'heat',   label: 'Підігрів', price: 400 },
     { id: 'sensor', label: 'Сенсор',   price: 300 },
-    { id: 'dimmer', label: 'Дімер',    price: 200 },
   ],
   mounting: 500,
   delivery: 200,
