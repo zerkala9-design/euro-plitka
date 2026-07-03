@@ -6,35 +6,59 @@ const cfg = JSON.stringify(ledCalcConfig);
 <div class="led-calc" id="ledCalc">
   <div class="led-calc__left">
 
-    <!-- 1. Тип -->
+    <!-- 1. Тип підсвітки -->
     <div class="led-step">
-      <h3 class="led-step__title">1. Тип дзеркала</h3>
+      <h3 class="led-step__title">1. Тип підсвітки</h3>
       <div class="led-type-grid">
         <label class="led-type-card" data-type="back">
           <input type="radio" name="mirrorType" value="back" checked />
-          <div class="led-type-card__img">🪞</div>
+          <div class="led-type-card__img">🌤️</div>
           <span>ФОНОВА</span>
+          <small>Світло по контуру ззаду</small>
         </label>
         <label class="led-type-card" data-type="front">
           <input type="radio" name="mirrorType" value="front" />
           <div class="led-type-card__img">💡</div>
           <span>ФРОНТАЛЬНА</span>
+          <small>Світло на лицьовій частині</small>
         </label>
       </div>
     </div>
 
-    <!-- 2. Розмір -->
+    <!-- 2. Форма -->
     <div class="led-step">
-      <h3 class="led-step__title">2. Розмір дзеркала</h3>
+      <h3 class="led-step__title">2. Форма дзеркала</h3>
+      <div class="led-type-grid led-shape-grid">
+        <label class="led-type-card" data-shape="rect">
+          <input type="radio" name="shape" value="rect" checked />
+          <div class="led-type-card__img">▭</div>
+          <span>Прямокутник</span>
+        </label>
+        <label class="led-type-card" data-shape="circle">
+          <input type="radio" name="shape" value="circle" />
+          <div class="led-type-card__img">⬤</div>
+          <span>Коло</span>
+        </label>
+        <label class="led-type-card" data-shape="oval">
+          <input type="radio" name="shape" value="oval" />
+          <div class="led-type-card__img">⬭</div>
+          <span>Овал</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 3. Розмір -->
+    <div class="led-step">
+      <h3 class="led-step__title">3. Розмір дзеркала</h3>
       <div class="led-size-row">
-        <label class="led-size-field">
-          <span>Ширина (мм)</span>
+        <label class="led-size-field" id="fieldW">
+          <span id="labelW">Ширина (мм)</span>
           <div class="led-size-input">
             <input type="number" id="ledW" value="400" min="200" max="2000" step="10" />
             <span>мм</span>
           </div>
         </label>
-        <label class="led-size-field">
+        <label class="led-size-field" id="fieldH">
           <span>Висота (мм)</span>
           <div class="led-size-input">
             <input type="number" id="ledH" value="600" min="200" max="2000" step="10" />
@@ -44,21 +68,21 @@ const cfg = JSON.stringify(ledCalcConfig);
       </div>
     </div>
 
-    <!-- 3. Колір світла -->
+    <!-- 4. Колір світла -->
     <div class="led-step">
-      <h3 class="led-step__title">3. Колір світла</h3>
+      <h3 class="led-step__title">4. Колір світла</h3>
       <div class="led-light-grid" id="lightGrid"></div>
     </div>
 
-    <!-- 4. Додаткові опції -->
+    <!-- 5. Додаткові опції -->
     <div class="led-step">
-      <h3 class="led-step__title">4. Додаткові опції</h3>
+      <h3 class="led-step__title">5. Додаткові опції</h3>
       <div class="led-options-grid" id="optionsGrid"></div>
     </div>
 
-    <!-- 5. Кількість -->
+    <!-- 6. Кількість -->
     <div class="led-step">
-      <h3 class="led-step__title">5. Кількість</h3>
+      <h3 class="led-step__title">6. Кількість</h3>
       <div class="led-qty">
         <button class="led-qty__btn" id="qtyMinus">−</button>
         <span class="led-qty__val" id="qtyVal">1</span>
@@ -67,15 +91,15 @@ const cfg = JSON.stringify(ledCalcConfig);
       </div>
     </div>
 
-    <!-- 6 & 7. Монтаж і доставка -->
+    <!-- 7 & 8. Монтаж і доставка -->
     <div class="led-step">
       <div class="led-service-row">
         <div class="led-service">
-          <h3 class="led-step__title">6. Монтаж</h3>
+          <h3 class="led-step__title">7. Монтаж</h3>
           <button class="btn btn--ghost led-toggle" id="toggleMounting">Додати монтаж</button>
         </div>
         <div class="led-service">
-          <h3 class="led-step__title">7. Доставка Київ</h3>
+          <h3 class="led-step__title">8. Доставка Київ</h3>
           <button class="btn btn--ghost led-toggle" id="toggleDelivery">Додати доставку</button>
         </div>
       </div>
@@ -84,6 +108,9 @@ const cfg = JSON.stringify(ledCalcConfig);
 
   <!-- Підсумок праворуч -->
   <div class="led-calc__right">
+    <div class="led-preview-box">
+      <svg id="ledPreview" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Превʼю дзеркала"></svg>
+    </div>
     <div class="led-summary">
       <h3>Ваше дзеркало</h3>
       <div class="led-summary__list" id="summaryList"></div>
@@ -135,6 +162,7 @@ const CFG = JSON.parse(cfg);
 
 let state = {
   type: 'back',
+  shape: 'rect',
   W: 400, H: 600,
   light: 'warm',
   options: {},
@@ -142,6 +170,8 @@ let state = {
   mounting: false,
   delivery: false,
 };
+
+const shapeLabels = { rect: 'Прямокутник', circle: 'Коло', oval: 'Овал' };
 
 // Рендер опцій світла
 const lightGrid = document.getElementById('lightGrid');
@@ -180,11 +210,61 @@ CFG.options.forEach(opt => {
   optGrid.appendChild(wrap);
 });
 
+// Площа за формою (см²)
+function areaCm2() {
+  const w = state.W / 10;
+  const h = (state.shape === 'circle' ? state.W : state.H) / 10;
+  if (state.shape === 'circle') return Math.PI * (w / 2) * (w / 2);
+  if (state.shape === 'oval')   return Math.PI * (w / 2) * (h / 2);
+  return w * h;
+}
+
 // Ціна дзеркала
 function mirrorPrice() {
-  const areaCm2 = (state.W / 10) * (state.H / 10);
   const ratePerCm2 = state.type === 'back' ? CFG.pricePerCm2.back : CFG.pricePerCm2.front;
-  return Math.round(areaCm2 * ratePerCm2);
+  return Math.round(areaCm2() * ratePerCm2);
+}
+
+// Превʼю форми з підсвіткою
+function drawPreview() {
+  const el = document.getElementById('ledPreview');
+  if (!el) return;
+  const lc = (CFG.lightColors.find(l => l.id === state.light) || {}).color || '#ffd580';
+  const VW = 220, VH = 220, cx = 110, cy = 110;
+  const w = state.W, h = (state.shape === 'circle' ? state.W : state.H);
+  const scale = 140 / Math.max(w, h);
+  const sw = Math.max(20, w * scale), sh = Math.max(20, h * scale);
+  const back = state.type === 'back';
+
+  const shapeEl = (dw, dh, attrs) => {
+    if (state.shape === 'circle' || state.shape === 'oval')
+      return `<ellipse cx="${cx}" cy="${cy}" rx="${(dw / 2).toFixed(1)}" ry="${(dh / 2).toFixed(1)}" ${attrs}/>`;
+    return `<rect x="${(cx - dw / 2).toFixed(1)}" y="${(cy - dh / 2).toFixed(1)}" width="${dw.toFixed(1)}" height="${dh.toFixed(1)}" rx="7" ${attrs}/>`;
+  };
+
+  let inner = '';
+  if (back) inner += shapeEl(sw * 1.28, sh * 1.28, `fill="${lc}" opacity="0.65" filter="url(#ledGlow)"`);
+  inner += shapeEl(sw, sh, `fill="url(#ledMir)" stroke="#cfcabf" stroke-width="2"`);
+  if (!back) inner += shapeEl(sw - 12, sh - 12, `fill="none" stroke="${lc}" stroke-width="4" opacity="0.95" filter="url(#ledGlowSoft)"`);
+
+  el.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
+  el.innerHTML = `
+    <defs>
+      <filter id="ledGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="9"/></filter>
+      <filter id="ledGlowSoft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
+      <linearGradient id="ledMir" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#edece7"/><stop offset="50%" stop-color="#cfcdc7"/><stop offset="100%" stop-color="#e4e1da"/>
+      </linearGradient>
+    </defs>
+    ${inner}`;
+}
+
+// Адаптація полів розміру під форму
+function updateSizeUI() {
+  const isCircle = state.shape === 'circle';
+  document.getElementById('fieldH').style.display = isCircle ? 'none' : '';
+  document.getElementById('labelW').textContent = isCircle ? 'Діаметр (мм)' : 'Ширина (мм)';
+  if (isCircle) state.H = state.W;
 }
 
 function recalc() {
@@ -201,16 +281,21 @@ function recalc() {
 
   // Підсумок
   const typeLabel = state.type === 'back' ? 'Фонова' : 'Фронтальна';
+  const shapeLabel = shapeLabels[state.shape];
   const lightLabel = (CFG.lightColors.find(l => l.id === state.light) || {}).label || '';
   const optLabels = CFG.options.filter(o => state.options[o.id]).map(o => o.label).join(', ') || 'Без опцій';
+  const dimText = state.shape === 'circle' ? `⌀ ${state.W} мм` : `${state.W} × ${state.H} мм`;
 
   document.getElementById('summaryList').innerHTML = `
-    <div class="led-summary__row"><span>Тип</span><span>${typeLabel}</span></div>
-    <div class="led-summary__row"><span>Розмір</span><span>${state.W} × ${state.H} мм</span></div>
+    <div class="led-summary__row"><span>Підсвітка</span><span>${typeLabel}</span></div>
+    <div class="led-summary__row"><span>Форма</span><span>${shapeLabel}</span></div>
+    <div class="led-summary__row"><span>Розмір</span><span>${dimText}</span></div>
     <div class="led-summary__row"><span>Колір</span><span>${lightLabel}</span></div>
     <div class="led-summary__row"><span>Опції</span><span>${optLabels}</span></div>
     <div class="led-summary__row"><span>Кількість</span><span>${state.qty} шт</span></div>
   `;
+
+  drawPreview();
 
   document.getElementById('priceBreakdown').innerHTML = `
     <div class="led-breakdown-row"><span>Дзеркало з опціями:</span><span>${mirrorTotal.toLocaleString('uk-UA')} грн</span></div>
@@ -221,7 +306,7 @@ function recalc() {
   document.getElementById('totalPrice').textContent = total.toLocaleString('uk-UA') + ' грн';
 
   // Зберігаємо для замовлення
-  window._ledOrderData = { typeLabel, lightLabel, optLabels, unitPrice, qty: state.qty, mirrorTotal, mountingCost, deliveryCost, total };
+  window._ledOrderData = { typeLabel, shapeLabel, dimText, lightLabel, optLabels, unitPrice, qty: state.qty, mirrorTotal, mountingCost, deliveryCost, total };
 }
 
 // Кількість
@@ -244,10 +329,22 @@ document.querySelectorAll('input[name="mirrorType"]').forEach(r => {
 });
 document.querySelector('.led-type-card[data-type="back"]')?.classList.add('selected');
 
+// Форма
+document.querySelectorAll('input[name="shape"]').forEach(r => {
+  r.addEventListener('change', (e) => {
+    state.shape = e.target.value;
+    document.querySelectorAll('.led-shape-grid .led-type-card').forEach(c => c.classList.remove('selected'));
+    e.target.closest('.led-type-card')?.classList.add('selected');
+    updateSizeUI();
+    recalc();
+  });
+});
+document.querySelector('.led-shape-grid .led-type-card[data-shape="rect"]')?.classList.add('selected');
+
 // Розмір
 ['ledW', 'ledH'].forEach(id => {
   document.getElementById(id).addEventListener('input', (e) => {
-    if (id === 'ledW') state.W = parseInt(e.target.value) || 400;
+    if (id === 'ledW') { state.W = parseInt(e.target.value) || 400; if (state.shape === 'circle') state.H = state.W; }
     else state.H = parseInt(e.target.value) || 600;
     recalc();
   });
@@ -274,7 +371,9 @@ document.getElementById('ledOrderBtn').addEventListener('click', () => {
   document.getElementById('ledOrderSummary').innerHTML = `
     <table class="order-table">
       <tbody>
-        <tr><td>Тип</td><td>${d.typeLabel}</td></tr>
+        <tr><td>Підсвітка</td><td>${d.typeLabel}</td></tr>
+        <tr><td>Форма</td><td>${d.shapeLabel}</td></tr>
+        <tr><td>Розмір</td><td>${d.dimText}</td></tr>
         <tr><td>Колір</td><td>${d.lightLabel}</td></tr>
         <tr><td>Опції</td><td>${d.optLabels}</td></tr>
         <tr><td>Кількість</td><td>${d.qty} шт</td></tr>
@@ -302,6 +401,7 @@ document.getElementById('submitLedOrder').addEventListener('click', () => {
 });
 
 // Старт
+updateSizeUI();
 recalc();
 </script>
 
@@ -340,6 +440,11 @@ recalc();
   #ledCalc .led-type-card input { display: none; }
   #ledCalc .led-type-card__img { font-size: 2.5rem; }
   #ledCalc .led-type-card span { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+  #ledCalc .led-type-card small { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; line-height: 1.3; }
+  #ledCalc .led-shape-grid { grid-template-columns: repeat(3, 1fr); }
+  #ledCalc .led-shape-grid .led-type-card { padding: 14px 8px; }
+  #ledCalc .led-shape-grid .led-type-card__img { font-size: 1.8rem; }
+  #ledCalc .led-shape-grid span { font-size: 0.78rem; }
   #ledCalc .led-type-card.selected, #ledCalc .led-type-card:has(input:checked) {
     border-color: var(--gold);
     background: var(--gold-pale);
@@ -453,6 +558,17 @@ recalc();
 
   /* Правий блок */
   #ledCalc .led-calc__right { position: sticky; top: 90px; display: flex; flex-direction: column; }
+
+  #ledCalc .led-preview-box {
+    background: var(--bg-gray);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: center;
+  }
+  #ledCalc #ledPreview { width: 180px; height: 180px; display: block; }
 
   #ledCalc .led-summary {
     background: var(--white);
