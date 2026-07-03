@@ -12,33 +12,13 @@ const cfg = JSON.stringify(ledCalcConfig);
       <div class="led-type-grid">
         <label class="led-type-card" data-type="back">
           <input type="radio" name="mirrorType" value="back" checked />
-          <svg class="led-type-card__icon" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <defs>
-              <filter id="fb-back" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5"/></filter>
-              <radialGradient id="mg-back" cx="38%" cy="34%" r="75%">
-                <stop offset="0%" stop-color="#f2f1ec"/><stop offset="60%" stop-color="#d7d5cf"/><stop offset="100%" stop-color="#c2c0ba"/>
-              </radialGradient>
-            </defs>
-            <circle cx="48" cy="48" r="34" fill="#ffcf70" opacity="0.8" filter="url(#fb-back)"/>
-            <circle cx="48" cy="48" r="28" fill="url(#mg-back)" stroke="#cfcabf" stroke-width="2"/>
-            <ellipse cx="40" cy="38" rx="10" ry="7" fill="#ffffff" opacity="0.45"/>
-          </svg>
+          <img class="led-type-card__photo" src="/led-back.png" alt="Фонова LED-підсвітка" loading="lazy" />
           <span>ФОНОВА</span>
           <small>Світло по контуру ззаду</small>
         </label>
         <label class="led-type-card" data-type="front">
           <input type="radio" name="mirrorType" value="front" />
-          <svg class="led-type-card__icon" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <defs>
-              <filter id="fb-front" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.6"/></filter>
-              <radialGradient id="mg-front" cx="38%" cy="34%" r="75%">
-                <stop offset="0%" stop-color="#f2f1ec"/><stop offset="60%" stop-color="#d7d5cf"/><stop offset="100%" stop-color="#c2c0ba"/>
-              </radialGradient>
-            </defs>
-            <circle cx="48" cy="48" r="30" fill="url(#mg-front)" stroke="#cfcabf" stroke-width="2"/>
-            <circle cx="48" cy="48" r="22" fill="none" stroke="#ffcf70" stroke-width="4" opacity="0.95" filter="url(#fb-front)"/>
-            <ellipse cx="40" cy="38" rx="9" ry="6" fill="#ffffff" opacity="0.4"/>
-          </svg>
+          <img class="led-type-card__photo" src="/led-front.png" alt="Фронтальна LED-підсвітка" loading="lazy" />
           <span>ФРОНТАЛЬНА</span>
           <small>Світло на лицьовій частині</small>
         </label>
@@ -444,6 +424,13 @@ recalc();
   #ledCalc .led-type-card span { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
   #ledCalc .led-type-card small { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; line-height: 1.3; }
   #ledCalc .led-type-card__icon { width: 68px; height: 68px; display: block; }
+  #ledCalc .led-type-card__photo {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+  }
   #ledCalc .led-shape-grid { grid-template-columns: repeat(2, 1fr); }
   #ledCalc .led-shape-grid .led-type-card { padding: 14px 8px; }
   #ledCalc .led-shape-grid .led-type-card__img { font-size: 1.8rem; }
