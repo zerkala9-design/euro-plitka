@@ -15,33 +15,33 @@ a { text-decoration: none; color: inherit; }
   --font-body:    'Inter', system-ui, sans-serif;
   --font:         var(--font-body);
 
-  /* Кольорова схема — СВІТЛА */
+  /* Кольорова схема — ЧОРНО-БІЛА */
   --white:        #ffffff;
-  --bg:           #fafaf8;
-  --bg-gray:      #f4f3f0;
+  --bg:           #fafafa;
+  --bg-gray:      #f2f2f2;
   --bg-card:      #ffffff;
-  --bg-input:     #f9f8f6;
-  --bg-dark:      #1a1810;
+  --bg-input:     #f7f7f7;
+  --bg-dark:      #111111;
 
   /* Текст */
-  --text:         #1a1810;
-  --text-mid:     #3d3b33;
-  --text-muted:   #6b6860;
+  --text:         #111111;
+  --text-mid:     #3a3a3a;
+  --text-muted:   #6e6e6e;
 
-  /* Золото */
-  --gold:         #b89244;
-  --gold-light:   #d4aa5a;
-  --gold-pale:    #fdf6e7;
-  --gold-border:  #e8d49a;
-  --border-gold:  #e8d49a;
+  /* Акцент — чорний замість золота */
+  --gold:         #111111;
+  --gold-light:   #3a3a3a;
+  --gold-pale:    #f0f0f0;
+  --gold-border:  #cfcfcf;
+  --border-gold:  #cfcfcf;
 
   /* Межі */
-  --border:       #e8e6e0;
+  --border:       #e4e4e4;
 
   /* Тіні */
-  --shadow:       0 1px 4px rgba(26,24,16,0.08);
-  --shadow-md:    0 4px 16px rgba(26,24,16,0.10);
-  --shadow-lg:    0 8px 40px rgba(26,24,16,0.13);
+  --shadow:       0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md:    0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:    0 8px 40px rgba(0,0,0,0.14);
 
   /* Радіуси */
   --radius-sm:    6px;
@@ -156,7 +156,7 @@ p { color: var(--text-mid); }
   border-color: var(--text);
 }
 .btn--dark:hover {
-  background: #2d2b22;
+  background: #2a2a2a;
   transform: translateY(-1px);
 }
 
@@ -229,7 +229,7 @@ p { color: var(--text-mid); }
 
 /* ===== CTA BANNER ===== */
 .cta-banner {
-  background: linear-gradient(135deg, #1a1810 0%, #2a2618 60%, #1a1810 100%);
+  background: linear-gradient(135deg, #111111 0%, #262626 60%, #111111 100%);
   padding: 80px 0;
   text-align: center;
 }
