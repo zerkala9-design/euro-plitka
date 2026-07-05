@@ -242,7 +242,8 @@ function recalc() {
   });
   const unitPrice = base + optionsTotal;
   const mirrorTotal = unitPrice * state.qty;
-  const mountingCost = state.mounting ? CFG.mounting * state.qty : 0;
+  // Монтаж — 35% від вартості дзеркал
+  const mountingCost = state.mounting ? Math.round(mirrorTotal * CFG.mountingPercent) : 0;
   const deliveryCost = state.delivery ? CFG.delivery : 0;
   const total = mirrorTotal + mountingCost + deliveryCost;
 
@@ -265,7 +266,7 @@ function recalc() {
 
   document.getElementById('priceBreakdown').innerHTML = `
     <div class="led-breakdown-row"><span>Дзеркало з опціями:</span><span>${mirrorTotal.toLocaleString('uk-UA')} грн</span></div>
-    <div class="led-breakdown-row"><span>Монтаж:</span><span>${mountingCost ? mountingCost.toLocaleString('uk-UA') + ' грн' : '0 грн'}</span></div>
+    <div class="led-breakdown-row"><span>Монтаж (35%):</span><span>${mountingCost ? mountingCost.toLocaleString('uk-UA') + ' грн' : '0 грн'}</span></div>
     <div class="led-breakdown-row"><span>Доставка:</span><span>${deliveryCost ? deliveryCost.toLocaleString('uk-UA') + ' грн' : '0 грн'}</span></div>
   `;
 

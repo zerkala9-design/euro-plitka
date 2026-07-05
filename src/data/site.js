@@ -42,7 +42,9 @@ export const ledCalcConfig = {
   // Фронтальна ~×1.2 (уточнити за прайсом).
   rates: {
     back:  { perM2: 2190, perM: 960 },
-    front: { perM2: 2630, perM: 1150 },
+    // Фронтальна (Модель 4): 2600 грн/м² + 1630 грн/м — відтворює
+    // 800×800=6880, 1200×800=9010, 1400×1000=11480 з похибкою <0.5%.
+    front: { perM2: 2600, perM: 1630 },
   },
   priceRound: 10,
   lightColors: [
@@ -54,8 +56,8 @@ export const ledCalcConfig = {
     { id: 'heat',   label: 'Підігрів', price: 400 },
     { id: 'sensor', label: 'Сенсор',   price: 300 },
   ],
-  mounting: 500,
-  delivery: 200,
+  mountingPercent: 0.35,  // монтаж = 35% від вартості дзеркала
+  delivery: 1500,         // доставка — фіксовано 1500 грн
   minSize: 300,
   maxSize: 2000,
   defaultW: 400,
