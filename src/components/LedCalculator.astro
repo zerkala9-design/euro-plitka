@@ -193,19 +193,25 @@ CFG.options.forEach(opt => {
   optGrid.appendChild(wrap);
 });
 
-// Площа для розрахунку вартості (см²).
-// Кругле дзеркало вирізається з квадратного листа, тож рахуємо за
-// описаним квадратом (діаметр²) — це враховує відходи скла.
-function areaCm2() {
-  const w = state.W / 10;
-  const h = (state.shape === 'circle' ? state.W : state.H) / 10;
-  return w * h;
+// Геометрія дзеркала в метрах.
+// Кругле дзеркало вирізається з квадратного листа → площа за описаним
+// квадратом (діаметр²); LED-стрічка йде по колу → периметр = π·D.
+function geometry() {
+  const Wm = state.W / 1000;
+  const Hm = (state.shape === 'circle' ? state.W : state.H) / 1000;
+  if (state.shape === 'circle') {
+    return { areaM2: Wm * Wm, perimM: Math.PI * Wm };
+  }
+  return { areaM2: Wm * Hm, perimM: 2 * (Wm + Hm) };
 }
 
-// Ціна дзеркала
+// Ціна дзеркала = площа × тариф/м² + периметр × тариф/м (LED-стрічка).
 function mirrorPrice() {
-  const ratePerCm2 = state.type === 'back' ? CFG.pricePerCm2.back : CFG.pricePerCm2.front;
-  return Math.round(areaCm2() * ratePerCm2);
+  const { areaM2, perimM } = geometry();
+  const r = CFG.rates[state.type] || CFG.rates.back;
+  const raw = areaM2 * r.perM2 + perimM * r.perM;
+  const step = CFG.priceRound || 1;
+  return Math.round(raw / step) * step;
 }
 
 // Превʼю — реальне фото дзеркала, яке замовляють

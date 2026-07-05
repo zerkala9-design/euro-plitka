@@ -36,7 +36,15 @@ export const tileCalcConfig = {
 };
 
 export const ledCalcConfig = {
-  pricePerCm2: { back: 0.875, front: 1.05 },
+  // Модель ціни: площа(м²) × perM2 + периметр(м) × perM.
+  // Виведено з реальних цін (фонова: 2190 грн/м² + 960 грн/м периметру —
+  // відтворює 600×600=3120, 1000×1000=6030, 2000×1000=10140 з похибкою <1%).
+  // Фронтальна ~×1.2 (уточнити за прайсом).
+  rates: {
+    back:  { perM2: 2190, perM: 960 },
+    front: { perM2: 2630, perM: 1150 },
+  },
+  priceRound: 10,
   lightColors: [
     { id: 'warm',    label: 'Тепле 3000K',     color: '#ffd580' },
     { id: 'neutral', label: 'Нейтральне 4000K', color: '#fff5cc' },
