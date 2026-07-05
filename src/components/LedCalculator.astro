@@ -405,8 +405,9 @@ recalc();
   #ledCalc .led-type-card__icon { width: 68px; height: 68px; display: block; }
   #ledCalc .led-type-card__photo {
     width: 100%;
-    height: 160px;
-    object-fit: cover;
+    height: auto;
+    max-height: 260px;
+    object-fit: contain;
     border-radius: 10px;
     display: block;
     background: var(--bg-gray);
