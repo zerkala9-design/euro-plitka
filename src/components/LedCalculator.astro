@@ -53,14 +53,14 @@ const cfg = JSON.stringify(ledCalcConfig);
         <label class="led-size-field" id="fieldW">
           <span id="labelW">Ширина (мм)</span>
           <div class="led-size-input">
-            <input type="number" id="ledW" value="400" min="200" max="2000" step="10" />
+            <input type="number" id="ledW" value="400" min="300" max="2000" step="10" />
             <span>мм</span>
           </div>
         </label>
         <label class="led-size-field" id="fieldH">
           <span>Висота (мм)</span>
           <div class="led-size-input">
-            <input type="number" id="ledH" value="600" min="200" max="2000" step="10" />
+            <input type="number" id="ledH" value="600" min="300" max="2000" step="10" />
             <span>мм</span>
           </div>
         </label>
@@ -302,10 +302,26 @@ document.querySelectorAll('input[name="shape"]').forEach(r => {
 document.querySelector('.led-shape-grid .led-type-card[data-shape="rect"]')?.classList.add('selected');
 
 // Розмір
+const clampSize = (v, fallback) => {
+  const n = parseInt(v);
+  if (!n || isNaN(n)) return fallback;
+  return Math.min(CFG.maxSize, Math.max(CFG.minSize, n));
+};
 ['ledW', 'ledH'].forEach(id => {
-  document.getElementById(id).addEventListener('input', (e) => {
-    if (id === 'ledW') { state.W = parseInt(e.target.value) || 400; if (state.shape === 'circle') state.H = state.W; }
-    else state.H = parseInt(e.target.value) || 600;
+  const inp = document.getElementById(id);
+  // живий перерахунок під час набору (без жорсткого затискання, щоб не заважати друкувати)
+  inp.addEventListener('input', (e) => {
+    if (id === 'ledW') { state.W = parseInt(e.target.value) || CFG.defaultW; if (state.shape === 'circle') state.H = state.W; }
+    else state.H = parseInt(e.target.value) || CFG.defaultH;
+    recalc();
+  });
+  // затискаємо у допустимий діапазон, коли користувач залишає поле
+  inp.addEventListener('change', (e) => {
+    const fallback = id === 'ledW' ? CFG.defaultW : CFG.defaultH;
+    const v = clampSize(e.target.value, fallback);
+    e.target.value = v;
+    if (id === 'ledW') { state.W = v; if (state.shape === 'circle') state.H = v; }
+    else state.H = v;
     recalc();
   });
 });
