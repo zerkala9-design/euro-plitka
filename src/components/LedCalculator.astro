@@ -405,15 +405,16 @@ recalc();
   #ledCalc .led-type-card__icon { width: 68px; height: 68px; display: block; }
   #ledCalc .led-type-card__photo {
     width: 100%;
-    height: 210px;
+    height: 160px;
     object-fit: cover;
     border-radius: 10px;
     display: block;
     background: var(--bg-gray);
   }
+  #ledCalc .led-type-grid:not(.led-shape-grid) .led-type-card { padding: 12px; gap: 6px; }
   #ledCalc .led-shape-grid { grid-template-columns: repeat(2, 1fr); }
-  #ledCalc .led-shape-grid .led-type-card { padding: 16px 8px; }
-  #ledCalc .led-shape-ico { width: 44px; height: 44px; color: var(--text-muted); transition: color 0.2s; }
+  #ledCalc .led-shape-grid .led-type-card { padding: 10px 8px; gap: 5px; }
+  #ledCalc .led-shape-ico { width: 34px; height: 34px; color: var(--text-muted); transition: color 0.2s; }
   #ledCalc .led-shape-grid .led-type-card:has(input:checked) .led-shape-ico { color: var(--gold); }
   #ledCalc .led-shape-grid span { font-size: 0.78rem; }
   #ledCalc .led-type-card.selected, #ledCalc .led-type-card:has(input:checked) {
@@ -449,10 +450,10 @@ recalc();
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 14px 8px;
+    gap: 6px;
+    padding: 9px 8px;
     border: 2px solid var(--border);
-    border-radius: 12px;
+    border-radius: 10px;
     cursor: pointer;
     transition: border-color 0.2s, background 0.2s;
     text-align: center;
@@ -462,11 +463,11 @@ recalc();
   #ledCalc .led-light-card:hover { border-color: var(--gold-border); }
   #ledCalc .led-light-card:has(input:checked) { border-color: var(--gold); background: var(--gold-pale); }
   #ledCalc .led-light-swatch {
-    width: 44px; height: 22px;
+    width: 38px; height: 18px;
     border-radius: 5px;
     border: 1px solid rgba(0,0,0,0.12);
   }
-  #ledCalc .led-light-name { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-mid); }
+  #ledCalc .led-light-name { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-mid); }
 
   /* Опції */
   #ledCalc .led-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
