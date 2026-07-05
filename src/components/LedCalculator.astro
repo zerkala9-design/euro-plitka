@@ -206,9 +206,11 @@ function geometry() {
 }
 
 // Ціна дзеркала = площа × тариф/м² + периметр × тариф/м (LED-стрічка).
+// Тарифи залежать від форми (прямокутник/коло) та типу підсвітки.
 function mirrorPrice() {
   const { areaM2, perimM } = geometry();
-  const r = CFG.rates[state.type] || CFG.rates.back;
+  const shapeRates = CFG.rates[state.shape === 'circle' ? 'circle' : 'rect'];
+  const r = shapeRates[state.type] || shapeRates.back;
   const raw = areaM2 * r.perM2 + perimM * r.perM;
   const step = CFG.priceRound || 1;
   return Math.round(raw / step) * step;
