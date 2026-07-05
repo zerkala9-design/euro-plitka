@@ -75,26 +75,15 @@ const cfg = JSON.stringify(ledCalcConfig);
       <div class="led-options-grid" id="optionsGrid"></div>
     </div>
 
-    <!-- 6. Кількість -->
-    <div class="led-step">
-      <h3 class="led-step__title">6. Кількість</h3>
-      <div class="led-qty">
-        <button class="led-qty__btn" id="qtyMinus">−</button>
-        <span class="led-qty__val" id="qtyVal">1</span>
-        <button class="led-qty__btn" id="qtyPlus">+</button>
-        <span class="led-qty__unit">шт</span>
-      </div>
-    </div>
-
-    <!-- 7 & 8. Монтаж і доставка -->
+    <!-- 6 & 7. Монтаж і доставка -->
     <div class="led-step">
       <div class="led-service-row">
         <div class="led-service">
-          <h3 class="led-step__title">7. Монтаж</h3>
+          <h3 class="led-step__title">6. Монтаж</h3>
           <button class="btn btn--ghost led-toggle" id="toggleMounting">Додати монтаж</button>
         </div>
         <div class="led-service">
-          <h3 class="led-step__title">8. Доставка Київ</h3>
+          <h3 class="led-step__title">7. Доставка Київ</h3>
           <button class="btn btn--ghost led-toggle" id="toggleDelivery">Додати доставку</button>
         </div>
       </div>
@@ -109,6 +98,15 @@ const cfg = JSON.stringify(ledCalcConfig);
     <div class="led-summary">
       <h3>Ваше дзеркало</h3>
       <div class="led-summary__list" id="summaryList"></div>
+      <div class="led-summary__row led-summary__qtyrow">
+        <span>Кількість</span>
+        <div class="led-qty">
+          <button class="led-qty__btn" id="qtyMinus" aria-label="Менше">−</button>
+          <span class="led-qty__val" id="qtyVal">1</span>
+          <button class="led-qty__btn" id="qtyPlus" aria-label="Більше">+</button>
+          <span class="led-qty__unit">шт</span>
+        </div>
+      </div>
     </div>
 
     <div class="led-price-box">
@@ -280,7 +278,6 @@ function recalc() {
     <div class="led-summary__row"><span>Розмір</span><span>${dimText}</span></div>
     <div class="led-summary__row"><span>Колір</span><span>${lightLabel}</span></div>
     <div class="led-summary__row"><span>Опції</span><span>${optLabels}</span></div>
-    <div class="led-summary__row"><span>Кількість</span><span>${state.qty} шт</span></div>
   `;
 
   drawPreview();
@@ -582,6 +579,11 @@ recalc();
     border-bottom: 1px solid var(--border);
   }
   #ledCalc .led-summary__row:last-child { border-bottom: none; }
+  #ledCalc .led-summary__qtyrow { align-items: center; padding-top: 12px; }
+  #ledCalc .led-summary__qtyrow .led-qty { gap: 10px; }
+  #ledCalc .led-summary__qtyrow .led-qty__btn { width: 30px; height: 30px; font-size: 1.05rem; }
+  #ledCalc .led-summary__qtyrow .led-qty__val { font-size: 1.05rem; min-width: 20px; }
+  #ledCalc .led-summary__qtyrow .led-qty__unit { font-size: 0.85rem; }
   #ledCalc .led-summary__row span:first-child { color: var(--text-muted); }
   #ledCalc .led-summary__row span:last-child { font-weight: 700; color: var(--text); text-align: right; }
 
