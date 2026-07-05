@@ -193,12 +193,12 @@ CFG.options.forEach(opt => {
   optGrid.appendChild(wrap);
 });
 
-// Площа за формою (см²)
+// Площа для розрахунку вартості (см²).
+// Кругле дзеркало вирізається з квадратного листа, тож рахуємо за
+// описаним квадратом (діаметр²) — це враховує відходи скла.
 function areaCm2() {
   const w = state.W / 10;
   const h = (state.shape === 'circle' ? state.W : state.H) / 10;
-  if (state.shape === 'circle') return Math.PI * (w / 2) * (w / 2);
-  if (state.shape === 'oval')   return Math.PI * (w / 2) * (h / 2);
   return w * h;
 }
 
