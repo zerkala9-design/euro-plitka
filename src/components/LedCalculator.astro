@@ -31,12 +31,16 @@ const cfg = JSON.stringify(ledCalcConfig);
       <div class="led-type-grid led-shape-grid">
         <label class="led-type-card" data-shape="rect">
           <input type="radio" name="shape" value="rect" checked />
-          <div class="led-type-card__img">▭</div>
+          <svg class="led-shape-ico" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="8" y="12" width="32" height="24" rx="4" stroke="currentColor" stroke-width="2.5"/>
+          </svg>
           <span>Прямокутник</span>
         </label>
         <label class="led-type-card" data-shape="circle">
           <input type="radio" name="shape" value="circle" />
-          <div class="led-type-card__img">⬤</div>
+          <svg class="led-shape-ico" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="24" cy="24" r="15" stroke="currentColor" stroke-width="2.5"/>
+          </svg>
           <span>Коло</span>
         </label>
       </div>
@@ -93,7 +97,7 @@ const cfg = JSON.stringify(ledCalcConfig);
   <!-- Підсумок праворуч -->
   <div class="led-calc__right">
     <div class="led-preview-box">
-      <svg id="ledPreview" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Превʼю дзеркала"></svg>
+      <img id="ledPreviewImg" src="/led-back-rect.png" alt="Ваше дзеркало" />
     </div>
     <div class="led-summary">
       <h3>Ваше дзеркало</h3>
@@ -207,38 +211,12 @@ function mirrorPrice() {
   return Math.round(areaCm2() * ratePerCm2);
 }
 
-// Превʼю форми з підсвіткою
+// Превʼю — реальне фото дзеркала, яке замовляють
 function drawPreview() {
-  const el = document.getElementById('ledPreview');
+  const el = document.getElementById('ledPreviewImg');
   if (!el) return;
-  const lc = (CFG.lightColors.find(l => l.id === state.light) || {}).color || '#ffd580';
-  const VW = 220, VH = 220, cx = 110, cy = 110;
-  const w = state.W, h = (state.shape === 'circle' ? state.W : state.H);
-  const scale = 140 / Math.max(w, h);
-  const sw = Math.max(20, w * scale), sh = Math.max(20, h * scale);
-  const back = state.type === 'back';
-
-  const shapeEl = (dw, dh, attrs) => {
-    if (state.shape === 'circle' || state.shape === 'oval')
-      return `<ellipse cx="${cx}" cy="${cy}" rx="${(dw / 2).toFixed(1)}" ry="${(dh / 2).toFixed(1)}" ${attrs}/>`;
-    return `<rect x="${(cx - dw / 2).toFixed(1)}" y="${(cy - dh / 2).toFixed(1)}" width="${dw.toFixed(1)}" height="${dh.toFixed(1)}" rx="7" ${attrs}/>`;
-  };
-
-  let inner = '';
-  if (back) inner += shapeEl(sw * 1.28, sh * 1.28, `fill="${lc}" opacity="0.65" filter="url(#ledGlow)"`);
-  inner += shapeEl(sw, sh, `fill="url(#ledMir)" stroke="#cfcabf" stroke-width="2"`);
-  if (!back) inner += shapeEl(sw - 12, sh - 12, `fill="none" stroke="${lc}" stroke-width="4" opacity="0.95" filter="url(#ledGlowSoft)"`);
-
-  el.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
-  el.innerHTML = `
-    <defs>
-      <filter id="ledGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="9"/></filter>
-      <filter id="ledGlowSoft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2"/></filter>
-      <linearGradient id="ledMir" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#edece7"/><stop offset="50%" stop-color="#cfcdc7"/><stop offset="100%" stop-color="#e4e1da"/>
-      </linearGradient>
-    </defs>
-    ${inner}`;
+  const shape = state.shape === 'circle' ? 'circle' : 'rect';
+  el.src = `/led-${state.type}-${shape}.png`;
 }
 
 // Адаптація полів розміру під форму
@@ -427,14 +405,15 @@ recalc();
   #ledCalc .led-type-card__icon { width: 68px; height: 68px; display: block; }
   #ledCalc .led-type-card__photo {
     width: 100%;
-    height: 150px;
-    object-fit: cover;
+    height: auto;
+    object-fit: contain;
     border-radius: 10px;
     display: block;
   }
   #ledCalc .led-shape-grid { grid-template-columns: repeat(2, 1fr); }
-  #ledCalc .led-shape-grid .led-type-card { padding: 14px 8px; }
-  #ledCalc .led-shape-grid .led-type-card__img { font-size: 1.8rem; }
+  #ledCalc .led-shape-grid .led-type-card { padding: 16px 8px; }
+  #ledCalc .led-shape-ico { width: 44px; height: 44px; color: var(--text-muted); transition: color 0.2s; }
+  #ledCalc .led-shape-grid .led-type-card:has(input:checked) .led-shape-ico { color: var(--gold); }
   #ledCalc .led-shape-grid span { font-size: 0.78rem; }
   #ledCalc .led-type-card.selected, #ledCalc .led-type-card:has(input:checked) {
     border-color: var(--gold);
@@ -554,12 +533,13 @@ recalc();
     background: var(--bg-gray);
     border: 1.5px solid var(--border);
     border-radius: 12px;
-    padding: 16px;
+    padding: 0;
     margin-bottom: 16px;
     display: flex;
     justify-content: center;
+    overflow: hidden;
   }
-  #ledCalc #ledPreview { width: 180px; height: 180px; display: block; }
+  #ledCalc #ledPreviewImg { width: 100%; height: auto; display: block; border-radius: 11px; }
 
   #ledCalc .led-summary {
     background: var(--white);
