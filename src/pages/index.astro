@@ -9,9 +9,11 @@ import TileCalculator from '../components/TileCalculator.astro';
 >
 
   <!-- HERO -->
-  <section class="hero">
-    <div class="hero__bg"></div>
+  <section class="hero" id="hero">
+    <div class="hero__base"></div>
     <div class="hero__overlay"></div>
+    <div class="hero__reveal" id="heroReveal"></div>
+    <canvas class="hero__mask" id="heroMaskCanvas" aria-hidden="true"></canvas>
     <div class="container hero__inner">
       <div class="hero__content">
         <div class="badge badge--dark">Виробник у Києві</div>
@@ -199,10 +201,13 @@ import TileCalculator from '../components/TileCalculator.astro';
     align-items: center;
     overflow: hidden;
     color: #fff;
+    background: #0d0b07;
   }
-  .hero__bg {
-    position: absolute; inset: 0;
+  /* Базовий шар — затемнений інтерʼєр */
+  .hero__base {
+    position: absolute; inset: 0; z-index: 1;
     background: url('/hero-interior.jpg') center/cover no-repeat;
+    filter: brightness(0.5) saturate(0.85);
     transform: scale(1.05);
     animation: heroZoom 18s ease-in-out infinite alternate;
   }
@@ -210,13 +215,31 @@ import TileCalculator from '../components/TileCalculator.astro';
     from { transform: scale(1.05); }
     to   { transform: scale(1.15); }
   }
+  /* Затемнення для читабельності тексту (над базою, під плямою) */
   .hero__overlay {
-    position: absolute; inset: 0;
+    position: absolute; inset: 0; z-index: 2;
     background:
-      linear-gradient(90deg, rgba(20,18,12,0.92) 0%, rgba(20,18,12,0.7) 45%, rgba(20,18,12,0.25) 100%),
-      linear-gradient(0deg, rgba(20,18,12,0.6) 0%, transparent 40%);
+      linear-gradient(90deg, rgba(20,18,12,0.9) 0%, rgba(20,18,12,0.65) 45%, rgba(20,18,12,0.2) 100%),
+      linear-gradient(0deg, rgba(20,18,12,0.55) 0%, transparent 40%);
   }
-  .hero__inner { position: relative; z-index: 2; padding: 100px 24px; }
+  /* Шар-«ліхтарик» — яскрава версія, видима лише всередині плями за курсором */
+  .hero__reveal {
+    position: absolute; inset: 0; z-index: 3;
+    background: url('/hero-interior.jpg') center/cover no-repeat;
+    filter: brightness(1.28) saturate(1.18) contrast(1.05);
+    transform: scale(1.05);
+    pointer-events: none;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+    /* до руху миші — нічого не показуємо */
+    -webkit-mask-image: none; mask-image: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .hero__reveal.is-active { opacity: 1; }
+  .hero__mask { position: absolute; inset: 0; pointer-events: none; display: none; }
+  .hero__inner { position: relative; z-index: 5; padding: 100px 24px; }
+  .hero__title, .hero__text { text-shadow: 0 2px 24px rgba(0,0,0,0.5); }
   .hero__content { max-width: 620px; }
   .hero__title {
     margin: 22px 0 22px;
@@ -341,3 +364,66 @@ import TileCalculator from '../components/TileCalculator.astro';
     }
   }
 </style>
+
+<script>
+  // Курсорна «світлова пляма», що відкриває яскраву версію інтерʼєру
+  const SPOTLIGHT_R = 260;
+  const hero = document.getElementById('hero');
+  const reveal = document.getElementById('heroReveal');
+  const canvas = document.getElementById('heroMaskCanvas');
+
+  if (hero && reveal && canvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const ctx = canvas.getContext('2d');
+    const mouse = { x: -999, y: -999 };
+    const smooth = { x: -999, y: -999 };
+    let active = false;
+    let raf = 0;
+
+    const sizeCanvas = () => {
+      const r = hero.getBoundingClientRect();
+      canvas.width = Math.round(r.width);
+      canvas.height = Math.round(r.height);
+    };
+    sizeCanvas();
+    window.addEventListener('resize', sizeCanvas);
+
+    hero.addEventListener('mousemove', (e) => {
+      const r = hero.getBoundingClientRect();
+      mouse.x = e.clientX - r.left;
+      mouse.y = e.clientY - r.top;
+      if (!active) {
+        active = true;
+        smooth.x = mouse.x; smooth.y = mouse.y;
+        reveal.classList.add('is-active');
+      }
+    });
+    hero.addEventListener('mouseleave', () => {
+      active = false;
+      reveal.classList.remove('is-active');
+    });
+
+    const draw = () => {
+      if (active && canvas.width && canvas.height) {
+        smooth.x += (mouse.x - smooth.x) * 0.1;
+        smooth.y += (mouse.y - smooth.y) * 0.1;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const g = ctx.createRadialGradient(smooth.x, smooth.y, 0, smooth.x, smooth.y, SPOTLIGHT_R);
+        g.addColorStop(0,    'rgba(255,255,255,1)');
+        g.addColorStop(0.4,  'rgba(255,255,255,1)');
+        g.addColorStop(0.6,  'rgba(255,255,255,0.75)');
+        g.addColorStop(0.75, 'rgba(255,255,255,0.4)');
+        g.addColorStop(0.88, 'rgba(255,255,255,0.12)');
+        g.addColorStop(1,    'rgba(255,255,255,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(smooth.x, smooth.y, SPOTLIGHT_R, 0, Math.PI * 2);
+        ctx.fill();
+        const url = canvas.toDataURL();
+        reveal.style.webkitMaskImage = `url(${url})`;
+        reveal.style.maskImage = `url(${url})`;
+      }
+      raf = requestAnimationFrame(draw);
+    };
+    raf = requestAnimationFrame(draw);
+  }
+</script>
