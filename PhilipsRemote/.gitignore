@@ -1,0 +1,18 @@
+# Xcode / XcodeGen generated
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+build/
+.build/
+
+# macOS
+.DS_Store
+
+# SwiftPM
+Package.resolved
+
+# Generated Info.plists (produced by `xcodegen generate`)
+App/Resources/Info.plist
+Widget/Info.plist
+Watch/Info.plist
