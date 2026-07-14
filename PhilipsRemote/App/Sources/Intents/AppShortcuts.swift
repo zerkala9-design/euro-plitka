@@ -1,4 +1,5 @@
 import AppIntents
+import PhilipsKit
 
 /// Registers Siri phrases so users can control the TV hands‑free, e.g.
 /// "Turn on my TV with Philips Remote".
