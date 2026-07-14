@@ -97,7 +97,7 @@ public actor DiscoveryService {
     private nonisolated static func hostString(_ host: NWEndpoint.Host) -> String? {
         switch host {
         case .ipv4(let addr):
-            return addr.rawValue.map(String.init).joined(separator: ".")
+            return addr.rawValue.map { String($0) }.joined(separator: ".")
         case .name(let name, _):
             return name
         default:

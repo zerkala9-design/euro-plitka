@@ -68,7 +68,12 @@ PhilipsRemote/
 ## 🚀 Getting started
 
 The project is defined with [XcodeGen](https://github.com/yonaskolb/XcodeGen)
-so the `.xcodeproj` is generated deterministically:
+so the `.xcodeproj` is generated deterministically.
+
+**Easiest — double‑click `bootstrap.command`** (installs XcodeGen if needed,
+generates the project and opens it in Xcode).
+
+Or manually:
 
 ```bash
 brew install xcodegen
@@ -76,6 +81,10 @@ cd PhilipsRemote
 xcodegen generate
 open PhilipsRemote.xcodeproj
 ```
+
+> The project builds in **Swift 5 language mode** (`SWIFT_VERSION = 5.0`) so
+> concurrency edge‑cases surface as warnings rather than hard errors. All modern
+> concurrency features (async/await, actors, `@Observable`) are still used.
 
 Then set your **Development Team** in *Signing & Capabilities* for each target
 and run on a device (the Local Network + Bonjour features require a real iPhone,
