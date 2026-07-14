@@ -69,7 +69,7 @@ struct VoiceControlView: View {
                 .overlay(
                     Image(systemName: "mic.fill")
                         .font(.system(size: 44))
-                        .foregroundStyle(speech.isRecording ? .white : .tint)
+                        .foregroundStyle(speech.isRecording ? Color.white : Color.accentColor)
                 )
                 .shadow(color: .accentColor.opacity(0.5), radius: 16)
         }
