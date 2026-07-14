@@ -28,7 +28,7 @@ final class TVController {
     private(set) var isMuted = false
     private(set) var apps: [TVApp] = []
     private(set) var sources: [InputSource] = []
-    private(set) var ambilight = AmbilightState()
+    var ambilight = AmbilightState()
     private(set) var diagnostics: [DiagnosticSample] = []
     private(set) var currentAppName: String?
 
