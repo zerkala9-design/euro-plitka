@@ -52,16 +52,22 @@ public final class ATVConnection: @unchecked Sendable {
     private let _capturedRef: () -> SecCertificate?
 
     public func start() async throws {
+        var didResume = false
         try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
             connection.stateUpdateHandler = { [weak self] state in
                 switch state {
                 case .ready:
                     self?.serverCertificate = self?._capturedRef()
-                    cont.resume()
+                    if !didResume { didResume = true; cont.resume() }
                     self?.receiveLoop()
                 case .failed(let error):
-                    cont.resume(throwing: PhilipsError.unknown("TLS failed: \(error.localizedDescription)"))
+                    if !didResume {
+                        didResume = true
+                        cont.resume(throwing: PhilipsError.unknown("TLS failed: \(error.localizedDescription)"))
+                    }
+                    self?.messageContinuation?.finish()
                 case .cancelled:
+                    if !didResume { didResume = true; cont.resume(throwing: PhilipsError.tvOffline) }
                     self?.messageContinuation?.finish()
                 default:
                     break

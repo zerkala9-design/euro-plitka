@@ -1,13 +1,16 @@
 import Foundation
 import Security
-import CryptoKit
 import Network
+import Crypto
+import _CryptoExtras
+import X509
+import SwiftASN1
 
 /// Certificate + key material for the Android TV Remote TLS connections.
 ///
-/// Generates a persistent self-signed RSA identity (stored in the Keychain and
-/// reused across launches), exposes it as a `sec_identity_t` for the `Network`
-/// framework, and implements the pairing-secret hash.
+/// A persistent self‑signed RSA identity is generated with swift‑certificates
+/// (a valid X.509 cert — the hand‑rolled one was rejected by the TV), stored in
+/// the Keychain, and reused. Exposed as a `sec_identity_t` for `Network`.
 public enum ATVCrypto {
 
     private static let keyTag = "com.europlitka.philipsremote.atv.key".data(using: .utf8)!
@@ -19,64 +22,78 @@ public enum ATVCrypto {
         public let exponent: Data
     }
 
-    // MARK: - Load or create the client identity
+    // MARK: - Identity
 
     public static func loadOrCreateIdentity() throws -> Identity {
-        let privateKey = try loadOrCreatePrivateKey()
-        guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
-            throw PhilipsError.unknown("No public key")
-        }
-        guard let pubData = SecKeyCopyExternalRepresentation(publicKey, nil) as Data?,
-              let numbers = DER.parseRSAPublicKey(pubData) else {
-            throw PhilipsError.unknown("Can't read public key")
+        if let identity = try loadIdentityFromKeychain(),
+           let cert = copyCertificate(from: identity),
+           let numbers = publicKeyNumbers(from: cert) {
+            return Identity(secIdentity: identity, modulus: numbers.modulus, exponent: numbers.exponent)
         }
 
-        if let existing = try loadIdentityFromKeychain() {
-            return Identity(secIdentity: existing, modulus: numbers.modulus, exponent: numbers.exponent)
-        }
-        let certDER = try buildSelfSignedCertificate(privateKey: privateKey, publicKeyPKCS1: pubData)
+        let rsa = try _RSA.Signing.PrivateKey(keySize: .bits2048)
+        let certDER = try makeCertificate(rsa: rsa)
+        try importPrivateKey(rsa)
         try storeCertificate(certDER)
-        guard let created = try loadIdentityFromKeychain() else {
-            throw PhilipsError.unknown("Identity not found after store")
+
+        guard let identity = try loadIdentityFromKeychain(),
+              let cert = copyCertificate(from: identity),
+              let numbers = publicKeyNumbers(from: cert) else {
+            throw PhilipsError.unknown("Identity setup failed")
         }
-        return Identity(secIdentity: created, modulus: numbers.modulus, exponent: numbers.exponent)
+        return Identity(secIdentity: identity, modulus: numbers.modulus, exponent: numbers.exponent)
     }
 
-    /// Bridge a `SecIdentity` into a `Network` framework `sec_identity_t`.
     public static func secIdentity(_ identity: SecIdentity) -> sec_identity_t? {
         sec_identity_create(identity)
     }
 
-    // MARK: - Private key
+    // MARK: - Certificate (swift-certificates)
 
-    private static func loadOrCreatePrivateKey() throws -> SecKey {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassKey,
-            kSecAttrApplicationTag as String: keyTag,
-            kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
-            kSecReturnRef as String: true
-        ]
-        var item: CFTypeRef?
-        if SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess, let key = item {
-            return (key as! SecKey)
-        }
-        // Create a new permanent key.
-        let attrs: [String: Any] = [
-            kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
-            kSecAttrKeySizeInBits as String: 2048,
-            kSecPrivateKeyAttrs as String: [
-                kSecAttrIsPermanent as String: true,
-                kSecAttrApplicationTag as String: keyTag
-            ]
-        ]
-        var error: Unmanaged<CFError>?
-        guard let key = SecKeyCreateRandomKey(attrs as CFDictionary, &error) else {
-            throw PhilipsError.unknown("Key generation failed")
-        }
-        return key
+    private static func makeCertificate(rsa: _RSA.Signing.PrivateKey) throws -> Data {
+        let key = Certificate.PrivateKey(rsa)
+        let name = try DistinguishedName { CommonName("atvremote") }
+        let cert = try Certificate(
+            version: .v3,
+            serialNumber: Certificate.SerialNumber(),
+            publicKey: key.publicKey,
+            notValidBefore: Date().addingTimeInterval(-86_400),
+            notValidAfter: Date().addingTimeInterval(60 * 60 * 24 * 3650),
+            issuer: name,
+            subject: name,
+            signatureAlgorithm: .sha256WithRSAEncryption,
+            extensions: Certificate.Extensions {},
+            issuerPrivateKey: key
+        )
+        var serializer = DER.Serializer()
+        try serializer.serialize(cert)
+        return Data(serializer.serializedBytes)
     }
 
-    // MARK: - Certificate persistence / identity lookup
+    // MARK: - Keychain: key + certificate → identity
+
+    private static func importPrivateKey(_ rsa: _RSA.Signing.PrivateKey) throws {
+        let pkcs1 = ASN1.pkcs1PrivateKey(from: rsa.derRepresentation)
+        let attrs: [String: Any] = [
+            kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
+            kSecAttrKeyClass as String: kSecAttrKeyClassPrivate,
+            kSecAttrKeySizeInBits as String: 2048
+        ]
+        var error: Unmanaged<CFError>?
+        guard let key = SecKeyCreateWithData(pkcs1 as CFData, attrs as CFDictionary, &error) else {
+            throw PhilipsError.unknown("Key import failed")
+        }
+        let add: [String: Any] = [
+            kSecClass as String: kSecClassKey,
+            kSecAttrApplicationTag as String: keyTag,
+            kSecValueRef as String: key
+        ]
+        SecItemDelete(add as CFDictionary)
+        let status = SecItemAdd(add as CFDictionary, nil)
+        guard status == errSecSuccess || status == errSecDuplicateItem else {
+            throw PhilipsError.unknown("Key store failed (\(status))")
+        }
+    }
 
     private static func storeCertificate(_ der: Data) throws {
         guard let cert = SecCertificateCreateWithData(nil, der as CFData) else {
@@ -106,50 +123,20 @@ public enum ATVCrypto {
         return (item as! SecIdentity)
     }
 
-    // MARK: - Self-signed certificate builder
-
-    private static func buildSelfSignedCertificate(privateKey: SecKey, publicKeyPKCS1: Data) throws -> Data {
-        // OIDs
-        let sha256WithRSA = DER.sequence([DER.oid([0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x0B]), DER.null()])
-        let rsaEncryption = DER.sequence([DER.oid([0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01]), DER.null()])
-        // CN = "atvremote"  (OID 2.5.4.3)
-        let name = DER.sequence([DER.set([DER.sequence([DER.oid([0x55, 0x04, 0x03]), DER.utf8String("atvremote")])])])
-        let now = Date().addingTimeInterval(-86_400)
-        let far = Date().addingTimeInterval(60 * 60 * 24 * 3650)
-        let validity = DER.sequence([DER.utcTime(now), DER.utcTime(far)])
-        let spki = DER.sequence([rsaEncryption, DER.bitString(publicKeyPKCS1)])
-
-        let tbs = DER.sequence([
-            DER.explicit(0, DER.integer(2)),          // version v3
-            DER.integer(Int.random(in: 1...Int.max)), // serial
-            sha256WithRSA,
-            name,
-            validity,
-            name,
-            spki
-        ])
-
-        var error: Unmanaged<CFError>?
-        guard let signature = SecKeyCreateSignature(
-            privateKey, .rsaSignatureMessagePKCS1v15SHA256, tbs as CFData, &error
-        ) as Data? else {
-            throw PhilipsError.unknown("TBS signing failed")
-        }
-
-        return DER.sequence([tbs, sha256WithRSA, DER.bitString(signature)])
+    private static func copyCertificate(from identity: SecIdentity) -> SecCertificate? {
+        var cert: SecCertificate?
+        SecIdentityCopyCertificate(identity, &cert)
+        return cert
     }
 
-    // MARK: - Pairing secret
+    // MARK: - Public key numbers + pairing secret
 
-    /// Extract (modulus, exponent) from a server certificate seen during TLS.
     public static func publicKeyNumbers(from certificate: SecCertificate) -> (modulus: Data, exponent: Data)? {
         guard let key = SecCertificateCopyKey(certificate),
               let data = SecKeyCopyExternalRepresentation(key, nil) as Data? else { return nil }
-        return DER.parseRSAPublicKey(data)
+        return ASN1.parseRSAPublicKey(data)
     }
 
-    /// Compute the pairing secret and whether the code's checksum byte matches.
-    /// `code` is the 6-hex-character code shown on the TV.
     public static func pairingSecret(
         clientModulus: Data, clientExponent: Data,
         serverModulus: Data, serverExponent: Data,

@@ -1,86 +1,9 @@
 import Foundation
 
-/// Tiny DER (ASN.1) encoder + a minimal reader, just enough to hand-build a
-/// self-signed X.509 certificate and to parse an RSA public key
-/// (`SEQUENCE { modulus INTEGER, exponent INTEGER }`).
-enum DER {
-
-    // MARK: - Encoding
-
-    static func length(_ n: Int) -> Data {
-        if n < 0x80 { return Data([UInt8(n)]) }
-        var bytes: [UInt8] = []
-        var v = n
-        while v > 0 { bytes.insert(UInt8(v & 0xFF), at: 0); v >>= 8 }
-        return Data([0x80 | UInt8(bytes.count)] + bytes)
-    }
-
-    static func tlv(_ tag: UInt8, _ value: Data) -> Data {
-        Data([tag]) + length(value.count) + value
-    }
-
-    static func sequence(_ items: [Data]) -> Data {
-        tlv(0x30, items.reduce(Data(), +))
-    }
-
-    static func set(_ items: [Data]) -> Data {
-        tlv(0x31, items.reduce(Data(), +))
-    }
-
-    /// INTEGER from an unsigned big-endian magnitude (adds a leading 0x00 if the
-    /// high bit is set so it stays positive).
-    static func integer(_ magnitude: Data) -> Data {
-        var m = Array(magnitude)
-        while m.count > 1 && m.first == 0 { m.removeFirst() }
-        if let first = m.first, first & 0x80 != 0 { m.insert(0, at: 0) }
-        return tlv(0x02, Data(m))
-    }
-
-    static func integer(_ value: Int) -> Data {
-        var v = value
-        var bytes: [UInt8] = []
-        repeat { bytes.insert(UInt8(v & 0xFF), at: 0); v >>= 8 } while v != 0
-        if let first = bytes.first, first & 0x80 != 0 { bytes.insert(0, at: 0) }
-        return tlv(0x02, Data(bytes))
-    }
-
-    static func bitString(_ value: Data) -> Data {
-        tlv(0x03, Data([0x00]) + value)   // 0 unused bits
-    }
-
-    static func octetString(_ value: Data) -> Data { tlv(0x04, value) }
-    static func oid(_ bytes: [UInt8]) -> Data { tlv(0x06, Data(bytes)) }
-    static func null() -> Data { Data([0x05, 0x00]) }
-    static func utf8String(_ s: String) -> Data { tlv(0x0C, Data(s.utf8)) }
-    static func utcTime(_ date: Date) -> Data {
-        let f = DateFormatter()
-        f.dateFormat = "yyMMddHHmmss'Z'"
-        f.timeZone = TimeZone(identifier: "UTC")
-        f.locale = Locale(identifier: "en_US_POSIX")
-        return tlv(0x17, Data(f.string(from: date).utf8))
-    }
-    static func explicit(_ tag: UInt8, _ value: Data) -> Data {
-        tlv(0xA0 | tag, value)
-    }
-
-    // MARK: - Minimal reader (for RSAPublicKey)
-
-    /// Parse `SEQUENCE { INTEGER modulus, INTEGER exponent }` from PKCS#1 DER,
-    /// returning the raw unsigned magnitudes (leading 0x00 stripped).
-    static func parseRSAPublicKey(_ der: Data) -> (modulus: Data, exponent: Data)? {
-        var cursor = Cursor(der)
-        guard let seq = cursor.readTLV(), seq.tag == 0x30 else { return nil }
-        var inner = Cursor(seq.value)
-        guard let mod = inner.readTLV(), mod.tag == 0x02,
-              let exp = inner.readTLV(), exp.tag == 0x02 else { return nil }
-        return (strip(mod.value), strip(exp.value))
-    }
-
-    private static func strip(_ data: Data) -> Data {
-        var v = data
-        while v.count > 1 && v.first == 0 { v.removeFirst() }
-        return v
-    }
+/// A minimal DER (ASN.1) reader used to pull the RSA modulus/exponent out of a
+/// public key and to unwrap a PKCS#8 private key into PKCS#1. Certificate
+/// *building* is handled by swift‑certificates, so no encoder is needed here.
+enum ASN1 {
 
     /// A tiny DER TLV cursor.
     struct Cursor {
@@ -106,5 +29,40 @@ enum DER {
             i = end
             return (tag, value)
         }
+    }
+
+    private static func strip(_ data: Data) -> Data {
+        var v = data
+        while v.count > 1 && v.first == 0 { v.removeFirst() }
+        return v
+    }
+
+    /// Parse `SEQUENCE { INTEGER modulus, INTEGER exponent }` (PKCS#1 public key).
+    static func parseRSAPublicKey(_ der: Data) -> (modulus: Data, exponent: Data)? {
+        var cursor = Cursor(der)
+        guard let seq = cursor.readTLV(), seq.tag == 0x30 else { return nil }
+        var inner = Cursor(seq.value)
+        guard let mod = inner.readTLV(), mod.tag == 0x02,
+              let exp = inner.readTLV(), exp.tag == 0x02 else { return nil }
+        return (strip(mod.value), strip(exp.value))
+    }
+
+    /// Return the PKCS#1 `RSAPrivateKey` DER from either a raw PKCS#1 blob or a
+    /// PKCS#8 `PrivateKeyInfo` wrapper.
+    static func pkcs1PrivateKey(from der: Data) -> Data {
+        var cursor = Cursor(der)
+        guard let seq = cursor.readTLV(), seq.tag == 0x30 else { return der }
+        var inner = Cursor(seq.value)
+        guard let version = inner.readTLV(), version.tag == 0x02 else { return der }
+        // Peek the next element: SEQUENCE => PKCS#8, INTEGER => already PKCS#1.
+        guard let next = inner.readTLV() else { return der }
+        if next.tag == 0x02 {
+            return der                      // already PKCS#1 RSAPrivateKey
+        }
+        if next.tag == 0x30 {               // AlgorithmIdentifier → next is OCTET STRING
+            guard let octet = inner.readTLV(), octet.tag == 0x04 else { return der }
+            return octet.value              // the wrapped PKCS#1 key
+        }
+        return der
     }
 }
