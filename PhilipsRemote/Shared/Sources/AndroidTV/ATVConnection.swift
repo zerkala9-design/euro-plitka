@@ -26,10 +26,12 @@ public final class ATVConnection: @unchecked Sendable {
         sec_protocol_options_set_verify_block(
             tls.securityProtocolOptions,
             { _, trust, complete in
+                print("ATV: verify block called — accepting TV server cert")
                 let secTrust = sec_trust_copy_ref(trust).takeRetainedValue()
                 if let chain = SecTrustCopyCertificateChain(secTrust) as? [SecCertificate],
                    let leaf = chain.first {
                     captured = leaf
+                    print("ATV: captured TV cert")
                 }
                 complete(true)   // accept the TV's self-signed certificate
             },
