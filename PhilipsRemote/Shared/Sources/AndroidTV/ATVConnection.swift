@@ -20,7 +20,10 @@ public final class ATVConnection: @unchecked Sendable {
     public init(host: String, port: UInt16, identity: sec_identity_t) {
         let tls = NWProtocolTLS.Options()
         sec_protocol_options_set_local_identity(tls.securityProtocolOptions, identity)
+        // Force TLS 1.2: the client certificate is validated during the
+        // handshake (not post-handshake as in 1.3), which the TV accepts.
         sec_protocol_options_set_min_tls_protocol_version(tls.securityProtocolOptions, .TLSv12)
+        sec_protocol_options_set_max_tls_protocol_version(tls.securityProtocolOptions, .TLSv12)
 
         var captured: SecCertificate?
         sec_protocol_options_set_verify_block(
