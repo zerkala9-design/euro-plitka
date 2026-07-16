@@ -26,7 +26,7 @@ public actor ATVRemoteClient {
         guard let secIdentity = ATVCrypto.secIdentity(id.secIdentity) else {
             throw PhilipsError.unknown("No TLS identity")
         }
-        let conn = ATVConnection(host: host, port: 6467, identity: secIdentity)
+        let conn = ATVConnection(host: host, port: 6466, identity: secIdentity)
         try await conn.start()
         connection = conn
 

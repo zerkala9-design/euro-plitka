@@ -42,8 +42,8 @@ public actor ATVPairingClient {
         guard let secIdentity = ATVCrypto.secIdentity(id.secIdentity) else {
             throw PhilipsError.unknown("No TLS identity")
         }
-        print("ATV-pair: connecting to \(host):6466")
-        let conn = ATVConnection(host: host, port: 6466, identity: secIdentity)
+        print("ATV-pair: connecting to \(host):6467")
+        let conn = ATVConnection(host: host, port: 6467, identity: secIdentity)
         try await conn.start()
         connection = conn
         iterator = conn.messages.makeAsyncIterator()
