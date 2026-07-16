@@ -66,11 +66,17 @@ public actor ATVRemoteClient {
     // MARK: - Outgoing
 
     public func sendKey(_ code: ATVKeyCode) {
+        // A tap = key down (direction 1) then key up (direction 2).
+        sendKeyEvent(code.rawValue, direction: 1)
+        sendKeyEvent(code.rawValue, direction: 2)
+    }
+
+    private func sendKeyEvent(_ code: Int, direction: Int) {
         guard let connection else { return }
         var m = ProtobufWriter()
         m.writeMessage(Field.keyInject) { k in
-            k.writeInt(1, 3)                 // direction = SHORT
-            k.writeInt(2, code.rawValue)     // key_code
+            k.writeInt(1, code)          // key_code (field 1)
+            k.writeInt(2, direction)     // direction (field 2): 1=down, 2=up
         }
         connection.send(m.lengthDelimited())
     }
