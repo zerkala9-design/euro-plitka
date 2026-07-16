@@ -32,7 +32,7 @@ struct PairingView: View {
                     PINField(pin: $pin)
                         .focused($pinFocused)
                         .onChange(of: pin) { _, new in
-                            if new.count == 4 { Task { await confirm() } }
+                            if new.count == 6 { Task { await confirm() } }
                         }
                 }
 
@@ -79,7 +79,7 @@ struct PairingView: View {
     private var subtitle: String {
         switch vm.phase {
         case .requesting: return "Waking up \(device.model) and requesting a secure session."
-        case .awaitingPIN: return "A 4‑digit code is now shown on your TV screen. Type it here."
+        case .awaitingPIN: return "A 6‑character code is now shown on your TV screen. Type it here."
         case .confirming: return "Exchanging encrypted keys with your TV."
         case .success: return "Your TV is connected and the token is stored securely in the Keychain."
         case .failed: return "Let's try that again."
@@ -161,25 +161,29 @@ struct PairingHero: View {
 struct PINField: View {
     @Binding var pin: String
 
+    private let slots = 6
+    private let hexChars = Set("0123456789ABCDEF")
+
     var body: some View {
         ZStack {
             TextField("", text: $pin)
-                .keyboardType(.numberPad)
-                .textContentType(.oneTimeCode)
+                .keyboardType(.asciiCapable)
+                .textInputAutocapitalization(.characters)
+                .autocorrectionDisabled()
                 .foregroundStyle(.clear)
                 .tint(.clear)
                 .onChange(of: pin) { _, new in
-                    pin = String(new.filter(\.isNumber).prefix(4))
+                    pin = String(new.uppercased().filter { hexChars.contains($0) }.prefix(slots))
                 }
-            HStack(spacing: 12) {
-                ForEach(0..<4) { index in
+            HStack(spacing: 8) {
+                ForEach(0..<slots, id: \.self) { index in
                     let char = index < pin.count ? String(Array(pin)[index]) : ""
                     Text(char)
-                        .font(.system(size: 30, weight: .bold, design: .rounded))
-                        .frame(width: 56, height: 68)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .font(.system(size: 26, weight: .bold, design: .rounded))
+                        .frame(width: 46, height: 60)
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
                                 .strokeBorder(index == pin.count ? Color.accentColor : .white.opacity(0.15),
                                               lineWidth: index == pin.count ? 2 : 1)
                         )

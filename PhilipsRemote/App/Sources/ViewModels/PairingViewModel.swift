@@ -1,7 +1,10 @@
 import SwiftUI
 import PhilipsKit
 
-/// Drives the pairing UI state machine on top of `AuthenticationService`.
+/// Drives the pairing UI state machine on top of the Android TV Remote v2
+/// pairing client (`ATVPairingClient`). The TV shows a 6‑hex‑digit code which
+/// the user types to complete pairing; the trusted client certificate is then
+/// stored in the Keychain for all future connections.
 @MainActor
 @Observable
 final class PairingViewModel {
@@ -14,13 +17,14 @@ final class PairingViewModel {
     }
 
     private(set) var phase: Phase = .requesting
-    private let auth = AuthenticationService()
-    private var session: AuthenticationService.PairingSession?
+    private var client: ATVPairingClient?
 
     func begin(pairing device: TVDevice) async {
         phase = .requesting
+        let client = ATVPairingClient(host: device.host)
+        self.client = client
         do {
-            session = try await auth.startPairing(with: device)
+            try await client.begin()      // TV now displays the code
             phase = .awaitingPIN
         } catch let error as PhilipsError {
             phase = .failed(error.errorDescription ?? "Couldn't start pairing.")
@@ -30,10 +34,10 @@ final class PairingViewModel {
     }
 
     func confirm(pin: String) async {
-        guard let session, pin.count == 4 else { return }
+        guard let client, pin.count == 6 else { return }
         phase = .confirming
         do {
-            try await auth.confirmPairing(session, pin: pin)
+            try await client.confirm(code: pin)
             phase = .success
         } catch let error as PhilipsError {
             phase = .failed(error.errorDescription ?? "Pairing failed.")

@@ -46,27 +46,20 @@ final class TVController {
 
     // MARK: - Connection lifecycle
 
+    private var atv: ATVRemoteClient?
+
     func connect(to device: TVDevice) async {
         disconnect()
         self.device = device
         state = .connecting
 
-        guard let credential = auth.credential(for: device) else {
-            state = .failed(PhilipsError.notPaired.localizedDescription)
-            return
-        }
-
-        let sink: @Sendable (DiagnosticSample) -> Void = { sample in
-            Task { @MainActor [weak self] in self?.record(sample) }
-        }
-        let client = PhilipsAPIClient(device: device, credential: credential, diagnosticsSink: sink)
-        self.client = client
-
+        // Android TV Remote v2 (ports 6466/6467). The trusted client cert stored
+        // in the Keychain during pairing is the credential — no token needed.
+        let client = ATVRemoteClient(host: device.host)
+        self.atv = client
         do {
-            _ = try await client.ping()
+            try await client.connect()
             state = .connected
-            await refreshAll()
-            startPolling()
             startLiveActivity()
         } catch let error as PhilipsError {
             state = .failed(error.localizedDescription)
@@ -79,6 +72,8 @@ final class TVController {
     func disconnect() {
         reconnectTask?.cancel(); reconnectTask = nil
         pollTask?.cancel(); pollTask = nil
+        Task { [atv] in await atv?.disconnect() }
+        atv = nil
         client = nil
         state = .disconnected
         LiveActivityController.shared.end()
@@ -163,19 +158,20 @@ final class TVController {
     // MARK: - Commands
 
     func send(_ key: RemoteKey) async {
-        guard let client else { return }
-        guard device?.capabilities.supports(key) ?? true else {
+        guard let atv, let code = ATVKeyCode(key) else {
             Haptics.shared.warning()
             return
         }
-        do { try await client.sendKey(key) }
-        catch { await handle(error) }
+        await atv.sendKey(code)
+        await AppLog.shared.info("Sent \(key.rawValue)", category: "command")
     }
 
     func setVolume(_ value: Int) async {
-        guard let client else { return }
-        volume = value                       // optimistic
-        try? await client.setVolume(value, muted: isMuted)
+        // The Android TV protocol has no absolute volume; step towards target.
+        let delta = value - volume
+        volume = value
+        let step: RemoteKey = delta >= 0 ? .volumeUp : .volumeDown
+        for _ in 0..<min(abs(delta), 10) { await send(step) }
     }
 
     func volumeStep(up: Bool) async {
@@ -193,13 +189,22 @@ final class TVController {
     }
 
     func launch(_ app: TVApp) async {
-        guard let client else { return }
-        do {
-            try await client.launch(app)
+        guard let atv else { return }
+        if let uri = ATVAppLink.uri(forAppNamed: app.label) {
+            await atv.launchApp(uri: uri)
             currentAppName = app.label
             recordRecentApp(app)
             updateLiveActivity()
-        } catch { await handle(error) }
+        } else {
+            Haptics.shared.warning()
+        }
+    }
+
+    /// Launch an app on the TV by name (used by voice/quick actions).
+    func launchApp(named name: String) async {
+        guard let atv, let uri = ATVAppLink.uri(forAppNamed: name) else { return }
+        await atv.launchApp(uri: uri)
+        currentAppName = name
     }
 
     func selectSource(_ source: InputSource) async {
@@ -240,11 +245,10 @@ final class TVController {
     }
 
     func powerToggle() async {
-        // A sleeping TV won't answer the API, so try Wake‑on‑LAN first.
         if state.isConnected {
-            await send(.standby)
+            await send(.standby)     // KEYCODE_POWER toggles standby
         } else {
-            await wake()
+            await wake()             // Wake‑on‑LAN for a fully sleeping TV
             if let device { scheduleReconnect(to: device, delay: 2) }
         }
     }

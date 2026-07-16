@@ -20,14 +20,13 @@ public actor DiscoveryService {
     /// devices appear; cancel the enclosing task to stop browsing.
     public func discover() -> AsyncStream<TVDevice> {
         AsyncStream { continuation in
-            let serviceTypes = ["_philips-remote._tcp", "_airplay._tcp", "_http._tcp"]
+            // Android TV Remote v2 advertises this Bonjour service.
+            let serviceTypes = ["_androidtvremote2._tcp", "_androidtvremote._tcp"]
 
             let handleEndpoint: @Sendable (String, String?) -> Void = { host, name in
                 Task {
                     if await self.markSeen(host) { return }
-                    if let device = try? await self.probe(host: host, advertisedName: name) {
-                        continuation.yield(device)
-                    }
+                    continuation.yield(DiscoveryService.androidDevice(host: host, name: name))
                 }
             }
 
@@ -66,6 +65,18 @@ public actor DiscoveryService {
         return false
     }
     public func resetSeen() { seenHosts.removeAll() }
+
+    /// Build an Android TV device record (pairing/remote use ports 6466/6467).
+    public nonisolated static func androidDevice(host: String, name: String?) -> TVDevice {
+        var device = TVDevice(name: name ?? "Android TV", model: "Android TV", host: host, port: 6466)
+        device.capabilities = TVCapabilities(
+            platform: .androidTV,
+            supportsWakeOnLan: true,
+            supportsApps: true,
+            supportsInputText: true
+        )
+        return device
+    }
 
     public func stop() {
         browsers.forEach { $0.cancel() }

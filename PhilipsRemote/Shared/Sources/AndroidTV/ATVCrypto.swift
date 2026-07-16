@@ -31,16 +31,15 @@ public enum ATVCrypto {
             throw PhilipsError.unknown("Can't read public key")
         }
 
-        let identity = try loadIdentityFromKeychain() ?? {
-            let certDER = try buildSelfSignedCertificate(privateKey: privateKey, publicKeyPKCS1: pubData)
-            try storeCertificate(certDER)
-            guard let id = try loadIdentityFromKeychain() else {
-                throw PhilipsError.unknown("Identity not found after store")
-            }
-            return id
-        }()
-
-        return Identity(secIdentity: identity, modulus: numbers.modulus, exponent: numbers.exponent)
+        if let existing = try loadIdentityFromKeychain() {
+            return Identity(secIdentity: existing, modulus: numbers.modulus, exponent: numbers.exponent)
+        }
+        let certDER = try buildSelfSignedCertificate(privateKey: privateKey, publicKeyPKCS1: pubData)
+        try storeCertificate(certDER)
+        guard let created = try loadIdentityFromKeychain() else {
+            throw PhilipsError.unknown("Identity not found after store")
+        }
+        return Identity(secIdentity: created, modulus: numbers.modulus, exponent: numbers.exponent)
     }
 
     /// Bridge a `SecIdentity` into a `Network` framework `sec_identity_t`.

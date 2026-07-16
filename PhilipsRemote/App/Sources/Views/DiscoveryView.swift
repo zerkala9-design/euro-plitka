@@ -103,14 +103,9 @@ struct DiscoveryView: View {
     private func addManual() {
         let host = manualHost.trimmingCharacters(in: .whitespaces)
         guard !host.isEmpty else { return }
-        Task {
-            if let device = try? await model.discovery.probe(host: host) {
-                await MainActor.run {
-                    store.upsert(device)
-                    pairingTarget = device
-                }
-            }
-        }
+        let device = DiscoveryService.androidDevice(host: host, name: "Philips TV")
+        store.upsert(device)
+        pairingTarget = device
         manualHost = ""
     }
 }

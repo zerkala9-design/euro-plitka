@@ -13,7 +13,7 @@ settings:
     MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: "1"
     SWIFT_VERSION: "5.0"
-    DEVELOPMENT_TEAM: ""
+    DEVELOPMENT_TEAM: "3D2MS64X3K"
     CODE_SIGN_STYLE: Automatic
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     # Swift 5 language mode: concurrency edge-cases surface as warnings, not
@@ -62,9 +62,9 @@ targets:
         UIUserInterfaceStyle: Dark
         NSLocalNetworkUsageDescription: "Philips Remote discovers and controls your Philips TV over your local Wi-Fi network."
         NSBonjourServices:
-          - _philips-remote._tcp
-          - _http._tcp
-          - _airplay._tcp
+          - _androidtvremote2._tcp
+          - _androidtvremote._tcp
+          - _googlecast._tcp
         NSMicrophoneUsageDescription: "Voice control lets you speak commands and search your TV hands-free."
         NSSpeechRecognitionUsageDescription: "Speech recognition converts your voice into TV commands and searches."
         NSSupportsLiveActivities: true
