@@ -55,18 +55,22 @@ public final class ATVConnection: @unchecked Sendable {
         var didResume = false
         try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
             connection.stateUpdateHandler = { [weak self] state in
+                print("ATV: connection state = \(state)")
                 switch state {
                 case .ready:
                     self?.serverCertificate = self?._capturedRef()
+                    print("ATV: TLS ready, serverCert=\(self?.serverCertificate != nil)")
                     if !didResume { didResume = true; cont.resume() }
                     self?.receiveLoop()
                 case .failed(let error):
+                    print("ATV: connection FAILED: \(error)")
                     if !didResume {
                         didResume = true
                         cont.resume(throwing: PhilipsError.unknown("TLS failed: \(error.localizedDescription)"))
                     }
                     self?.messageContinuation?.finish()
                 case .cancelled:
+                    print("ATV: connection cancelled")
                     if !didResume { didResume = true; cont.resume(throwing: PhilipsError.tvOffline) }
                     self?.messageContinuation?.finish()
                 default:
@@ -81,11 +85,14 @@ public final class ATVConnection: @unchecked Sendable {
         connection.receive(minimumIncompleteLength: 1, maximumLength: 65_536) { [weak self] data, _, isComplete, error in
             guard let self else { return }
             if let data, !data.isEmpty {
+                print("ATV: received \(data.count) bytes")
                 self.buffer.append(data)
                 while let message = self.buffer.next() {
+                    print("ATV: framed message \(message.count) bytes")
                     self.messageContinuation?.yield(message)
                 }
             }
+            if let error { print("ATV: receive error \(error)") }
             if isComplete || error != nil {
                 self.messageContinuation?.finish()
                 return
@@ -96,7 +103,10 @@ public final class ATVConnection: @unchecked Sendable {
 
     /// Send an already length-prefixed message.
     public func send(_ framed: Data) {
-        connection.send(content: framed, completion: .contentProcessed { _ in })
+        print("ATV: sending \(framed.count) bytes: \(framed.map { String(format: "%02x", $0) }.joined())")
+        connection.send(content: framed, completion: .contentProcessed { error in
+            if let error { print("ATV: send error \(error)") }
+        })
     }
 
     public func close() {

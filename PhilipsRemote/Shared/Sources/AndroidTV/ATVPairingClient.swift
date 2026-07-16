@@ -35,25 +35,31 @@ public actor ATVPairingClient {
     private static let roleInput = 1
 
     public func begin() async throws {
+        print("ATV-pair: loading identity")
         let id = try ATVCrypto.loadOrCreateIdentity()
         identity = id
+        print("ATV-pair: identity ok, modulus \(id.modulus.count) bytes")
         guard let secIdentity = ATVCrypto.secIdentity(id.secIdentity) else {
             throw PhilipsError.unknown("No TLS identity")
         }
+        print("ATV-pair: connecting to \(host):6466")
         let conn = ATVConnection(host: host, port: 6466, identity: secIdentity)
         try await conn.start()
         connection = conn
         iterator = conn.messages.makeAsyncIterator()
+        print("ATV-pair: connected")
 
         // Capture the TV's public key from its certificate.
         if let cert = conn.serverCertificate,
            let numbers = ATVCrypto.publicKeyNumbers(from: cert) {
             serverModulus = numbers.modulus
             serverExponent = numbers.exponent
+            print("ATV-pair: server modulus \(numbers.modulus.count) bytes")
         } else {
             throw PhilipsError.unknown("No server certificate")
         }
 
+        print("ATV-pair: sending PairingRequest")
         try send { m in
             base(&m)
             m.writeMessage(Field.pairingRequest) { r in
@@ -137,6 +143,7 @@ public actor ATVPairingClient {
     /// Read the next message and verify its status is OK.
     private func expectOK() async throws {
         let data = try await nextMessage()
+        print("ATV-pair: got reply \(data.count) bytes: \(data.map { String(format: "%02x", $0) }.joined())")
         var reader = ProtobufReader(data)
         var status = Self.statusOK
         while let tag = reader.readTag() {
