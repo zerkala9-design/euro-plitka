@@ -13,8 +13,10 @@ import SwiftASN1
 /// the Keychain, and reused. Exposed as a `sec_identity_t` for `Network`.
 public enum ATVCrypto {
 
-    private static let keyTag = "com.europlitka.philipsremote.atv.key".data(using: .utf8)!
-    private static let certLabel = "com.europlitka.philipsremote.atv.cert"
+    // v2: force a fresh swift-certificates identity, ignoring any earlier
+    // hand-built (invalid) cert left in the Keychain from older builds.
+    private static let keyTag = "com.europlitka.philipsremote.atv.key.v2".data(using: .utf8)!
+    private static let certLabel = "com.europlitka.philipsremote.atv.cert.v2"
 
     public struct Identity {
         public let secIdentity: SecIdentity
@@ -112,8 +114,11 @@ public enum ATVCrypto {
     }
 
     private static func loadIdentityFromKeychain() throws -> SecIdentity? {
+        // Match only OUR identity (by the certificate label), so a stale
+        // identity from an earlier build is never picked up.
         let query: [String: Any] = [
             kSecClass as String: kSecClassIdentity,
+            kSecAttrLabel as String: certLabel,
             kSecReturnRef as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
