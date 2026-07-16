@@ -7,17 +7,15 @@ struct RemoteView: View {
     @Environment(TVController.self) private var controller
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 22) {
-                topRow
-                DPadView()
-                rockers
-                coloredKeys
-                transport
-            }
-            .padding(.vertical, 4)
+        VStack(spacing: 12) {
+            topRow
+            Spacer(minLength: 6)
+            DPadView()
+            Spacer(minLength: 6)
+            rockers
+            coloredKeys
         }
-        .scrollIndicators(.hidden)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var topRow: some View {
@@ -134,7 +132,7 @@ struct DPadView: View {
             }
             .buttonStyle(.plain)
         }
-        .frame(width: 250, height: 250)
+        .frame(width: 216, height: 216)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Navigation pad")
     }

@@ -103,6 +103,10 @@ public enum ATVAppLink {
             return "https://app.primevideo.com"
         case let n where n.contains("disney"): return "https://www.disneyplus.com"
         case let n where n.contains("spotify"): return "spotify://"
+        case let n where n.contains("megogo"): return "https://megogo.net"
+        case let n where n.contains("kyivstar") || n.contains("київстар"): return "https://tv.kyivstar.ua"
+        case let n where n.contains("sweet"): return "https://sweet.tv"
+        case let n where n.contains("megafon"): return "https://megafon.tv"
         default: return nil
         }
     }
