@@ -45,8 +45,8 @@ struct RemoteView: View {
                 bottomIcon: RemoteKey.volumeDown.systemImage,
                 centerIcon: controller.isMuted ? "speaker.slash.fill" : "speaker.wave.2.fill",
                 label: "VOL",
-                onUp: { Task { await controller.volumeStep(up: true) } },
-                onDown: { Task { await controller.volumeStep(up: false) } },
+                onUp: { down in down ? controller.beginHold(.volumeUp) : controller.endHold() },
+                onDown: { down in down ? controller.beginHold(.volumeDown) : controller.endHold() },
                 onCenter: { Task { await controller.toggleMute() } }
             )
             RockerControl(
@@ -54,8 +54,8 @@ struct RemoteView: View {
                 bottomIcon: RemoteKey.channelDown.systemImage,
                 centerIcon: "list.and.film",
                 label: "CH",
-                onUp: { Task { await controller.send(.channelUp) } },
-                onDown: { Task { await controller.send(.channelDown) } },
+                onUp: { down in down ? controller.beginHold(.channelUp) : controller.endHold() },
+                onDown: { down in down ? controller.beginHold(.channelDown) : controller.endHold() },
                 onCenter: { Task { await controller.send(.guide) } }
             )
         }
@@ -147,15 +147,19 @@ struct DPadView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
             .scaleEffect(pressedDirection == key && !reduceMotion ? 1.3 : 1)
             .contentShape(Rectangle())
-            .onTapGesture {
-                Haptics.shared.tap()
-                withAnimation(.spring(response: 0.2, dampingFraction: 0.5)) { pressedDirection = key }
-                Task {
-                    await controller.send(key)
-                    try? await Task.sleep(for: .seconds(0.15))
-                    withAnimation { pressedDirection = nil }
-                }
-            }
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        guard pressedDirection != key else { return }
+                        Haptics.shared.tap()
+                        withAnimation(.spring(response: 0.2, dampingFraction: 0.5)) { pressedDirection = key }
+                        controller.beginHold(key)     // hold to keep scrolling
+                    }
+                    .onEnded { _ in
+                        controller.endHold()
+                        withAnimation { pressedDirection = nil }
+                    }
+            )
             .accessibilityLabel("\(key)".capitalized)
     }
 }
@@ -166,13 +170,14 @@ struct RockerControl: View {
     let bottomIcon: String
     let centerIcon: String
     let label: String
-    let onUp: () -> Void
-    let onDown: () -> Void
+    /// Called with `true` on press and `false` on release (for auto‑repeat).
+    let onUp: (Bool) -> Void
+    let onDown: (Bool) -> Void
     let onCenter: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
-            rockerButton(topIcon, action: onUp)
+            rockerButton(topIcon, hold: onUp)
             Divider().background(.white.opacity(0.1))
             Button(action: { Haptics.shared.tap(); onCenter() }) {
                 VStack(spacing: 2) {
@@ -184,22 +189,48 @@ struct RockerControl: View {
             }
             .buttonStyle(.plain)
             Divider().background(.white.opacity(0.1))
-            rockerButton(bottomIcon, action: onDown)
+            rockerButton(bottomIcon, hold: onDown)
         }
         .frame(maxWidth: .infinity)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 30, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 30, style: .continuous).strokeBorder(.white.opacity(0.12)))
     }
 
-    private func rockerButton(_ icon: String, action: @escaping () -> Void) -> some View {
-        Button(action: { Haptics.shared.tap(); action() }) {
+    private func rockerButton(_ icon: String, hold: @escaping (Bool) -> Void) -> some View {
+        HoldButton(hold: hold) {
             Image(systemName: icon)
                 .font(.title2.weight(.semibold))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 18)
                 .contentShape(Rectangle())
+                .foregroundStyle(.primary)
         }
-        .buttonStyle(.plain)
-        .foregroundStyle(.primary)
+    }
+}
+
+/// A button that fires `hold(true)` on press and `hold(false)` on release, so
+/// the caller can auto‑repeat an action while it's held down.
+struct HoldButton<Label: View>: View {
+    let hold: (Bool) -> Void
+    @ViewBuilder var label: Label
+    @State private var isPressed = false
+
+    var body: some View {
+        label
+            .contentShape(Rectangle())
+            .opacity(isPressed ? 0.5 : 1)
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        guard !isPressed else { return }
+                        isPressed = true
+                        Haptics.shared.tap()
+                        hold(true)
+                    }
+                    .onEnded { _ in
+                        isPressed = false
+                        hold(false)
+                    }
+            )
     }
 }

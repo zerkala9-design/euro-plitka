@@ -166,6 +166,28 @@ final class TVController {
         await AppLog.shared.info("Sent \(key.rawValue)", category: "command")
     }
 
+    // MARK: - Press & hold (auto‑repeat while a key is held)
+
+    private var holdTask: Task<Void, Never>?
+
+    /// Begin repeating a key while a button is held (volume, channels, D‑pad).
+    func beginHold(_ key: RemoteKey) {
+        endHold()
+        holdTask = Task { [weak self] in
+            await self?.send(key)                        // immediate first press
+            try? await Task.sleep(for: .seconds(0.35))   // delay before repeating
+            while !Task.isCancelled {
+                await self?.send(key)
+                try? await Task.sleep(for: .seconds(0.11))
+            }
+        }
+    }
+
+    func endHold() {
+        holdTask?.cancel()
+        holdTask = nil
+    }
+
     func setVolume(_ value: Int) async {
         // The Android TV protocol has no absolute volume; step towards target.
         let delta = value - volume
