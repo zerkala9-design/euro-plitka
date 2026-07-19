@@ -136,7 +136,7 @@ struct DPadView: View {
                 Text("OK")
                     .font(.title3.bold())
                     .foregroundStyle(.white)
-                    .frame(width: 96, height: 96)
+                    .frame(width: 80, height: 80)
                     .background(Circle().fill(.tint.opacity(0.9)))
                     .overlay(Circle().strokeBorder(.white.opacity(0.3), lineWidth: 1.5))
                     .shadow(color: .accentColor.opacity(0.6), radius: 12)
