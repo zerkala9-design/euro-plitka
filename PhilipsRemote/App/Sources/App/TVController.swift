@@ -265,6 +265,12 @@ final class TVController {
         currentAppName = name
     }
 
+    /// Launch a raw app‑link / URL on the TV (used by user‑added links).
+    func launchURL(_ uri: String) async {
+        guard let atv, !uri.isEmpty else { return }
+        await atv.launchApp(uri: uri)
+    }
+
     func selectSource(_ source: InputSource) async {
         guard let client else { return }
         try? await client.selectSource(source)
