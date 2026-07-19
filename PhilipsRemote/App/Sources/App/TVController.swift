@@ -70,9 +70,11 @@ final class TVController {
         await client.setOnClose { [weak self] in
             Task { @MainActor in self?.handleDropped(generation: generation) }
         }
-        // Offer the phone keyboard when the TV focuses a text field.
+        // Offer the phone keyboard the first time the TV focuses a text field
+        // (only once per connection, so it doesn't keep popping up).
+        keyboardOffered = false
         await client.setOnTextFocus { [weak self] in
-            Task { @MainActor in self?.textFieldFocused = true }
+            Task { @MainActor in self?.offerKeyboardOnce() }
         }
         do {
             try await client.connect()
@@ -331,6 +333,14 @@ final class TVController {
 
     /// Reset the focused‑field flag (e.g. after the keyboard sheet is closed).
     func clearTextFieldFocus() { textFieldFocused = false }
+
+    private var keyboardOffered = false
+    /// Raise the keyboard once per connection when a TV text field is focused.
+    private func offerKeyboardOnce() {
+        guard !keyboardOffered else { return }
+        keyboardOffered = true
+        textFieldFocused = true
+    }
 
     /// Submit the focused text field (search / go) — an IME Enter, not the
     /// D‑pad OK (which would just press the highlighted on‑screen key).
