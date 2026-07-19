@@ -5,6 +5,7 @@ import PhilipsKit
 /// OK, volume & channel rockers, colored keys and transport controls.
 struct RemoteView: View {
     @Environment(TVController.self) private var controller
+    @State private var showSleepMenu = false
 
     var body: some View {
         VStack(spacing: 12) {
@@ -19,10 +20,7 @@ struct RemoteView: View {
 
     private var topRow: some View {
         HStack(spacing: 18) {
-            GlassButton(systemImage: RemoteKey.standby.systemImage, title: "Power",
-                        tint: .red, prominent: true) {
-                Task { await controller.powerToggle() }
-            }
+            powerButton
             GlassButton(systemImage: RemoteKey.home.systemImage, title: "Home") {
                 Task { await controller.send(.home) }
             }
@@ -32,6 +30,43 @@ struct RemoteView: View {
             GlassButton(systemImage: RemoteKey.settings.systemImage, title: "Settings") {
                 Task { await controller.send(.settings) }
             }
+        }
+    }
+
+    /// Power: tap opens the sleep‑timer menu, press‑and‑hold turns the TV off.
+    private var powerButton: some View {
+        VStack(spacing: 4) {
+            Image(systemName: RemoteKey.standby.systemImage)
+                .font(.system(size: Theme.buttonSize * 0.34, weight: .semibold))
+                .symbolRenderingMode(.hierarchical)
+            Text(controller.sleepTimerMinutes.map { "\($0) min" } ?? "Power")
+                .font(.caption2.weight(.medium)).lineLimit(1)
+        }
+        .foregroundStyle(.red)
+        .frame(width: Theme.buttonSize, height: Theme.buttonSize)
+        .background(Circle().fill(Color.red.opacity(controller.sleepTimerMinutes != nil ? 0.35 : 0.22)))
+        .overlay(Circle().strokeBorder(.white.opacity(0.18), lineWidth: 1))
+        .shadow(color: .black.opacity(0.35), radius: 8, y: 4)
+        .contentShape(Circle())
+        .onTapGesture {
+            Haptics.shared.tap()
+            showSleepMenu = true
+        }
+        .onLongPressGesture(minimumDuration: 0.5) {
+            Haptics.shared.press()
+            Task { await controller.powerOff() }
+        }
+        .confirmationDialog("Power & sleep timer", isPresented: $showSleepMenu, titleVisibility: .visible) {
+            Button("Turn off now", role: .destructive) { Task { await controller.powerOff() } }
+            Button("Sleep in 15 minutes") { controller.startSleepTimer(minutes: 15); Haptics.shared.success() }
+            Button("Sleep in 30 minutes") { controller.startSleepTimer(minutes: 30); Haptics.shared.success() }
+            Button("Sleep in 60 minutes") { controller.startSleepTimer(minutes: 60); Haptics.shared.success() }
+            if controller.sleepTimerMinutes != nil {
+                Button("Cancel sleep timer") { controller.cancelSleepTimer(); Haptics.shared.tap() }
+            }
+        } message: {
+            Text(controller.sleepTimerMinutes.map { "TV will turn off in \($0) min. Hold Power to turn off now." }
+                 ?? "Pick a delay to turn the TV off automatically. Hold Power to turn off now.")
         }
     }
 

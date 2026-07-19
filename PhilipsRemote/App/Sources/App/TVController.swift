@@ -375,6 +375,35 @@ final class TVController {
         try? await wol.wake(macAddress: mac)
     }
 
+    // MARK: - Sleep timer
+
+    /// Minutes remaining until the scheduled power‑off, or nil if no timer.
+    private(set) var sleepTimerMinutes: Int?
+    private var sleepTask: Task<Void, Never>?
+
+    /// Turn the TV off after `minutes`. Replaces any existing timer.
+    func startSleepTimer(minutes: Int) {
+        cancelSleepTimer()
+        sleepTimerMinutes = minutes
+        sleepTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(Double(minutes) * 60))
+            guard !Task.isCancelled else { return }
+            await self?.send(.standby)     // power off
+            self?.sleepTimerMinutes = nil
+        }
+    }
+
+    func cancelSleepTimer() {
+        sleepTask?.cancel(); sleepTask = nil
+        sleepTimerMinutes = nil
+    }
+
+    /// Turn the TV off now (used by press‑and‑hold on the power button).
+    func powerOff() async {
+        cancelSleepTimer()
+        await send(.standby)
+    }
+
     func powerToggle() async {
         if state.isConnected {
             await send(.standby)     // KEYCODE_POWER toggles standby
