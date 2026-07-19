@@ -375,6 +375,15 @@ final class TVController {
         try? await wol.wake(macAddress: mac)
     }
 
+    /// Toggle a virtual‑mouse app on the TV (e.g. "Mouse Toggle for Android TV"),
+    /// which switches the cursor on/off on a quick double‑OK.
+    func toggleMouseMode() async {
+        await send(.confirm)
+        try? await Task.sleep(for: .milliseconds(120))
+        await send(.confirm)
+        Haptics.shared.success()
+    }
+
     // MARK: - Sleep timer
 
     /// Minutes remaining until the scheduled power‑off, or nil if no timer.

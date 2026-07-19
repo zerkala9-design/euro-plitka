@@ -72,6 +72,7 @@ struct RemoteHomeView: View {
         HStack(spacing: 12) {
             quick("Voice", "mic.fill") { activeSheet = .voice }
             quick("Keyboard", "keyboard.fill") { activeSheet = .keyboard }
+            quick("Mouse", "computermouse.fill") { Task { await controller.toggleMouseMode() } }
             quick("Sources", "rectangle.connected.to.line.below") { activeSheet = .sources }
             quick("123", "number") { activeSheet = .numbers }
         }
