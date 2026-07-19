@@ -18,13 +18,7 @@ struct AppsView: View {
 
     private let apps: [QuickApp] = [
         .init(name: "YouTube", color: .red, symbol: "play.rectangle.fill"),
-        .init(name: "Netflix", color: .red, symbol: "play.tv.fill"),
-        .init(name: "Megogo", color: .orange, symbol: "film.fill"),
         .init(name: "Kyivstar TV", color: .blue, symbol: "tv.fill"),
-        .init(name: "Sweet.TV", color: .pink, symbol: "sparkles.tv.fill"),
-        .init(name: "Disney+", color: Color(red: 0.05, green: 0.2, blue: 0.6), symbol: "star.fill"),
-        .init(name: "Prime Video", color: .cyan, symbol: "play.tv.fill"),
-        .init(name: "Spotify", color: .green, symbol: "music.note"),
     ]
 
     private var filtered: [QuickApp] {

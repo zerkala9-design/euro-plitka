@@ -47,8 +47,8 @@ struct RemoteView: View {
                 onCenter: { Task { await controller.toggleMute() } }
             )
             RockerControl(
-                topIcon: RemoteKey.channelUp.systemImage,
-                bottomIcon: RemoteKey.channelDown.systemImage,
+                topIcon: "plus",       // match the volume rocker's look
+                bottomIcon: "minus",
                 centerIcon: "list.and.film",
                 label: "CH",
                 onUp: { down in down ? controller.beginHold(.channelUp) : controller.endHold() },
