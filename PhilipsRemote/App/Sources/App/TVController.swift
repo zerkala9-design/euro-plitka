@@ -47,29 +47,42 @@ final class TVController {
     // MARK: - Connection lifecycle
 
     private var atv: ATVRemoteClient?
+    /// Bumped on every connect so a stale connection's drop callback is ignored.
+    private var connectionGeneration = 0
+    /// True while the app is foregrounded and should hold a live connection.
+    private var wantsConnection = false
 
     func connect(to device: TVDevice) async {
-        disconnect()
+        disconnect(userInitiated: false)
         self.device = device
+        wantsConnection = true
         state = .connecting
+        connectionGeneration += 1
+        let generation = connectionGeneration
 
         // Android TV Remote v2 (ports 6466/6467). The trusted client cert stored
         // in the Keychain during pairing is the credential — no token needed.
         let client = ATVRemoteClient(host: device.host)
         self.atv = client
+        // Reconnect automatically if the TV or iOS drops the socket.
+        await client.setOnClose { [weak self] in
+            Task { @MainActor in self?.handleDropped(generation: generation) }
+        }
         do {
             try await client.connect()
             state = .connected
             startLiveActivity()
         } catch let error as PhilipsError {
             state = .failed(error.localizedDescription)
-            if settings.autoReconnect { scheduleReconnect(to: device) }
+            if wantsConnection, settings.autoReconnect { scheduleReconnect(to: device) }
         } catch {
             state = .failed(error.localizedDescription)
+            if wantsConnection, settings.autoReconnect { scheduleReconnect(to: device) }
         }
     }
 
-    func disconnect() {
+    func disconnect(userInitiated: Bool = true) {
+        if userInitiated { wantsConnection = false }
         reconnectTask?.cancel(); reconnectTask = nil
         pollTask?.cancel(); pollTask = nil
         Task { [atv] in await atv?.disconnect() }
@@ -77,6 +90,29 @@ final class TVController {
         client = nil
         state = .disconnected
         LiveActivityController.shared.end()
+    }
+
+    /// The live control channel dropped on its own — try to restore it silently.
+    private func handleDropped(generation: Int) {
+        guard generation == connectionGeneration, wantsConnection else { return }
+        state = .connecting
+        if let device, settings.autoReconnect { scheduleReconnect(to: device, delay: 1.5) }
+    }
+
+    // MARK: - Foreground / background
+
+    /// Call when the app returns to the foreground: restore the connection if it
+    /// was lost while suspended, so the remote is ready without a manual retry.
+    func reconnectIfNeeded() async {
+        guard let device, device.isPaired else { return }
+        wantsConnection = true
+        if !state.isConnected { await connect(to: device) }
+    }
+
+    /// Call when the app is backgrounded: stop retry attempts to save battery.
+    /// iOS suspends the socket anyway; we reconnect on the next foreground.
+    func enterBackground() {
+        reconnectTask?.cancel(); reconnectTask = nil
     }
 
     // MARK: - Live Activity
@@ -100,7 +136,7 @@ final class TVController {
         reconnectTask?.cancel()
         reconnectTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(delay))
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled, self?.wantsConnection == true else { return }
             await AppLog.shared.info("Auto‑reconnecting to \(device.displayName)", category: "reconnect")
             await self?.connect(to: device)
         }

@@ -10,7 +10,18 @@ public actor ATVRemoteClient {
     private var readerTask: Task<Void, Never>?
     public private(set) var isReady = false
 
+    /// Set to `true` when we tear the connection down on purpose, so the
+    /// unexpected‑drop callback doesn't fire and trigger a reconnect.
+    private var intentionalClose = false
+    /// Fired when the control channel ends unexpectedly (TV/iOS dropped it).
+    private var onClose: (@Sendable () -> Void)?
+
     public init(host: String) { self.host = host }
+
+    /// Register a handler invoked once if the connection drops on its own.
+    public func setOnClose(_ handler: @escaping @Sendable () -> Void) {
+        onClose = handler
+    }
 
     private enum Field {
         static let configure = 1
@@ -22,6 +33,7 @@ public actor ATVRemoteClient {
     }
 
     public func connect() async throws {
+        intentionalClose = false
         let id = try ATVCrypto.loadOrCreateIdentity()
         guard let secIdentity = ATVCrypto.secIdentity(id.secIdentity) else {
             throw PhilipsError.unknown("No TLS identity")
@@ -35,11 +47,16 @@ public actor ATVRemoteClient {
             for await message in messages {
                 await self.handle(message)
             }
-            await self.markNotReady()
+            await self.connectionDidEnd()
         }
     }
 
-    private func markNotReady() { isReady = false }
+    /// The message stream finished — the socket is gone. Notify the owner so it
+    /// can reconnect (unless we closed it ourselves).
+    private func connectionDidEnd() {
+        isReady = false
+        if !intentionalClose { onClose?() }
+    }
 
     private func handle(_ data: Data) async {
         var reader = ProtobufReader(data)
@@ -135,6 +152,7 @@ public actor ATVRemoteClient {
     }
 
     public func disconnect() {
+        intentionalClose = true
         readerTask?.cancel()
         connection?.close()
         isReady = false
