@@ -224,6 +224,40 @@ final class TVController {
         holdTask = nil
     }
 
+    // MARK: - True key hold (physical‑remote style, used by the D‑pad)
+
+    private var heldKey: RemoteKey?
+    private var releaseTask: Task<Void, Never>?
+
+    /// Hold a navigation key down the way a physical remote does: send one
+    /// key‑down now and the matching key‑up on release, letting the TV do its
+    /// own native auto‑repeat. Avoids the rapid tap‑flood that some apps (e.g.
+    /// cursor‑based web apps) mishandle.
+    func beginPress(_ key: RemoteKey) {
+        endPress()   // release anything still held
+        guard let atv, let code = ATVKeyCode(key) else {
+            Haptics.shared.warning()
+            return
+        }
+        heldKey = key
+        Task { await atv.pressKey(code) }
+        // Safety net: never leave a key stuck down if the release is missed.
+        releaseTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(6))
+            guard !Task.isCancelled else { return }
+            self?.endPress()
+        }
+    }
+
+    func endPress() {
+        releaseTask?.cancel(); releaseTask = nil
+        guard let key = heldKey else { return }
+        heldKey = nil
+        if let atv, let code = ATVKeyCode(key) {
+            Task { await atv.releaseKey(code) }
+        }
+    }
+
     func setVolume(_ value: Int) async {
         // The Android TV protocol has no absolute volume; step towards target.
         let delta = value - volume

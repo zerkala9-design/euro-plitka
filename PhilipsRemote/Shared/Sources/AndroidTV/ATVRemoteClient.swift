@@ -88,6 +88,18 @@ public actor ATVRemoteClient {
         sendKeyEvent(code.rawValue, direction: 2)
     }
 
+    /// Press and hold a key (key down only) — like holding a button on a
+    /// physical remote. The TV generates its own native auto‑repeat until
+    /// `releaseKey` sends the matching key up.
+    public func pressKey(_ code: ATVKeyCode) {
+        sendKeyEvent(code.rawValue, direction: 1)
+    }
+
+    /// Release a key previously held with `pressKey`.
+    public func releaseKey(_ code: ATVKeyCode) {
+        sendKeyEvent(code.rawValue, direction: 2)
+    }
+
     private func sendKeyEvent(_ code: Int, direction: Int) {
         guard let connection else { return }
         var m = ProtobufWriter()

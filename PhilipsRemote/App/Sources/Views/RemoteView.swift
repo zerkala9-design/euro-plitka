@@ -129,10 +129,10 @@ struct DPadView: View {
                         guard pressedDirection != key else { return }
                         Haptics.shared.tap()
                         withAnimation(.spring(response: 0.2, dampingFraction: 0.5)) { pressedDirection = key }
-                        controller.beginHold(key)     // hold to keep scrolling
+                        controller.beginPress(key)    // hold like a physical remote
                     }
                     .onEnded { _ in
-                        controller.endHold()
+                        controller.endPress()
                         withAnimation { pressedDirection = nil }
                     }
             )
