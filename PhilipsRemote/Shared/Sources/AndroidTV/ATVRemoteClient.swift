@@ -15,12 +15,20 @@ public actor ATVRemoteClient {
     private var intentionalClose = false
     /// Fired when the control channel ends unexpectedly (TV/iOS dropped it).
     private var onClose: (@Sendable () -> Void)?
+    /// Fired when the TV reports a focused text field (so the phone can offer
+    /// its keyboard).
+    private var onTextFocus: (@Sendable () -> Void)?
 
     public init(host: String) { self.host = host }
 
     /// Register a handler invoked once if the connection drops on its own.
     public func setOnClose(_ handler: @escaping @Sendable () -> Void) {
         onClose = handler
+    }
+
+    /// Register a handler invoked when the TV focuses a text field.
+    public func setOnTextFocus(_ handler: @escaping @Sendable () -> Void) {
+        onTextFocus = handler
     }
 
     private enum Field {
@@ -107,6 +115,8 @@ public actor ATVRemoteClient {
                 reader.skip(wire: tag.wire)
             }
         }
+        // A text field is focused and addressable — let the phone offer typing.
+        if imeCounter != nil, fieldCounter != nil { onTextFocus?() }
     }
 
     /// RemoteImeBatchEdit { ime_counter(1), field_counter(2), ... }

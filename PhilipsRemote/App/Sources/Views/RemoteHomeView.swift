@@ -47,7 +47,7 @@ struct RemoteHomeView: View {
                     }
                 }
             }
-            .sheet(item: $activeSheet) { sheet in
+            .sheet(item: $activeSheet, onDismiss: { controller.clearTextFieldFocus() }) { sheet in
                 switch sheet {
                 case .voice: VoiceControlView()
                 case .keyboard: KeyboardView()
@@ -56,6 +56,11 @@ struct RemoteHomeView: View {
                 case .info: TVInfoView()
                 case .devices: DevicesView()
                 }
+            }
+            // When the TV focuses a text field, pop the phone keyboard so the
+            // user can type the search on the phone instead of the TV's D‑pad.
+            .onChange(of: controller.textFieldFocused) { _, focused in
+                if focused, activeSheet == nil { activeSheet = .keyboard }
             }
         }
     }

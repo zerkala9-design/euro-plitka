@@ -31,6 +31,8 @@ final class TVController {
     var ambilight = AmbilightState()
     private(set) var diagnostics: [DiagnosticSample] = []
     private(set) var currentAppName: String?
+    /// True when the TV has a focused text field the phone can type into.
+    private(set) var textFieldFocused = false
 
     // Dependencies
     private let auth = AuthenticationService()
@@ -67,6 +69,10 @@ final class TVController {
         // Reconnect automatically if the TV or iOS drops the socket.
         await client.setOnClose { [weak self] in
             Task { @MainActor in self?.handleDropped(generation: generation) }
+        }
+        // Offer the phone keyboard when the TV focuses a text field.
+        await client.setOnTextFocus { [weak self] in
+            Task { @MainActor in self?.textFieldFocused = true }
         }
         do {
             try await client.connect()
@@ -322,6 +328,9 @@ final class TVController {
         guard let atv else { return false }
         return await atv.canSendText
     }
+
+    /// Reset the focused‑field flag (e.g. after the keyboard sheet is closed).
+    func clearTextFieldFocus() { textFieldFocused = false }
 
     func setAmbilightPower(_ on: Bool) async {
         guard let client else { return }
