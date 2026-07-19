@@ -29,8 +29,15 @@ public actor ATVRemoteClient {
         static let pingRequest = 8
         static let pingResponse = 9
         static let keyInject = 10
+        static let imeKeyInject = 20
+        static let imeBatchEdit = 21
         static let appLink = 90
     }
+
+    // Latest text‑field identifiers reported by the TV. Needed to address a
+    // focused text field when injecting text via a batch edit.
+    private var imeCounter: Int?
+    private var fieldCounter: Int?
 
     public func connect() async throws {
         intentionalClose = false
@@ -74,8 +81,42 @@ public actor ATVRemoteClient {
             case Field.setActive where tag.wire == 2:
                 _ = reader.readBytes()
                 isReady = true
+            case Field.imeKeyInject where tag.wire == 2:
+                // TV focused a text field — remember how to address it.
+                parseImeKeyInject(reader.readBytes() ?? Data())
+            case Field.imeBatchEdit where tag.wire == 2:
+                parseImeCounters(fromBatchEdit: reader.readBytes() ?? Data())
             default:
                 reader.skip(wire: tag.wire)
+            }
+        }
+    }
+
+    /// RemoteImeKeyInject { app_info(1){ counter(1) }, text_field_status(2){ counter_field(1) } }
+    private func parseImeKeyInject(_ data: Data) {
+        var reader = ProtobufReader(data)
+        while let tag = reader.readTag() {
+            switch tag.field {
+            case 1 where tag.wire == 2:   // app_info
+                let appInfo = reader.readBytes() ?? Data()
+                if let c = firstVarint(inField: 1, of: appInfo) { imeCounter = Int(c) }
+            case 2 where tag.wire == 2:   // text_field_status
+                let status = reader.readBytes() ?? Data()
+                if let f = firstVarint(inField: 1, of: status) { fieldCounter = Int(f) }
+            default:
+                reader.skip(wire: tag.wire)
+            }
+        }
+    }
+
+    /// RemoteImeBatchEdit { ime_counter(1), field_counter(2), ... }
+    private func parseImeCounters(fromBatchEdit data: Data) {
+        var reader = ProtobufReader(data)
+        while let tag = reader.readTag() {
+            switch tag.field {
+            case 1 where tag.wire == 0: imeCounter = Int(reader.readVarint() ?? 0)
+            case 2 where tag.wire == 0: fieldCounter = Int(reader.readVarint() ?? 0)
+            default: reader.skip(wire: tag.wire)
             }
         }
     }
@@ -106,6 +147,31 @@ public actor ATVRemoteClient {
         m.writeMessage(Field.keyInject) { k in
             k.writeInt(1, code)          // key_code (field 1)
             k.writeInt(2, direction)     // direction (field 2): 1=down, 2=up
+        }
+        connection.send(m.lengthDelimited())
+    }
+
+    /// True once the TV has told us about a focused text field, so `sendText`
+    /// has somewhere to write.
+    public var canSendText: Bool { imeCounter != nil && fieldCounter != nil }
+
+    /// Set the contents of the TV's currently focused text field. Requires the
+    /// TV to have reported a focused field (see `canSendText`).
+    public func sendText(_ text: String) {
+        guard let connection, let ic = imeCounter, let fc = fieldCounter else { return }
+        let cursor = max(0, text.utf16.count - 1)
+        var m = ProtobufWriter()
+        m.writeMessage(Field.imeBatchEdit) { b in        // RemoteImeBatchEdit
+            b.writeInt(1, ic)                            // ime_counter
+            b.writeInt(2, fc)                            // field_counter
+            b.writeMessage(3) { e in                     // edit_info[0] (RemoteEditInfo)
+                e.writeInt(1, 1)                         // insert
+                e.writeMessage(2) { o in                 // text_field_status (RemoteImeObject)
+                    o.writeInt(1, cursor)                // start
+                    o.writeInt(2, cursor)                // end
+                    o.writeString(3, text)               // value
+                }
+            }
         }
         connection.send(m.lengthDelimited())
     }

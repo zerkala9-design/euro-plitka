@@ -310,10 +310,17 @@ final class TVController {
         try? await client.selectSource(source)
     }
 
-    /// Best‑effort remote text entry (model dependent).
+    /// Remote text entry — writes into the TV's focused text field (via the
+    /// Android TV IME channel). Only works while a field is focused on the TV.
     func sendText(_ text: String) async {
-        guard let client, !text.isEmpty else { return }
-        try? await client.sendText(text)
+        guard let atv else { return }
+        await atv.sendText(text)
+    }
+
+    /// Whether the TV currently has a focused text field we can type into.
+    func canSendText() async -> Bool {
+        guard let atv else { return false }
+        return await atv.canSendText
     }
 
     func setAmbilightPower(_ on: Bool) async {

@@ -37,9 +37,18 @@ struct KeyboardView: View {
                             Task { await controller.sendText(clip) }
                         }
                     }
-                    GlassPill(title: "Clear", systemImage: "xmark.circle") { text = "" }
+                    GlassPill(title: "Clear", systemImage: "xmark.circle") {
+                        text = ""
+                        Task { await controller.sendText("") }
+                    }
                     GlassPill(title: "Send", systemImage: "paperplane.fill") { send() }
                 }
+
+                Text("Open a search or text field on the TV first, then type here — the text appears on the TV as you type. Press Send to confirm the search.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 8)
 
                 Spacer()
             }
