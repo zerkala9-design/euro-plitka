@@ -57,6 +57,7 @@ struct RemoteView: View {
             Task { await controller.powerOff() }
         }
         .confirmationDialog("Power & sleep timer", isPresented: $showSleepMenu, titleVisibility: .visible) {
+            Button("Power on / off") { Task { await controller.powerToggle() } }
             Button("Turn off now", role: .destructive) { Task { await controller.powerOff() } }
             Button("Sleep in 15 minutes") { controller.startSleepTimer(minutes: 15); Haptics.shared.success() }
             Button("Sleep in 30 minutes") { controller.startSleepTimer(minutes: 30); Haptics.shared.success() }
@@ -133,12 +134,12 @@ struct DPadView: View {
                 Task { await controller.send(.confirm) }
             } label: {
                 Text("OK")
-                    .font(.headline.bold())
+                    .font(.title3.bold())
                     .foregroundStyle(.white)
-                    .frame(width: 68, height: 68)
+                    .frame(width: 96, height: 96)
                     .background(Circle().fill(.tint.opacity(0.9)))
                     .overlay(Circle().strokeBorder(.white.opacity(0.3), lineWidth: 1.5))
-                    .shadow(color: .accentColor.opacity(0.6), radius: 10)
+                    .shadow(color: .accentColor.opacity(0.6), radius: 12)
             }
             .buttonStyle(.plain)
         }
