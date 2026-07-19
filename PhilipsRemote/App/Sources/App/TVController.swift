@@ -332,6 +332,13 @@ final class TVController {
     /// Reset the focused‑field flag (e.g. after the keyboard sheet is closed).
     func clearTextFieldFocus() { textFieldFocused = false }
 
+    /// Submit the focused text field (search / go) — an IME Enter, not the
+    /// D‑pad OK (which would just press the highlighted on‑screen key).
+    func submitText() async {
+        guard let atv else { return }
+        await atv.sendKey(.enter)
+    }
+
     func setAmbilightPower(_ on: Bool) async {
         guard let client else { return }
         ambilight.power = on

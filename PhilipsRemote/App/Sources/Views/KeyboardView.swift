@@ -9,6 +9,7 @@ struct KeyboardView: View {
     @Environment(TVController.self) private var controller
     @Environment(\.dismiss) private var dismiss
     @State private var text = ""
+    @State private var debounce: Task<Void, Never>?
     @FocusState private var focused: Bool
 
     var body: some View {
@@ -25,7 +26,14 @@ struct KeyboardView: View {
                             .submitLabel(.send)
                             .onSubmit { send() }
                             .onChange(of: text) { _, new in
-                                Task { await controller.sendText(new) }
+                                // Send once the user pauses, not on every key,
+                                // so the TV applies one clean field update.
+                                debounce?.cancel()
+                                debounce = Task {
+                                    try? await Task.sleep(for: .milliseconds(180))
+                                    guard !Task.isCancelled else { return }
+                                    await controller.sendText(new)
+                                }
                             }
                     }
                 }
@@ -63,9 +71,11 @@ struct KeyboardView: View {
     }
 
     private func send() {
+        debounce?.cancel()
         Task {
-            await controller.sendText(text)
-            await controller.send(.confirm)
+            await controller.sendText(text)          // ensure latest text is set
+            try? await Task.sleep(for: .milliseconds(120))
+            await controller.submitText()            // IME Enter (search), not OK
         }
         Haptics.shared.success()
     }

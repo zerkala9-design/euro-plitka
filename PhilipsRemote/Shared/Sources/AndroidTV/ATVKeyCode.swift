@@ -11,6 +11,7 @@ public enum ATVKeyCode: Int, Sendable {
     case dpadLeft = 21
     case dpadRight = 22
     case dpadCenter = 23        // OK / select
+    case enter = 66             // submit a text field (search / go)
     case volumeUp = 24
     case volumeDown = 25
     case volumeMute = 164
