@@ -95,6 +95,13 @@ public enum ATVKeyCode: Int, Sendable {
 
 /// Well-known app-link URIs for launching apps via `RemoteAppLinkLaunchRequest`.
 public enum ATVAppLink {
+    /// Launch an installed app by its Android package name. The Play Store
+    /// registers `market://launch?id=…` and opens the app if it's installed —
+    /// more reliable than guessing an app's own web deep link.
+    private static func launch(_ packageName: String) -> String {
+        "market://launch?id=\(packageName)"
+    }
+
     public static func uri(forAppNamed name: String) -> String? {
         switch name.lowercased() {
         case let n where n.contains("youtube"): return "https://www.youtube.com"
@@ -103,9 +110,9 @@ public enum ATVAppLink {
             return "https://app.primevideo.com"
         case let n where n.contains("disney"): return "https://www.disneyplus.com"
         case let n where n.contains("spotify"): return "spotify://"
-        case let n where n.contains("megogo"): return "https://megogo.net"
-        case let n where n.contains("kyivstar") || n.contains("київстар"): return "https://tv.kyivstar.ua"
-        case let n where n.contains("sweet"): return "https://sweet.tv"
+        case let n where n.contains("megogo"): return launch("com.megogo.application.tv")
+        case let n where n.contains("kyivstar") || n.contains("київстар"): return launch("com.kyivstar.tv.androidtv")
+        case let n where n.contains("sweet"): return launch("tv.sweet.player")
         case let n where n.contains("megafon"): return "https://megafon.tv"
         default: return nil
         }
