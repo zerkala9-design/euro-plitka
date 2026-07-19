@@ -13,7 +13,6 @@ struct RemoteView: View {
             DPadView()
             Spacer(minLength: 6)
             rockers
-            coloredKeys
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -57,30 +56,6 @@ struct RemoteView: View {
                 onCenter: { Task { await controller.send(.guide) } }
             )
         }
-    }
-
-    private var coloredKeys: some View {
-        HStack(spacing: 16) {
-            colorKey(.red, .red)
-            colorKey(.green, .green)
-            colorKey(.yellow, .yellow)
-            colorKey(.blue, .blue)
-        }
-    }
-
-    private func colorKey(_ key: RemoteKey, _ color: Color) -> some View {
-        Button {
-            Haptics.shared.tap()
-            Task { await controller.send(key) }
-        } label: {
-            Circle()
-                .fill(color.gradient)
-                .frame(height: 26)
-                .overlay(Circle().strokeBorder(.white.opacity(0.3), lineWidth: 1))
-                .shadow(color: color.opacity(0.5), radius: 6)
-                .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.plain)
     }
 
     private var transport: some View {
@@ -138,12 +113,15 @@ struct DPadView: View {
     }
 
     private func directional(_ key: RemoteKey, alignment: Alignment) -> some View {
+        // The tappable area is the bounded 76×76 box; expanding to the full
+        // frame afterwards only *positions* it at the edge, so each arrow reacts
+        // only in its own region (otherwise the top view in the ZStack would
+        // swallow every touch).
         Image(systemName: key.systemImage)
             .font(.title2.weight(.semibold))
             .foregroundStyle(.secondary)
-            .frame(width: 60, height: 60)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
             .scaleEffect(pressedDirection == key && !reduceMotion ? 1.3 : 1)
+            .frame(width: 76, height: 76)
             .contentShape(Rectangle())
             .gesture(
                 DragGesture(minimumDistance: 0)
@@ -158,6 +136,7 @@ struct DPadView: View {
                         withAnimation { pressedDirection = nil }
                     }
             )
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
             .accessibilityLabel("\(key)".capitalized)
     }
 }
