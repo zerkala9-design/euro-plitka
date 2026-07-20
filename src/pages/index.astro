@@ -226,8 +226,8 @@ import TileCalculator from '../components/TileCalculator.astro';
   /* Шар-«ліхтарик» — яскрава версія, видима лише всередині плями за курсором */
   .hero__reveal {
     position: absolute; inset: 0; z-index: 3;
-    background: url('/hero-interior.jpg') center/cover no-repeat;
-    filter: brightness(1.28) saturate(1.18) contrast(1.05);
+    background: url('/hero-interior-lit.jpg') center/cover no-repeat;
+    filter: brightness(1.06) saturate(1.04) contrast(1.03);
     transform: scale(1.05);
     pointer-events: none;
     -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
@@ -236,9 +236,6 @@ import TileCalculator from '../components/TileCalculator.astro';
     -webkit-mask-image: none; mask-image: none;
     opacity: 0;
     transition: opacity 0.4s ease;
-  }
-  .hero__reveal {
-    filter: brightness(1.34) saturate(1.02) contrast(1.05);
   }
   .hero__reveal.is-active { opacity: 1; }
   /* Холодне LED-світіння (нейтральне біло-блакитне), що «вмикається» під курсором */
