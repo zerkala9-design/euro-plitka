@@ -12,9 +12,6 @@ import TileCalculator from '../components/TileCalculator.astro';
   <section class="hero" id="hero">
     <div class="hero__base"></div>
     <div class="hero__overlay"></div>
-    <div class="hero__reveal" id="heroReveal"></div>
-    <div class="hero__glow" id="heroGlow"></div>
-    <canvas class="hero__mask" id="heroMaskCanvas" aria-hidden="true"></canvas>
     <div class="container hero__inner">
       <div class="hero__content">
         <div class="badge badge--dark">Виробник у Києві</div>
@@ -38,6 +35,23 @@ import TileCalculator from '../components/TileCalculator.astro';
             <span class="hero__stat-label">кольори дзеркала</span>
           </div>
         </div>
+      </div>
+
+      <div class="hero__shortcuts">
+        <a href="/led-dzerkalo/#ledCalc" class="hero-shortcut">
+          <span class="hero-shortcut__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/></svg>
+          </span>
+          <span class="hero-shortcut__label">Калькулятор<br>LED дзеркал</span>
+          <span class="hero-shortcut__arrow">→</span>
+        </a>
+        <a href="#calculator" class="hero-shortcut">
+          <span class="hero-shortcut__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="1.5"/><path d="M4 10h16M4 15h16M10 4v16M15 4v16"/></svg>
+          </span>
+          <span class="hero-shortcut__label">Калькулятор<br>плитки</span>
+          <span class="hero-shortcut__arrow">→</span>
+        </a>
       </div>
     </div>
     <a href="#calculator" class="hero__scroll" aria-label="Прокрутити вниз">
@@ -204,11 +218,11 @@ import TileCalculator from '../components/TileCalculator.astro';
     color: #fff;
     background: #0d0b07;
   }
-  /* Базовий шар — затемнений інтерʼєр */
+  /* Базовий шар — інтерʼєр з увімкненими LED-дзеркалами */
   .hero__base {
     position: absolute; inset: 0; z-index: 1;
-    background: url('/hero-interior.jpg') center/cover no-repeat;
-    filter: brightness(0.5) saturate(0.85);
+    background: url('/hero-interior-2.jpg') center/cover no-repeat;
+    filter: brightness(0.9) saturate(1);
     transform: scale(1.05);
     animation: heroZoom 18s ease-in-out infinite alternate;
   }
@@ -258,8 +272,39 @@ import TileCalculator from '../components/TileCalculator.astro';
   }
   .hero__glow.is-active { opacity: 1; }
   .hero__mask { position: absolute; inset: 0; pointer-events: none; display: none; }
-  .hero__inner { position: relative; z-index: 5; padding: 100px 24px; }
+  .hero__inner {
+    position: relative; z-index: 5; padding: 100px 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 40px;
+  }
   .hero__title, .hero__text { text-shadow: 0 2px 24px rgba(0,0,0,0.5); }
+
+  /* Кнопки-калькулятори праворуч (як на фото) */
+  .hero__shortcuts { display: flex; flex-direction: column; gap: 22px; flex-shrink: 0; }
+  .hero-shortcut {
+    display: flex; align-items: center; gap: 16px;
+    color: #fff;
+    padding: 6px 4px 20px;
+    border-bottom: 1px solid rgba(212,170,90,0.5);
+    transition: all 0.2s;
+    min-width: 260px;
+  }
+  .hero-shortcut:hover { border-color: var(--gold-light); transform: translateX(4px); }
+  .hero-shortcut__icon {
+    width: 46px; height: 46px; flex-shrink: 0;
+    border: 1px solid rgba(212,170,90,0.7);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold-light);
+  }
+  .hero-shortcut__icon svg { width: 24px; height: 24px; }
+  .hero-shortcut__label {
+    flex: 1;
+    font-size: 1.15rem; font-weight: 600; line-height: 1.2;
+    letter-spacing: 0.01em; text-transform: uppercase;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.6);
+  }
+  .hero-shortcut__arrow { font-size: 1.5rem; color: var(--gold-light); transition: transform 0.2s; }
+  .hero-shortcut:hover .hero-shortcut__arrow { transform: translateX(5px); }
   .hero__content { max-width: 620px; }
   .hero__title {
     margin: 22px 0 22px;
@@ -375,79 +420,19 @@ import TileCalculator from '../components/TileCalculator.astro';
     .how-layout { grid-template-columns: 1fr; gap: 48px; }
     .how-visual { order: -1; }
   }
+  @media (max-width: 1100px) {
+    .hero__inner { flex-direction: column; align-items: flex-start; gap: 32px; }
+    .hero__shortcuts { flex-direction: row; flex-wrap: wrap; gap: 16px 32px; }
+    .hero-shortcut { min-width: 220px; padding-bottom: 14px; }
+  }
   @media (max-width: 640px) {
     .hero { min-height: 88vh; }
     .hero__inner { padding: 80px 24px; }
     .hero__stats { gap: 28px; margin-top: 40px; }
+    .hero__shortcuts { flex-direction: column; gap: 14px; }
+    .hero-shortcut__label { font-size: 1rem; }
     .hero__overlay {
       background: linear-gradient(0deg, rgba(20,18,12,0.92) 0%, rgba(20,18,12,0.55) 60%, rgba(20,18,12,0.4) 100%);
     }
   }
 </style>
-
-<script>
-  // Курсорна «світлова пляма», що відкриває яскраву версію інтерʼєру
-  const SPOTLIGHT_R = 260;
-  const hero = document.getElementById('hero');
-  const reveal = document.getElementById('heroReveal');
-  const glow = document.getElementById('heroGlow');
-  const canvas = document.getElementById('heroMaskCanvas');
-
-  if (hero && reveal && canvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const ctx = canvas.getContext('2d');
-    const mouse = { x: -999, y: -999 };
-    const smooth = { x: -999, y: -999 };
-    let active = false;
-    let raf = 0;
-
-    const sizeCanvas = () => {
-      const r = hero.getBoundingClientRect();
-      canvas.width = Math.round(r.width);
-      canvas.height = Math.round(r.height);
-    };
-    sizeCanvas();
-    window.addEventListener('resize', sizeCanvas);
-
-    hero.addEventListener('mousemove', (e) => {
-      const r = hero.getBoundingClientRect();
-      mouse.x = e.clientX - r.left;
-      mouse.y = e.clientY - r.top;
-      if (!active) {
-        active = true;
-        smooth.x = mouse.x; smooth.y = mouse.y;
-        reveal.classList.add('is-active');
-        glow && glow.classList.add('is-active');
-      }
-    });
-    hero.addEventListener('mouseleave', () => {
-      active = false;
-      reveal.classList.remove('is-active');
-      glow && glow.classList.remove('is-active');
-    });
-
-    const draw = () => {
-      if (active && canvas.width && canvas.height) {
-        smooth.x += (mouse.x - smooth.x) * 0.1;
-        smooth.y += (mouse.y - smooth.y) * 0.1;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const g = ctx.createRadialGradient(smooth.x, smooth.y, 0, smooth.x, smooth.y, SPOTLIGHT_R);
-        g.addColorStop(0,    'rgba(255,255,255,1)');
-        g.addColorStop(0.4,  'rgba(255,255,255,1)');
-        g.addColorStop(0.6,  'rgba(255,255,255,0.75)');
-        g.addColorStop(0.75, 'rgba(255,255,255,0.4)');
-        g.addColorStop(0.88, 'rgba(255,255,255,0.12)');
-        g.addColorStop(1,    'rgba(255,255,255,0)');
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(smooth.x, smooth.y, SPOTLIGHT_R, 0, Math.PI * 2);
-        ctx.fill();
-        const url = canvas.toDataURL();
-        reveal.style.webkitMaskImage = `url(${url})`;
-        reveal.style.maskImage = `url(${url})`;
-        if (glow) glow.style.transform = `translate(${smooth.x}px, ${smooth.y}px)`;
-      }
-      raf = requestAnimationFrame(draw);
-    };
-    raf = requestAnimationFrame(draw);
-  }
-</script>
