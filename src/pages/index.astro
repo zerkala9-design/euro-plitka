@@ -431,21 +431,20 @@ import TileCalculator from '../components/TileCalculator.astro';
     .how-layout { grid-template-columns: 1fr; gap: 48px; }
     .how-visual { order: -1; }
   }
-  /* На вужчих екранах — кнопки в потоці під контентом (не на стіні) */
+  /* На планшеті/мобільному прибираємо декоративні кнопки на стіні
+     (калькулятори доступні через меню та кнопку «Розрахувати вартість») */
   @media (max-width: 1100px) {
-    .hero__shortcuts {
-      position: static; opacity: 1 !important;
-      flex-direction: row; flex-wrap: wrap; gap: 16px 32px;
-      margin: 8px 24px 0; padding-bottom: 8px;
-    }
-    .hero-shortcut { min-width: 220px; padding-bottom: 14px; }
+    .hero__shortcuts { display: none; }
   }
   @media (max-width: 640px) {
-    .hero { min-height: 88vh; }
-    .hero__inner { padding: 80px 24px 40px; }
-    .hero__stats { gap: 28px; margin-top: 40px; }
-    .hero__shortcuts { flex-direction: column; gap: 14px; }
-    .hero-shortcut__label { font-size: 1rem; }
+    .hero { min-height: 80vh; }
+    .hero__inner { padding: 64px 20px 40px; }
+    .hero__title { font-size: clamp(2rem, 9vw, 2.6rem); }
+    .hero__text { font-size: 1rem; margin-bottom: 28px; }
+    .hero__actions { flex-direction: column; align-items: stretch; }
+    .hero__actions .btn { width: 100%; }
+    .hero__stats { gap: 24px; margin-top: 32px; padding-top: 28px; }
+    .hero__stat-num { font-size: 1.9rem; }
     .hero__overlay {
       background: linear-gradient(0deg, rgba(20,18,12,0.92) 0%, rgba(20,18,12,0.55) 60%, rgba(20,18,12,0.4) 100%);
     }
