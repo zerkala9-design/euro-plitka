@@ -13,6 +13,7 @@ import TileCalculator from '../components/TileCalculator.astro';
     <div class="hero__base"></div>
     <div class="hero__overlay"></div>
     <div class="hero__reveal" id="heroReveal"></div>
+    <div class="hero__glow" id="heroGlow"></div>
     <canvas class="hero__mask" id="heroMaskCanvas" aria-hidden="true"></canvas>
     <div class="container hero__inner">
       <div class="hero__content">
@@ -236,7 +237,29 @@ import TileCalculator from '../components/TileCalculator.astro';
     opacity: 0;
     transition: opacity 0.4s ease;
   }
+  .hero__reveal {
+    filter: brightness(1.32) saturate(1.15) contrast(1.04) sepia(0.12) hue-rotate(-8deg);
+  }
   .hero__reveal.is-active { opacity: 1; }
+  /* Тепле LED-світіння, що «вмикається» під курсором */
+  .hero__glow {
+    position: absolute; z-index: 4;
+    left: 0; top: 0;
+    width: 620px; height: 620px;
+    margin-left: -310px; margin-top: -310px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+      rgba(255,224,168,0.6) 0%,
+      rgba(255,206,128,0.34) 32%,
+      rgba(255,196,112,0.12) 58%,
+      transparent 74%);
+    mix-blend-mode: screen;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+    will-change: transform;
+  }
+  .hero__glow.is-active { opacity: 1; }
   .hero__mask { position: absolute; inset: 0; pointer-events: none; display: none; }
   .hero__inner { position: relative; z-index: 5; padding: 100px 24px; }
   .hero__title, .hero__text { text-shadow: 0 2px 24px rgba(0,0,0,0.5); }
@@ -370,6 +393,7 @@ import TileCalculator from '../components/TileCalculator.astro';
   const SPOTLIGHT_R = 260;
   const hero = document.getElementById('hero');
   const reveal = document.getElementById('heroReveal');
+  const glow = document.getElementById('heroGlow');
   const canvas = document.getElementById('heroMaskCanvas');
 
   if (hero && reveal && canvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -395,11 +419,13 @@ import TileCalculator from '../components/TileCalculator.astro';
         active = true;
         smooth.x = mouse.x; smooth.y = mouse.y;
         reveal.classList.add('is-active');
+        glow && glow.classList.add('is-active');
       }
     });
     hero.addEventListener('mouseleave', () => {
       active = false;
       reveal.classList.remove('is-active');
+      glow && glow.classList.remove('is-active');
     });
 
     const draw = () => {
@@ -421,6 +447,7 @@ import TileCalculator from '../components/TileCalculator.astro';
         const url = canvas.toDataURL();
         reveal.style.webkitMaskImage = `url(${url})`;
         reveal.style.maskImage = `url(${url})`;
+        if (glow) glow.style.transform = `translate(${smooth.x}px, ${smooth.y}px)`;
       }
       raf = requestAnimationFrame(draw);
     };
