@@ -268,7 +268,7 @@ function recalc() {
 
   document.getElementById('priceBreakdown').innerHTML = `
     <div class="led-breakdown-row"><span>Дзеркало з опціями:</span><span>${mirrorTotal.toLocaleString('uk-UA')} грн</span></div>
-    <div class="led-breakdown-row"><span>Монтаж (35%):</span><span>${mountingCost ? mountingCost.toLocaleString('uk-UA') + ' грн' : '0 грн'}</span></div>
+    <div class="led-breakdown-row"><span>Монтаж:</span><span>${mountingCost ? mountingCost.toLocaleString('uk-UA') + ' грн' : '0 грн'}</span></div>
     <div class="led-breakdown-row"><span>Доставка:</span><span>${deliveryCost ? deliveryCost.toLocaleString('uk-UA') + ' грн' : '0 грн'}</span></div>
   `;
 
