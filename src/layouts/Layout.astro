@@ -1,21 +1,49 @@
 ---
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
 import '../styles/global.css';
 
 interface Props {
   title: string;
   description?: string;
   canonical?: string;
+  ogImage?: string;
 }
 
 const {
   title,
   description = 'Дзеркальна плитка та LED дзеркала в Києві. Виготовлення панно, монтаж, доставка. Онлайн-калькулятор.',
   canonical,
+  ogImage = '/hero-on.jpg',
 } = Astro.props;
 
-const url = canonical ?? `https://euro-plitka.com.ua${Astro.url.pathname}`;
+const origin = 'https://euro-plitka.com.ua';
+const url = canonical ?? `${origin}${Astro.url.pathname}`;
+const ogImageUrl = `${origin}${ogImage}`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: site.name,
+  image: ogImageUrl,
+  url: origin,
+  telephone: [site.phone.tel, site.phone2?.tel].filter(Boolean),
+  email: site.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'вул. Вадима Гетьмана, 27',
+    addressLocality: 'Київ',
+    addressCountry: 'UA',
+  },
+  openingHoursSpecification: {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    opens: '10:00',
+    closes: '18:00',
+  },
+  sameAs: [site.social.instagram, site.social.telegram].filter(Boolean),
+};
 ---
 
 <!doctype html>
@@ -25,6 +53,7 @@ const url = canonical ?? `https://euro-plitka.com.ua${Astro.url.pathname}`;
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title} | Євро Плитка</title>
   <meta name="description" content={description} />
+  <meta name="theme-color" content="#b89244" />
   <link rel="canonical" href={url} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -35,6 +64,13 @@ const url = canonical ?? `https://euro-plitka.com.ua${Astro.url.pathname}`;
   <meta property="og:url" content={url} />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="uk_UA" />
+  <meta property="og:site_name" content="Євро Плитка" />
+  <meta property="og:image" content={ogImageUrl} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={`${title} | Євро Плитка`} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImageUrl} />
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 </head>
 <body>
   <Header />
