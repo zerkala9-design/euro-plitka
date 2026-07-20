@@ -83,12 +83,13 @@ import LedCalculator from '../components/LedCalculator.astro';
   .page-hero--dark {
     background: var(--bg);
     border-bottom: 1px solid var(--border);
-    padding: 60px 0 48px;
+    padding: 28px 0 24px;
   }
-  .page-hero--dark .breadcrumb { color: var(--text-muted); margin-bottom: 20px; font-size: 0.88rem; display: flex; gap: 8px; align-items: center; }
+  .page-hero--dark .breadcrumb { color: var(--text-muted); margin-bottom: 10px; font-size: 0.82rem; display: flex; gap: 8px; align-items: center; }
   .page-hero--dark .breadcrumb a { color: var(--text-muted); }
-  .page-hero--dark h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text); margin-bottom: 12px; }
-  .hero-sub { color: var(--text-muted); font-size: 1.1rem; }
+  .page-hero--dark .section-label { margin-bottom: 4px; }
+  .page-hero--dark h1 { font-size: clamp(1.35rem, 2.6vw, 1.9rem); color: var(--text); margin-bottom: 6px; }
+  .hero-sub { color: var(--text-muted); font-size: 0.95rem; }
 
   .section-label {
     font-size: 0.78rem;
@@ -99,7 +100,7 @@ import LedCalculator from '../components/LedCalculator.astro';
     margin-bottom: 8px;
   }
 
-  .calc-section { background: var(--bg); }
+  .calc-section { background: var(--bg); padding: 28px 0 60px; }
   .backlight-section { background: #111; }
 
   .backlight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 28px; }

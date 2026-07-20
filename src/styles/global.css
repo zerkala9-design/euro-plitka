@@ -1,56 +1,244 @@
-export const site = {
-  name: 'Євро Плитка',
-  domain: 'euro-plitka.com.ua',
-  phone: { tel: '+380995283637', display: '+38 (099) 528-36-37' },
-  email: 'info-plitka@ukr.net',
-  address: 'Київ',
-  workingHours: 'Пн–Сб: 9:00–18:00',
-  social: {
-    instagram: 'https://www.instagram.com/euro_plitka/',
-    facebook: '',
-    telegram: 'https://t.me/europlitka',
-  },
-};
+/* ===== FONTS ===== */
+/* Inter + Playfair Display завантажуються в Layout.astro */
 
-export const nav = [
-  { label: 'Головна',           path: '/' },
-  { label: 'Дзеркальна плитка', path: '/dzerkalna-plitka/' },
-  { label: 'LED дзеркала',      path: '/led-dzerkalo/' },
-  { label: 'Послуги',           path: '/poslugy/' },
-  { label: 'Про нас',           path: '/pro-nas/' },
-  { label: 'Доставка та оплата',path: '/dostavka/' },
-  { label: 'Контакти',          path: '/kontakty/' },
-];
+/* ===== RESET ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+img, svg { display: block; max-width: 100%; }
+button { cursor: pointer; }
+a { text-decoration: none; color: inherit; }
 
-export const tileCalcConfig = {
-  silverPrice: 2120,
-  colorPrice: 3270,
-  trianglePrice: 1.5,
-  facetsPrices: [0, 35, 55, 75, 95],
-  extraPrice: 1.0,
-  defaultPrice: 1.0,
-  gridAuto: 400,
-  gridRatio: { ideal: 1.35, max: 1.5 },
-  tileMin: 150,
-  tileMax: 600,
-};
+/* ===== TOKENS ===== */
+:root {
+  /* Шрифти */
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font:         var(--font-body);
 
-export const ledCalcConfig = {
-  pricePerCm2: { back: 0.875, front: 1.05 },
-  lightColors: [
-    { id: 'warm',    label: 'Тепле 3000K',     color: '#ffd580' },
-    { id: 'neutral', label: 'Нейтральне 4000K', color: '#fff5cc' },
-    { id: 'cold',    label: 'Холодне 6000K',    color: '#e8f4ff' },
-  ],
-  options: [
-    { id: 'heat',   label: 'Підігрів', price: 400 },
-    { id: 'sensor', label: 'Сенсор',   price: 300 },
-    { id: 'dimmer', label: 'Дімер',    price: 200 },
-  ],
-  mounting: 500,
-  delivery: 200,
-  minSize: 300,
-  maxSize: 2000,
-  defaultW: 400,
-  defaultH: 600,
-};
+  /* Кольорова схема — СВІТЛА */
+  --white:        #ffffff;
+  --bg:           #fafaf8;
+  --bg-gray:      #f4f3f0;
+  --bg-card:      #ffffff;
+  --bg-input:     #f9f8f6;
+  --bg-dark:      #1a1810;
+
+  /* Текст */
+  --text:         #1a1810;
+  --text-mid:     #3d3b33;
+  --text-muted:   #6b6860;
+
+  /* Золото */
+  --gold:         #b89244;
+  --gold-light:   #d4aa5a;
+  --gold-pale:    #fdf6e7;
+  --gold-border:  #e8d49a;
+  --border-gold:  #e8d49a;
+
+  /* Межі */
+  --border:       #e8e6e0;
+
+  /* Тіні */
+  --shadow:       0 1px 4px rgba(26,24,16,0.08);
+  --shadow-md:    0 4px 16px rgba(26,24,16,0.10);
+  --shadow-lg:    0 8px 40px rgba(26,24,16,0.13);
+
+  /* Радіуси */
+  --radius-sm:    6px;
+  --radius:       10px;
+  --radius-lg:    16px;
+}
+
+/* ===== BASE ===== */
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-heading);
+  line-height: 1.2;
+  color: var(--text);
+  font-weight: 700;
+}
+h1 { font-size: clamp(2rem, 4.5vw, 3rem); font-weight: 800; }
+h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); }
+h3 { font-size: 1.15rem; font-family: var(--font-body); font-weight: 700; }
+
+p { color: var(--text-mid); }
+
+/* ===== LAYOUT ===== */
+.container {
+  width: 100%;
+  max-width: 1680px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+@media (max-width: 700px) {
+  .container { padding: 0 16px; }
+}
+
+/* ===== SECTIONS ===== */
+.section { padding: 80px 0; }
+.section--white { background: var(--white); }
+.section--gray  { background: var(--bg-gray); }
+
+.section-header { margin-bottom: 48px; }
+.section-header--center { text-align: center; margin-bottom: 48px; }
+.section-header h2, .section-header--center h2 { margin-bottom: 0; }
+.section-header p, .section-header--center p { color: var(--text-muted); margin-top: 14px; }
+
+/* ===== DIVIDER ===== */
+.divider {
+  width: 48px; height: 3px;
+  background: var(--gold);
+  border-radius: 2px;
+  margin: 20px 0;
+}
+.divider--center { margin: 20px auto; }
+
+/* ===== BADGE ===== */
+.badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: var(--gold-pale);
+  border: 1px solid var(--gold-border);
+  border-radius: 100px;
+  padding: 4px 14px;
+}
+.badge--dark {
+  background: rgba(184,146,68,0.15);
+  border-color: rgba(184,146,68,0.3);
+  color: var(--gold-light);
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 28px;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.925rem;
+  font-weight: 600;
+  border: 2px solid transparent;
+  transition: all 0.18s;
+  white-space: nowrap;
+  line-height: 1;
+}
+.btn--lg { padding: 16px 36px; font-size: 1rem; }
+
+.btn--primary {
+  background: var(--gold);
+  color: #fff;
+  border-color: var(--gold);
+}
+.btn--primary:hover {
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(184,146,68,0.35);
+}
+
+.btn--dark {
+  background: var(--text);
+  color: #fff;
+  border-color: var(--text);
+}
+.btn--dark:hover {
+  background: #2d2b22;
+  transform: translateY(-1px);
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--gold);
+  border-color: var(--gold);
+}
+.btn--outline:hover {
+  background: var(--gold-pale);
+  transform: translateY(-1px);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--text-mid);
+  border-color: var(--border);
+}
+.btn--ghost:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: var(--gold-pale);
+}
+
+.btn--sm { padding: 9px 16px; font-size: 0.85rem; }
+
+/* ===== GRIDS ===== */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+  .grid-4 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+
+/* ===== FEATURE ICON ===== */
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: 14px;
+}
+
+/* ===== STEPS ===== */
+.steps { display: flex; flex-direction: column; gap: 28px; }
+.step { display: flex; gap: 18px; align-items: flex-start; }
+.step__num {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--gold-pale);
+  border: 2px solid var(--gold-border);
+  flex-shrink: 0;
+  counter-increment: step-counter;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: var(--gold); font-size: 0.9rem;
+}
+.steps { counter-reset: step-counter; }
+.step__num::before { content: counter(step-counter); }
+.step__body h3 { font-family: var(--font-body); font-size: 1rem; font-weight: 700; margin-bottom: 5px; }
+.step__body p { font-size: 0.9rem; color: var(--text-muted); }
+
+/* ===== CTA BANNER ===== */
+.cta-banner {
+  background: linear-gradient(135deg, #1a1810 0%, #2a2618 60%, #1a1810 100%);
+  padding: 80px 0;
+  text-align: center;
+}
+.cta-banner h2 { color: #fff; margin-bottom: 14px; }
+.cta-banner p { color: rgba(255,255,255,0.65); font-size: 1.1rem; margin-bottom: 36px; }
+.cta-banner__actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-gray); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-border); }

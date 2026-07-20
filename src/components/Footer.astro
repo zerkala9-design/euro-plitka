@@ -49,6 +49,7 @@ const year = new Date().getFullYear();
         <h4>Контакти</h4>
         <ul class="footer__contacts">
           <li><a href={`tel:${site.phone.tel}`}>{site.phone.display}</a></li>
+          {site.phone2 && <li><a href={`tel:${site.phone2.tel}`}>{site.phone2.display}</a></li>}
           <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
           <li>{site.address}</li>
           <li>{site.workingHours}</li>

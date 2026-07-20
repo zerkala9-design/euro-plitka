@@ -6,65 +6,77 @@ const cfg = JSON.stringify(ledCalcConfig);
 <div class="led-calc" id="ledCalc">
   <div class="led-calc__left">
 
-    <!-- 1. Тип -->
+    <!-- 1. Тип підсвітки -->
     <div class="led-step">
-      <h3 class="led-step__title">1. Тип дзеркала</h3>
+      <h3 class="led-step__title">1. Тип підсвітки</h3>
       <div class="led-type-grid">
         <label class="led-type-card" data-type="back">
           <input type="radio" name="mirrorType" value="back" checked />
-          <div class="led-type-card__img">🪞</div>
+          <img class="led-type-card__photo" id="typeImgBack" src="/led-back-rect.png" alt="Фонова LED-підсвітка" loading="lazy" />
           <span>ФОНОВА</span>
+          <small>Світло по контуру ззаду</small>
         </label>
         <label class="led-type-card" data-type="front">
           <input type="radio" name="mirrorType" value="front" />
-          <div class="led-type-card__img">💡</div>
+          <img class="led-type-card__photo" id="typeImgFront" src="/led-front-rect.png" alt="Фронтальна LED-підсвітка" loading="lazy" />
           <span>ФРОНТАЛЬНА</span>
+          <small>Світло на лицьовій частині</small>
         </label>
       </div>
     </div>
 
-    <!-- 2. Розмір -->
+    <!-- 2. Форма -->
     <div class="led-step">
-      <h3 class="led-step__title">2. Розмір дзеркала</h3>
+      <h3 class="led-step__title">2. Форма дзеркала</h3>
+      <div class="led-type-grid led-shape-grid">
+        <label class="led-type-card" data-shape="rect">
+          <input type="radio" name="shape" value="rect" checked />
+          <svg class="led-shape-ico" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="8" y="12" width="32" height="24" rx="4" stroke="currentColor" stroke-width="2.5"/>
+          </svg>
+          <span>Прямокутник</span>
+        </label>
+        <label class="led-type-card" data-shape="circle">
+          <input type="radio" name="shape" value="circle" />
+          <svg class="led-shape-ico" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="24" cy="24" r="15" stroke="currentColor" stroke-width="2.5"/>
+          </svg>
+          <span>Коло</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 3. Розмір -->
+    <div class="led-step">
+      <h3 class="led-step__title">3. Розмір дзеркала</h3>
       <div class="led-size-row">
-        <label class="led-size-field">
-          <span>Ширина (мм)</span>
+        <label class="led-size-field" id="fieldW">
+          <span id="labelW">Ширина (мм)</span>
           <div class="led-size-input">
-            <input type="number" id="ledW" value="400" min="200" max="2000" step="10" />
+            <input type="number" id="ledW" value="400" min="300" max="2000" step="10" />
             <span>мм</span>
           </div>
         </label>
-        <label class="led-size-field">
+        <label class="led-size-field" id="fieldH">
           <span>Висота (мм)</span>
           <div class="led-size-input">
-            <input type="number" id="ledH" value="600" min="200" max="2000" step="10" />
+            <input type="number" id="ledH" value="600" min="300" max="2000" step="10" />
             <span>мм</span>
           </div>
         </label>
       </div>
     </div>
 
-    <!-- 3. Колір світла -->
+    <!-- 4. Колір світла -->
     <div class="led-step">
-      <h3 class="led-step__title">3. Колір світла</h3>
+      <h3 class="led-step__title">4. Колір світла</h3>
       <div class="led-light-grid" id="lightGrid"></div>
     </div>
 
-    <!-- 4. Додаткові опції -->
+    <!-- 5. Додаткові опції -->
     <div class="led-step">
-      <h3 class="led-step__title">4. Додаткові опції</h3>
+      <h3 class="led-step__title">5. Додаткові опції</h3>
       <div class="led-options-grid" id="optionsGrid"></div>
-    </div>
-
-    <!-- 5. Кількість -->
-    <div class="led-step">
-      <h3 class="led-step__title">5. Кількість</h3>
-      <div class="led-qty">
-        <button class="led-qty__btn" id="qtyMinus">−</button>
-        <span class="led-qty__val" id="qtyVal">1</span>
-        <button class="led-qty__btn" id="qtyPlus">+</button>
-        <span class="led-qty__unit">шт</span>
-      </div>
     </div>
 
     <!-- 6 & 7. Монтаж і доставка -->
@@ -87,16 +99,14 @@ const cfg = JSON.stringify(ledCalcConfig);
     <div class="led-summary">
       <h3>Ваше дзеркало</h3>
       <div class="led-summary__list" id="summaryList"></div>
-    </div>
-
-    <div class="led-service-row led-service-row--price">
-      <div>
-        <p class="led-service-label">6. Монтаж</p>
-        <button class="btn btn--ghost btn--sm led-toggle" id="toggleMounting2">Додати монтаж</button>
-      </div>
-      <div>
-        <p class="led-service-label">7. Доставка Київ</p>
-        <button class="btn btn--ghost btn--sm led-toggle" id="toggleDelivery2">Додати доставку</button>
+      <div class="led-summary__row led-summary__qtyrow">
+        <span>Кількість</span>
+        <div class="led-qty">
+          <button class="led-qty__btn" id="qtyMinus" aria-label="Менше">−</button>
+          <span class="led-qty__val" id="qtyVal">1</span>
+          <button class="led-qty__btn" id="qtyPlus" aria-label="Більше">+</button>
+          <span class="led-qty__unit">шт</span>
+        </div>
       </div>
     </div>
 
@@ -135,6 +145,7 @@ const CFG = JSON.parse(cfg);
 
 let state = {
   type: 'back',
+  shape: 'rect',
   W: 400, H: 600,
   light: 'warm',
   options: {},
@@ -142,6 +153,8 @@ let state = {
   mounting: false,
   delivery: false,
 };
+
+const shapeLabels = { rect: 'Прямокутник', circle: 'Коло', oval: 'Овал' };
 
 // Рендер опцій світла
 const lightGrid = document.getElementById('lightGrid');
@@ -180,11 +193,47 @@ CFG.options.forEach(opt => {
   optGrid.appendChild(wrap);
 });
 
-// Ціна дзеркала
+// Геометрія дзеркала в метрах.
+// Кругле дзеркало вирізається з квадратного листа → площа за описаним
+// квадратом (діаметр²); LED-стрічка йде по колу → периметр = π·D.
+function geometry() {
+  const Wm = state.W / 1000;
+  const Hm = (state.shape === 'circle' ? state.W : state.H) / 1000;
+  if (state.shape === 'circle') {
+    return { areaM2: Wm * Wm, perimM: Math.PI * Wm };
+  }
+  return { areaM2: Wm * Hm, perimM: 2 * (Wm + Hm) };
+}
+
+// Ціна дзеркала = площа × тариф/м² + периметр × тариф/м (LED-стрічка).
+// Тарифи залежать від форми (прямокутник/коло) та типу підсвітки.
 function mirrorPrice() {
-  const areaCm2 = (state.W / 10) * (state.H / 10);
-  const ratePerCm2 = state.type === 'back' ? CFG.pricePerCm2.back : CFG.pricePerCm2.front;
-  return Math.round(areaCm2 * ratePerCm2);
+  const { areaM2, perimM } = geometry();
+  const shapeRates = CFG.rates[state.shape === 'circle' ? 'circle' : 'rect'];
+  const r = shapeRates[state.type] || shapeRates.back;
+  const raw = areaM2 * r.perM2 + perimM * r.perM;
+  const step = CFG.priceRound || 1;
+  return Math.round(raw / step) * step;
+}
+
+// Превʼю — реальне фото дзеркала, яке замовляють
+function drawPreview() {
+  const el = document.getElementById('ledPreviewImg');
+  if (!el) return;
+  const shape = state.shape === 'circle' ? 'circle' : 'rect';
+  el.src = `/led-${state.type}-${shape}.png`;
+}
+
+// Адаптація полів розміру під форму
+function updateSizeUI() {
+  const isCircle = state.shape === 'circle';
+  document.getElementById('fieldH').style.display = isCircle ? 'none' : '';
+  document.getElementById('labelW').textContent = isCircle ? 'Діаметр (мм)' : 'Ширина (мм)';
+  if (isCircle) state.H = state.W;
+  // фото типів підсвітки відповідно до форми
+  const variant = isCircle ? 'circle' : 'rect';
+  document.getElementById('typeImgBack').src = `/led-back-${variant}.png`;
+  document.getElementById('typeImgFront').src = `/led-front-${variant}.png`;
 }
 
 function recalc() {
@@ -195,22 +244,27 @@ function recalc() {
   });
   const unitPrice = base + optionsTotal;
   const mirrorTotal = unitPrice * state.qty;
-  const mountingCost = state.mounting ? CFG.mounting * state.qty : 0;
+  // Монтаж — 35% від вартості дзеркал
+  const mountingCost = state.mounting ? Math.round(mirrorTotal * CFG.mountingPercent) : 0;
   const deliveryCost = state.delivery ? CFG.delivery : 0;
   const total = mirrorTotal + mountingCost + deliveryCost;
 
   // Підсумок
   const typeLabel = state.type === 'back' ? 'Фонова' : 'Фронтальна';
+  const shapeLabel = shapeLabels[state.shape];
   const lightLabel = (CFG.lightColors.find(l => l.id === state.light) || {}).label || '';
   const optLabels = CFG.options.filter(o => state.options[o.id]).map(o => o.label).join(', ') || 'Без опцій';
+  const dimText = state.shape === 'circle' ? `⌀ ${state.W} мм` : `${state.W} × ${state.H} мм`;
 
   document.getElementById('summaryList').innerHTML = `
-    <div class="led-summary__row"><span>Тип</span><span>${typeLabel}</span></div>
-    <div class="led-summary__row"><span>Розмір</span><span>${state.W} × ${state.H} мм</span></div>
+    <div class="led-summary__row"><span>Підсвітка</span><span>${typeLabel}</span></div>
+    <div class="led-summary__row"><span>Форма</span><span>${shapeLabel}</span></div>
+    <div class="led-summary__row"><span>Розмір</span><span>${dimText}</span></div>
     <div class="led-summary__row"><span>Колір</span><span>${lightLabel}</span></div>
     <div class="led-summary__row"><span>Опції</span><span>${optLabels}</span></div>
-    <div class="led-summary__row"><span>Кількість</span><span>${state.qty} шт</span></div>
   `;
+
+  drawPreview();
 
   document.getElementById('priceBreakdown').innerHTML = `
     <div class="led-breakdown-row"><span>Дзеркало з опціями:</span><span>${mirrorTotal.toLocaleString('uk-UA')} грн</span></div>
@@ -221,7 +275,7 @@ function recalc() {
   document.getElementById('totalPrice').textContent = total.toLocaleString('uk-UA') + ' грн';
 
   // Зберігаємо для замовлення
-  window._ledOrderData = { typeLabel, lightLabel, optLabels, unitPrice, qty: state.qty, mirrorTotal, mountingCost, deliveryCost, total };
+  window._ledOrderData = { typeLabel, shapeLabel, dimText, lightLabel, optLabels, unitPrice, qty: state.qty, mirrorTotal, mountingCost, deliveryCost, total };
 }
 
 // Кількість
@@ -244,11 +298,39 @@ document.querySelectorAll('input[name="mirrorType"]').forEach(r => {
 });
 document.querySelector('.led-type-card[data-type="back"]')?.classList.add('selected');
 
+// Форма
+document.querySelectorAll('input[name="shape"]').forEach(r => {
+  r.addEventListener('change', (e) => {
+    state.shape = e.target.value;
+    document.querySelectorAll('.led-shape-grid .led-type-card').forEach(c => c.classList.remove('selected'));
+    e.target.closest('.led-type-card')?.classList.add('selected');
+    updateSizeUI();
+    recalc();
+  });
+});
+document.querySelector('.led-shape-grid .led-type-card[data-shape="rect"]')?.classList.add('selected');
+
 // Розмір
+const clampSize = (v, fallback) => {
+  const n = parseInt(v);
+  if (!n || isNaN(n)) return fallback;
+  return Math.min(CFG.maxSize, Math.max(CFG.minSize, n));
+};
 ['ledW', 'ledH'].forEach(id => {
-  document.getElementById(id).addEventListener('input', (e) => {
-    if (id === 'ledW') state.W = parseInt(e.target.value) || 400;
-    else state.H = parseInt(e.target.value) || 600;
+  const inp = document.getElementById(id);
+  // живий перерахунок під час набору (без жорсткого затискання, щоб не заважати друкувати)
+  inp.addEventListener('input', (e) => {
+    if (id === 'ledW') { state.W = parseInt(e.target.value) || CFG.defaultW; if (state.shape === 'circle') state.H = state.W; }
+    else state.H = parseInt(e.target.value) || CFG.defaultH;
+    recalc();
+  });
+  // затискаємо у допустимий діапазон, коли користувач залишає поле
+  inp.addEventListener('change', (e) => {
+    const fallback = id === 'ledW' ? CFG.defaultW : CFG.defaultH;
+    const v = clampSize(e.target.value, fallback);
+    e.target.value = v;
+    if (id === 'ledW') { state.W = v; if (state.shape === 'circle') state.H = v; }
+    else state.H = v;
     recalc();
   });
 });
@@ -264,9 +346,7 @@ function toggleService(id, key) {
   recalc();
 }
 document.getElementById('toggleMounting').addEventListener('click', () => toggleService('toggleMounting', 'mounting'));
-document.getElementById('toggleMounting2').addEventListener('click', () => toggleService('toggleMounting', 'mounting'));
 document.getElementById('toggleDelivery').addEventListener('click', () => toggleService('toggleDelivery', 'delivery'));
-document.getElementById('toggleDelivery2').addEventListener('click', () => toggleService('toggleDelivery', 'delivery'));
 
 // Замовити
 document.getElementById('ledOrderBtn').addEventListener('click', () => {
@@ -274,7 +354,9 @@ document.getElementById('ledOrderBtn').addEventListener('click', () => {
   document.getElementById('ledOrderSummary').innerHTML = `
     <table class="order-table">
       <tbody>
-        <tr><td>Тип</td><td>${d.typeLabel}</td></tr>
+        <tr><td>Підсвітка</td><td>${d.typeLabel}</td></tr>
+        <tr><td>Форма</td><td>${d.shapeLabel}</td></tr>
+        <tr><td>Розмір</td><td>${d.dimText}</td></tr>
         <tr><td>Колір</td><td>${d.lightLabel}</td></tr>
         <tr><td>Опції</td><td>${d.optLabels}</td></tr>
         <tr><td>Кількість</td><td>${d.qty} шт</td></tr>
@@ -302,115 +384,141 @@ document.getElementById('submitLedOrder').addEventListener('click', () => {
 });
 
 // Старт
+updateSizeUI();
 recalc();
 </script>
 
-<style>
-  .led-calc {
+<style is:global>
+  #ledCalc {
     display: grid;
     grid-template-columns: 1fr 360px;
     gap: 32px;
     align-items: start;
   }
 
-  .led-step { margin-bottom: 28px; }
-  .led-step__title {
-    font-size: 1rem;
+  #ledCalc .led-step { margin-bottom: 16px; }
+  #ledCalc .led-step__title {
+    font-size: 0.98rem;
     font-weight: 700;
-    margin-bottom: 14px;
+    margin-bottom: 8px;
     color: var(--text);
   }
 
   /* Тип дзеркала */
-  .led-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .led-type-card {
+  #ledCalc .led-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  #ledCalc .led-type-card {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    padding: 16px;
+    padding: 18px;
     border: 2px solid var(--border);
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s;
     text-align: center;
+    background: var(--white);
   }
-  .led-type-card input { display: none; }
-  .led-type-card__img { font-size: 2.5rem; }
-  .led-type-card span { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
-  .led-type-card.selected, .led-type-card:has(input:checked) {
-    border-color: var(--green);
-    background: rgba(46,125,50,0.05);
+  #ledCalc .led-type-card:hover { border-color: var(--gold-border); }
+  #ledCalc .led-type-card input { display: none; }
+  #ledCalc .led-type-card__img { font-size: 2.5rem; }
+  #ledCalc .led-type-card span { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+  #ledCalc .led-type-card small { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; line-height: 1.3; }
+  #ledCalc .led-type-card__icon { width: 68px; height: 68px; display: block; }
+  #ledCalc .led-type-card__photo {
+    width: 100%;
+    height: auto;
+    max-height: 340px;
+    object-fit: contain;
+    border-radius: 10px;
+    display: block;
+    background: var(--bg-gray);
   }
-  .led-type-card.selected span, .led-type-card:has(input:checked) span { color: var(--green); }
+  #ledCalc .led-type-grid:not(.led-shape-grid) .led-type-card { padding: 12px; gap: 6px; }
+  #ledCalc .led-shape-grid { grid-template-columns: repeat(2, 1fr); }
+  #ledCalc .led-shape-grid .led-type-card { padding: 7px 8px; gap: 3px; }
+  #ledCalc .led-shape-ico { width: 26px; height: 26px; color: var(--text-muted); transition: color 0.2s; }
+  #ledCalc .led-shape-grid span { font-size: 0.72rem; }
+  #ledCalc .led-shape-grid .led-type-card:has(input:checked) .led-shape-ico { color: var(--gold); }
+  #ledCalc .led-shape-grid span { font-size: 0.78rem; }
+  #ledCalc .led-type-card.selected, #ledCalc .led-type-card:has(input:checked) {
+    border-color: var(--gold);
+    background: var(--gold-pale);
+  }
+  #ledCalc .led-type-card.selected span, #ledCalc .led-type-card:has(input:checked) span { color: var(--gold); }
 
   /* Розмір */
-  .led-size-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .led-size-field { display: flex; flex-direction: column; gap: 6px; }
-  .led-size-field > span { font-size: 0.85rem; color: var(--text-muted); }
-  .led-size-input {
+  #ledCalc .led-size-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  #ledCalc .led-size-field { display: flex; flex-direction: column; gap: 6px; }
+  #ledCalc .led-size-field > span { font-size: 0.88rem; font-weight: 600; color: var(--text-mid); }
+  #ledCalc .led-size-input {
     display: flex;
     align-items: center;
     gap: 8px;
     border: 1.5px solid var(--border);
     border-radius: var(--radius);
-    padding: 10px 12px;
+    padding: 8px 12px;
+    background: var(--white);
   }
-  .led-size-input:focus-within { border-color: var(--green); }
-  .led-size-input input {
-    flex: 1; border: none; outline: none;
-    font-family: var(--font); font-size: 1.1rem; font-weight: 600;
+  #ledCalc .led-size-input:focus-within { border-color: var(--gold); }
+  #ledCalc .led-size-input input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-family: var(--font); font-size: 1rem; font-weight: 600; color: var(--text);
     min-width: 60px;
   }
-  .led-size-input span { font-size: 0.85rem; color: var(--text-muted); }
+  #ledCalc .led-size-input span { font-size: 0.85rem; color: var(--text-muted); }
 
   /* Колір світла */
-  .led-light-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .led-light-card {
+  #ledCalc .led-light-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  #ledCalc .led-light-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    padding: 12px 8px;
+    gap: 4px;
+    padding: 6px 6px;
     border: 2px solid var(--border);
-    border-radius: 10px;
+    border-radius: 9px;
     cursor: pointer;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, background 0.2s;
     text-align: center;
+    background: var(--white);
   }
-  .led-light-card input { display: none; }
-  .led-light-card:has(input:checked) { border-color: var(--green); }
-  .led-light-swatch {
-    width: 40px; height: 20px;
-    border-radius: 4px;
-    border: 1px solid rgba(0,0,0,0.1);
+  #ledCalc .led-light-card input { display: none; }
+  #ledCalc .led-light-card:hover { border-color: var(--gold-border); }
+  #ledCalc .led-light-card:has(input:checked) { border-color: var(--gold); background: var(--gold-pale); }
+  #ledCalc .led-light-swatch {
+    width: 38px; height: 18px;
+    border-radius: 5px;
+    border: 1px solid rgba(0,0,0,0.12);
   }
-  .led-light-name { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  #ledCalc .led-light-name { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-mid); }
 
   /* Опції */
-  .led-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .led-option {
+  #ledCalc .led-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  #ledCalc .led-option {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    padding: 12px 14px;
+    padding: 9px 14px;
     border: 1.5px solid var(--border);
     border-radius: var(--radius);
+    background: var(--white);
   }
-  .led-option__label { font-weight: 600; font-size: 0.9rem; }
-  .led-option__price { font-size: 0.8rem; color: var(--green); }
+  #ledCalc .led-option__info { display: flex; flex-direction: column; gap: 2px; }
+  #ledCalc .led-option__label { font-weight: 600; font-size: 0.92rem; color: var(--text); }
+  #ledCalc .led-option__price { font-size: 0.8rem; font-weight: 600; color: var(--gold); }
 
   /* Toggle switch */
-  .led-toggle-switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; cursor: pointer; }
-  .led-toggle-switch input { opacity: 0; width: 0; height: 0; }
-  .led-toggle-track {
+  #ledCalc .led-toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; cursor: pointer; }
+  #ledCalc .led-toggle-switch input { opacity: 0; width: 0; height: 0; }
+  #ledCalc .led-toggle-track {
     position: absolute; inset: 0;
-    background: #ccc;
+    background: #d5d3cc;
     border-radius: 24px;
     transition: background 0.2s;
   }
-  .led-toggle-track::after {
+  #ledCalc .led-toggle-track::after {
     content: '';
     position: absolute;
     left: 3px; top: 3px;
@@ -418,83 +526,103 @@ recalc();
     background: #fff;
     border-radius: 50%;
     transition: transform 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
   }
-  .led-toggle-switch input:checked ~ .led-toggle-track { background: var(--green); }
-  .led-toggle-switch input:checked ~ .led-toggle-track::after { transform: translateX(18px); }
+  #ledCalc .led-toggle-switch input:checked ~ .led-toggle-track { background: var(--gold); }
+  #ledCalc .led-toggle-switch input:checked ~ .led-toggle-track::after { transform: translateX(20px); }
 
   /* Кількість */
-  .led-qty { display: flex; align-items: center; gap: 12px; }
-  .led-qty__btn {
-    width: 36px; height: 36px;
+  #ledCalc .led-qty { display: flex; align-items: center; gap: 14px; }
+  #ledCalc .led-qty__btn {
+    width: 38px; height: 38px;
     border: 2px solid var(--border);
     border-radius: 50%;
-    background: none;
+    background: var(--white);
     font-size: 1.2rem;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transition: all 0.2s;
   }
-  .led-qty__btn:hover { border-color: var(--green); color: var(--green); }
-  .led-qty__val { font-size: 1.2rem; font-weight: 700; min-width: 24px; text-align: center; }
-  .led-qty__unit { color: var(--text-muted); }
+  #ledCalc .led-qty__btn:hover { border-color: var(--gold); color: var(--gold); }
+  #ledCalc .led-qty__val { font-size: 1.3rem; font-weight: 700; min-width: 28px; text-align: center; }
+  #ledCalc .led-qty__unit { color: var(--text-muted); }
 
   /* Монтаж / доставка */
-  .led-service-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .led-service-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; }
-  .led-toggle.active { border-color: var(--green); color: var(--green); background: rgba(46,125,50,0.05); }
-  .btn--sm { padding: 8px 14px; font-size: 0.85rem; }
+  #ledCalc .led-service-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  #ledCalc .led-service-label { font-size: 0.85rem; font-weight: 600; color: var(--text-mid); margin-bottom: 8px; }
+  #ledCalc .led-toggle.active { border-color: var(--gold); color: var(--gold); background: var(--gold-pale); }
 
   /* Правий блок */
-  .led-calc__right { position: sticky; top: 80px; }
+  #ledCalc .led-calc__right { position: sticky; top: 90px; display: flex; flex-direction: column; }
 
-  .led-summary {
-    background: #fff;
+  #ledCalc .led-preview-box {
+    background: var(--bg-gray);
     border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 20px;
+    border-radius: 12px;
+    padding: 14px;
     margin-bottom: 16px;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
   }
-  .led-summary h3 { margin-bottom: 14px; font-size: 1rem; }
-  .led-summary__row {
+  #ledCalc #ledPreviewImg { width: 70%; max-width: 210px; height: auto; display: block; border-radius: 10px; }
+
+  #ledCalc .led-summary {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+  #ledCalc .led-summary h3 { margin-bottom: 14px; font-size: 1.05rem; color: var(--text); }
+  #ledCalc .led-summary__row {
     display: flex;
     justify-content: space-between;
-    padding: 6px 0;
-    font-size: 0.9rem;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 0.92rem;
     border-bottom: 1px solid var(--border);
   }
-  .led-summary__row:last-child { border-bottom: none; }
-  .led-summary__row span:first-child { color: var(--text-muted); }
-  .led-summary__row span:last-child { font-weight: 600; }
+  #ledCalc .led-summary__row:last-child { border-bottom: none; }
+  #ledCalc .led-summary__qtyrow { align-items: center; padding-top: 12px; }
+  #ledCalc .led-summary__qtyrow .led-qty { gap: 10px; }
+  #ledCalc .led-summary__qtyrow .led-qty__btn { width: 30px; height: 30px; font-size: 1.05rem; }
+  #ledCalc .led-summary__qtyrow .led-qty__val { font-size: 1.05rem; min-width: 20px; }
+  #ledCalc .led-summary__qtyrow .led-qty__unit { font-size: 0.85rem; }
+  #ledCalc .led-summary__row span:first-child { color: var(--text-muted); }
+  #ledCalc .led-summary__row span:last-child { font-weight: 700; color: var(--text); text-align: right; }
 
-  .led-service-row--price { margin-bottom: 16px; }
+  #ledCalc .led-service-row--price { margin-bottom: 16px; }
 
-  .led-price-box {
-    background: var(--green);
+  #ledCalc .led-price-box {
+    background: linear-gradient(135deg, #1a1810 0%, #2a2618 100%);
     color: #fff;
-    border-radius: 10px;
-    padding: 20px;
+    border-radius: 12px;
+    padding: 22px;
   }
-  .led-price-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; opacity: 0.8; }
-  .led-breakdown-row {
+  #ledCalc .led-price-label { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 14px; color: var(--gold-light); }
+  #ledCalc .led-breakdown-row {
     display: flex;
     justify-content: space-between;
+    gap: 12px;
     font-size: 0.9rem;
-    padding: 3px 0;
-    opacity: 0.85;
+    padding: 4px 0;
+    color: rgba(255,255,255,0.75);
   }
-  .led-price-total {
+  #ledCalc .led-price-total {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid rgba(255,255,255,0.3);
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.18);
     font-weight: 700;
   }
-  .led-price-total__val { font-size: 1.8rem; font-weight: 800; }
+  #ledCalc .led-price-total__val { font-size: 1.9rem; font-weight: 800; color: var(--gold-light); }
 
-  /* Модалка (shared styles from TileCalculator) */
-  .order-modal {
+  /* Модалка замовлення LED */
+  #ledOrderModal {
     display: none;
     position: fixed;
     inset: 0;
@@ -505,38 +633,39 @@ recalc();
     align-items: center;
     justify-content: center;
   }
-  .order-modal.open { display: flex; }
-  .order-modal__box {
-    background: #fff;
+  #ledOrderModal.open { display: flex; }
+  #ledOrderModal .order-modal__box {
+    background: var(--white);
     border-radius: 12px;
     padding: 32px;
     max-width: 480px;
     width: 100%;
     position: relative;
+    box-shadow: var(--shadow-lg);
   }
-  .order-modal__close {
+  #ledOrderModal .order-modal__close {
     position: absolute; top: 16px; right: 16px;
-    background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #999;
+    background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);
     width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%;
   }
-  .order-modal__close:hover { background: #f5f5f5; }
-  .order-modal__box h3 { margin-bottom: 16px; }
-  .order-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-  .order-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); }
-  .order-total td { font-weight: 700; background: #f9f9f9; }
-  .order-modal__form { display: flex; flex-direction: column; gap: 10px; }
-  .order-modal__input {
+  #ledOrderModal .order-modal__close:hover { background: var(--bg-gray); color: var(--text); }
+  #ledOrderModal h3 { margin-bottom: 16px; color: var(--text); }
+  #ledOrderModal .order-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  #ledOrderModal .order-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); color: var(--text-mid); }
+  #ledOrderModal .order-total td { font-weight: 700; background: var(--gold-pale); color: var(--text); }
+  #ledOrderModal .order-modal__form { display: flex; flex-direction: column; gap: 10px; }
+  #ledOrderModal .order-modal__input {
     padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius);
-    font-family: var(--font); font-size: 0.95rem; outline: none;
+    font-family: var(--font); font-size: 0.95rem; outline: none; background: var(--bg-input); color: var(--text);
   }
-  .order-modal__input:focus { border-color: var(--green); }
+  #ledOrderModal .order-modal__input:focus { border-color: var(--gold); }
 
   @media (max-width: 900px) {
-    .led-calc { grid-template-columns: 1fr; }
-    .led-calc__right { position: static; }
+    #ledCalc { grid-template-columns: 1fr; }
+    #ledCalc .led-calc__right { position: static; }
   }
   @media (max-width: 500px) {
-    .led-light-grid { grid-template-columns: 1fr 1fr; }
-    .led-options-grid { grid-template-columns: 1fr; }
+    #ledCalc .led-light-grid { grid-template-columns: 1fr 1fr; }
+    #ledCalc .led-options-grid { grid-template-columns: 1fr; }
   }
 </style>

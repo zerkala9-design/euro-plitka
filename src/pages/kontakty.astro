@@ -21,6 +21,7 @@ import { site } from '../data/site';
           <div class="contact-card__label">Телефон</div>
           <h3>Телефон</h3>
           <a href={`tel:${site.phone.tel}`}>{site.phone.display}</a>
+          {site.phone2 && <a href={`tel:${site.phone2.tel}`} style="display:block;margin-top:4px">{site.phone2.display}</a>}
         </div>
         <div class="contact-card">
           <div class="contact-card__icon">■</div>
@@ -54,8 +55,8 @@ import { site } from '../data/site';
             <div class="address-row">
               <span class="address-row__icon">◆</span>
               <div>
-                <strong>Місто</strong>
-                <p>Київ, Україна</p>
+                <strong>Адреса</strong>
+                <p>{site.address}</p>
               </div>
             </div>
             <div class="address-row">
@@ -80,6 +81,7 @@ import { site } from '../data/site';
           <p>Зателефонуйте або напишіть — розрахуємо вартість та відповімо на всі запитання.</p>
           <div class="cta-buttons">
             <a href={`tel:${site.phone.tel}`} class="btn btn--primary">{site.phone.display}</a>
+            {site.phone2 && <a href={`tel:${site.phone2.tel}`} class="btn btn--outline">{site.phone2.display}</a>}
             <a href={site.social.telegram} target="_blank" class="btn btn--outline">Telegram</a>
           </div>
         </div>

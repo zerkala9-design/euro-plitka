@@ -1,0 +1,98 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const products = [
+  { img: '/panno-abstract.png', name: 'Мілано',     desc: 'Асиметричні лінії — сучасний акцент на всю стіну.',              price: 'від 2 450 грн/м²' },
+  { img: '/panno-chevron.png',  name: 'Верона',     desc: 'V-подібний шеврон — динамічний геометричний дизайн.',            price: 'від 2 300 грн/м²' },
+  { img: '/panno-geometry.png', name: 'Флоренція',  desc: 'Трикутні грані — стильне рішення для мінімалістичних інтерʼєрів.', price: 'від 2 450 грн/м²' },
+  { img: '/panno-diagonal.png', name: 'Комо',       desc: 'Лаконічні діагоналі — простір та чистота форм.',                 price: 'від 2 300 грн/м²' },
+];
+---
+
+<Layout
+  title="Каталог дзеркальних панно"
+  description="Каталог дзеркальних панно для передпокою та вітальні. Абстракція, шеврон, геометрія, діагоналі. Розрахунок вартості онлайн."
+>
+  <div class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Головна</a><span>›</span><span>Каталог</span></div>
+      <div class="section-label">Дзеркальні панно</div>
+      <h1>Каталог панно</h1>
+      <p class="hero-sub">Оберіть дизайн — і розрахуйте точну вартість під розміри вашої стіни</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="cat-grid">
+        {products.map((p) => (
+          <article class="cat-card">
+            <div class="cat-card__media">
+              <img src={p.img} alt={`Дзеркальне панно — ${p.name}`} loading="lazy" />
+            </div>
+            <div class="cat-card__body">
+              <h3>{p.name}</h3>
+              <p>{p.desc}</p>
+              <div class="cat-card__foot">
+                <span class="cat-card__price">{p.price}</span>
+                <a href="/dzerkalna-plitka/#calculator" class="btn btn--outline btn--sm">Розрахувати</a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-banner">
+    <div class="container">
+      <h2>Потрібен індивідуальний дизайн?</h2>
+      <p>Зробимо панно за вашим ескізом — будь-який візерунок та розмір</p>
+      <div class="cta-banner__actions">
+        <a href="/kontakty/" class="btn btn--primary btn--lg">Зв'язатися з нами</a>
+        <a href="/dzerkalna-plitka/#calculator" class="btn btn--ghost btn--lg">Калькулятор</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 60px 0 48px;
+  }
+  .breadcrumb { color: var(--text-muted); margin-bottom: 20px; font-size: 0.88rem; display: flex; gap: 8px; align-items: center; }
+  .breadcrumb a:hover { color: var(--gold); }
+  .page-hero h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text); margin-bottom: 12px; }
+  .hero-sub { color: var(--text-muted); font-size: 1.1rem; max-width: 560px; }
+  .section-label {
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--gold); margin-bottom: 8px;
+  }
+
+  .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .cat-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    box-shadow: var(--shadow);
+  }
+  .cat-card:hover { border-color: var(--gold-border); box-shadow: var(--shadow-md); transform: translateY(-4px); }
+  .cat-card__media { aspect-ratio: 4 / 5; overflow: hidden; background: var(--bg-gray); }
+  .cat-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s; }
+  .cat-card:hover .cat-card__media img { transform: scale(1.04); }
+  .cat-card__body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .cat-card__body h3 { font-size: 1.15rem; color: var(--text); }
+  .cat-card__body p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; flex: 1; margin: 0; }
+  .cat-card__foot { margin-top: auto; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .cat-card__price { font-size: 0.95rem; font-weight: 800; color: var(--gold); }
+  .btn--sm { padding: 9px 16px; font-size: 0.8rem; }
+
+  .cta-banner .btn--ghost { color: #fff; border-color: rgba(255,255,255,0.35); background: transparent; }
+  .cta-banner .btn--ghost:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
+
+  @media (max-width: 1000px) { .cat-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 460px) { .cat-grid { grid-template-columns: 1fr; } }
+</style>
