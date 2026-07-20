@@ -279,6 +279,14 @@ import TileCalculator from '../components/TileCalculator.astro';
     position: absolute; z-index: 6;
     top: 23%; left: 61%;
     display: flex; flex-direction: column; gap: 18px;
+    padding: 26px 30px;
+  }
+  /* мʼяка темна підкладка — читабельність + ховає слабку пляму на стіні */
+  .hero__shortcuts::before {
+    content: '';
+    position: absolute; inset: 0; z-index: -1;
+    background: radial-gradient(ellipse at center, rgba(10,8,4,0.6) 0%, rgba(10,8,4,0.32) 55%, transparent 78%);
+    border-radius: 18px;
   }
   /* Коли ефект активний — кнопки зʼявляються, лише коли ліхтарик доходить до них */
   .hero.fx .hero__shortcuts { opacity: 0; transition: opacity 0.5s ease; }
