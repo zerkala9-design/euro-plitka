@@ -39,23 +39,23 @@ import TileCalculator from '../components/TileCalculator.astro';
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="hero__shortcuts">
-        <a href="/led-dzerkalo/#ledCalc" class="hero-shortcut">
-          <span class="hero-shortcut__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/></svg>
-          </span>
-          <span class="hero-shortcut__label">Калькулятор<br>LED дзеркал</span>
-          <span class="hero-shortcut__arrow">→</span>
-        </a>
-        <a href="#calculator" class="hero-shortcut">
-          <span class="hero-shortcut__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="1.5"/><path d="M4 10h16M4 15h16M10 4v16M15 4v16"/></svg>
-          </span>
-          <span class="hero-shortcut__label">Калькулятор<br>плитки</span>
-          <span class="hero-shortcut__arrow">→</span>
-        </a>
-      </div>
+    <div class="hero__shortcuts" id="heroShortcuts">
+      <a href="/led-dzerkalo/#ledCalc" class="hero-shortcut">
+        <span class="hero-shortcut__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/></svg>
+        </span>
+        <span class="hero-shortcut__label">Калькулятор<br>LED дзеркал</span>
+        <span class="hero-shortcut__arrow">→</span>
+      </a>
+      <a href="#calculator" class="hero-shortcut">
+        <span class="hero-shortcut__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="1.5"/><path d="M4 10h16M4 15h16M10 4v16M15 4v16"/></svg>
+        </span>
+        <span class="hero-shortcut__label">Калькулятор<br>плитки</span>
+        <span class="hero-shortcut__arrow">→</span>
+      </a>
     </div>
     <a href="#calculator" class="hero__scroll" aria-label="Прокрутити вниз">
       <span></span>
@@ -226,12 +226,6 @@ import TileCalculator from '../components/TileCalculator.astro';
     position: absolute; inset: 0; z-index: 1;
     background: url('/hero-off.jpg') center/cover no-repeat;
     filter: brightness(0.82) saturate(0.95);
-    transform: scale(1.05);
-    animation: heroZoom 18s ease-in-out infinite alternate;
-  }
-  @keyframes heroZoom {
-    from { transform: scale(1.05); }
-    to   { transform: scale(1.15); }
   }
   /* Затемнення для читабельності тексту (над базою, під плямою) */
   .hero__overlay {
@@ -245,7 +239,6 @@ import TileCalculator from '../components/TileCalculator.astro';
     position: absolute; inset: 0; z-index: 3;
     background: url('/hero-on.jpg') center/cover no-repeat;
     filter: brightness(1.05) saturate(1.05) contrast(1.02);
-    transform: scale(1.05);
     pointer-events: none;
     -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
     -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
@@ -280,10 +273,16 @@ import TileCalculator from '../components/TileCalculator.astro';
     display: flex; align-items: center; justify-content: space-between; gap: 40px;
   }
   .hero__title, .hero__text { text-shadow: 0 2px 24px rgba(0,0,0,0.5); }
-  .hero__shortcuts { align-self: flex-start; margin-top: 40px; }
 
-  /* Кнопки-калькулятори праворуч (як на фото) */
-  .hero__shortcuts { display: flex; flex-direction: column; gap: 22px; flex-shrink: 0; }
+  /* Кнопки-калькулятори — на стіні (де був текст на фото) */
+  .hero__shortcuts {
+    position: absolute; z-index: 6;
+    top: 23%; left: 61%;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  /* Коли ефект активний — кнопки зʼявляються, лише коли ліхтарик доходить до них */
+  .hero.fx .hero__shortcuts { opacity: 0; transition: opacity 0.5s ease; }
+  .hero.fx .hero__shortcuts.is-lit { opacity: 1; }
   .hero-shortcut {
     display: flex; align-items: center; gap: 16px;
     color: #fff;
@@ -424,14 +423,18 @@ import TileCalculator from '../components/TileCalculator.astro';
     .how-layout { grid-template-columns: 1fr; gap: 48px; }
     .how-visual { order: -1; }
   }
+  /* На вужчих екранах — кнопки в потоці під контентом (не на стіні) */
   @media (max-width: 1100px) {
-    .hero__inner { flex-direction: column; align-items: flex-start; gap: 32px; }
-    .hero__shortcuts { flex-direction: row; flex-wrap: wrap; gap: 16px 32px; }
+    .hero__shortcuts {
+      position: static; opacity: 1 !important;
+      flex-direction: row; flex-wrap: wrap; gap: 16px 32px;
+      margin: 8px 24px 0; padding-bottom: 8px;
+    }
     .hero-shortcut { min-width: 220px; padding-bottom: 14px; }
   }
   @media (max-width: 640px) {
     .hero { min-height: 88vh; }
-    .hero__inner { padding: 80px 24px; }
+    .hero__inner { padding: 80px 24px 40px; }
     .hero__stats { gap: 28px; margin-top: 40px; }
     .hero__shortcuts { flex-direction: column; gap: 14px; }
     .hero-shortcut__label { font-size: 1rem; }
@@ -450,6 +453,8 @@ import TileCalculator from '../components/TileCalculator.astro';
   const canvas = document.getElementById('heroMaskCanvas');
 
   if (hero && reveal && canvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    hero.classList.add('fx');
+    const shortcuts = document.getElementById('heroShortcuts');
     const ctx = canvas.getContext('2d');
     const mouse = { x: -999, y: -999 };
     const smooth = { x: -999, y: -999 };
@@ -478,6 +483,7 @@ import TileCalculator from '../components/TileCalculator.astro';
       active = false;
       reveal.classList.remove('is-active');
       glow && glow.classList.remove('is-active');
+      shortcuts && shortcuts.classList.remove('is-lit');
     });
 
     const draw = () => {
@@ -500,6 +506,16 @@ import TileCalculator from '../components/TileCalculator.astro';
         reveal.style.webkitMaskImage = `url(${url})`;
         reveal.style.maskImage = `url(${url})`;
         if (glow) glow.style.transform = `translate(${smooth.x}px, ${smooth.y}px)`;
+
+        // кнопки зʼявляються, коли пляма доходить до їхнього місця
+        if (shortcuts) {
+          const hr = hero.getBoundingClientRect();
+          const sr = shortcuts.getBoundingClientRect();
+          const cx = sr.left + sr.width / 2 - hr.left;
+          const cy = sr.top + sr.height / 2 - hr.top;
+          const dist = Math.hypot(smooth.x - cx, smooth.y - cy);
+          shortcuts.classList.toggle('is-lit', dist < SPOTLIGHT_R + Math.max(sr.width, sr.height) / 2);
+        }
       }
       requestAnimationFrame(draw);
     };
