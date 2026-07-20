@@ -12,6 +12,9 @@ import TileCalculator from '../components/TileCalculator.astro';
   <section class="hero" id="hero">
     <div class="hero__base"></div>
     <div class="hero__overlay"></div>
+    <div class="hero__reveal" id="heroReveal"></div>
+    <div class="hero__glow" id="heroGlow"></div>
+    <canvas class="hero__mask" id="heroMaskCanvas" aria-hidden="true"></canvas>
     <div class="container hero__inner">
       <div class="hero__content">
         <div class="badge badge--dark">Виробник у Києві</div>
@@ -218,11 +221,11 @@ import TileCalculator from '../components/TileCalculator.astro';
     color: #fff;
     background: #0d0b07;
   }
-  /* Базовий шар — інтерʼєр з увімкненими LED-дзеркалами */
+  /* Базовий шар — інтерʼєр з ВИМКНЕНИМИ LED-дзеркалами */
   .hero__base {
     position: absolute; inset: 0; z-index: 1;
-    background: url('/hero-interior-2.jpg') center/cover no-repeat;
-    filter: brightness(0.9) saturate(1);
+    background: url('/hero-off.jpg') center/cover no-repeat;
+    filter: brightness(0.82) saturate(0.95);
     transform: scale(1.05);
     animation: heroZoom 18s ease-in-out infinite alternate;
   }
@@ -240,8 +243,8 @@ import TileCalculator from '../components/TileCalculator.astro';
   /* Шар-«ліхтарик» — яскрава версія, видима лише всередині плями за курсором */
   .hero__reveal {
     position: absolute; inset: 0; z-index: 3;
-    background: url('/hero-interior-lit.jpg') center/cover no-repeat;
-    filter: brightness(1.06) saturate(1.04) contrast(1.03);
+    background: url('/hero-on.jpg') center/cover no-repeat;
+    filter: brightness(1.05) saturate(1.05) contrast(1.02);
     transform: scale(1.05);
     pointer-events: none;
     -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
@@ -277,6 +280,7 @@ import TileCalculator from '../components/TileCalculator.astro';
     display: flex; align-items: center; justify-content: space-between; gap: 40px;
   }
   .hero__title, .hero__text { text-shadow: 0 2px 24px rgba(0,0,0,0.5); }
+  .hero__shortcuts { align-self: flex-start; margin-top: 40px; }
 
   /* Кнопки-калькулятори праворуч (як на фото) */
   .hero__shortcuts { display: flex; flex-direction: column; gap: 22px; flex-shrink: 0; }
@@ -436,3 +440,69 @@ import TileCalculator from '../components/TileCalculator.astro';
     }
   }
 </style>
+
+<script>
+  // Курсорна «світлова пляма» — відкриває версію з увімкненою LED-підсвіткою
+  const SPOTLIGHT_R = 260;
+  const hero = document.getElementById('hero');
+  const reveal = document.getElementById('heroReveal');
+  const glow = document.getElementById('heroGlow');
+  const canvas = document.getElementById('heroMaskCanvas');
+
+  if (hero && reveal && canvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const ctx = canvas.getContext('2d');
+    const mouse = { x: -999, y: -999 };
+    const smooth = { x: -999, y: -999 };
+    let active = false;
+
+    const sizeCanvas = () => {
+      const r = hero.getBoundingClientRect();
+      canvas.width = Math.round(r.width);
+      canvas.height = Math.round(r.height);
+    };
+    sizeCanvas();
+    window.addEventListener('resize', sizeCanvas);
+
+    hero.addEventListener('mousemove', (e) => {
+      const r = hero.getBoundingClientRect();
+      mouse.x = e.clientX - r.left;
+      mouse.y = e.clientY - r.top;
+      if (!active) {
+        active = true;
+        smooth.x = mouse.x; smooth.y = mouse.y;
+        reveal.classList.add('is-active');
+        glow && glow.classList.add('is-active');
+      }
+    });
+    hero.addEventListener('mouseleave', () => {
+      active = false;
+      reveal.classList.remove('is-active');
+      glow && glow.classList.remove('is-active');
+    });
+
+    const draw = () => {
+      if (active && canvas.width && canvas.height) {
+        smooth.x += (mouse.x - smooth.x) * 0.1;
+        smooth.y += (mouse.y - smooth.y) * 0.1;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const g = ctx.createRadialGradient(smooth.x, smooth.y, 0, smooth.x, smooth.y, SPOTLIGHT_R);
+        g.addColorStop(0,    'rgba(255,255,255,1)');
+        g.addColorStop(0.4,  'rgba(255,255,255,1)');
+        g.addColorStop(0.6,  'rgba(255,255,255,0.75)');
+        g.addColorStop(0.75, 'rgba(255,255,255,0.4)');
+        g.addColorStop(0.88, 'rgba(255,255,255,0.12)');
+        g.addColorStop(1,    'rgba(255,255,255,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(smooth.x, smooth.y, SPOTLIGHT_R, 0, Math.PI * 2);
+        ctx.fill();
+        const url = canvas.toDataURL();
+        reveal.style.webkitMaskImage = `url(${url})`;
+        reveal.style.maskImage = `url(${url})`;
+        if (glow) glow.style.transform = `translate(${smooth.x}px, ${smooth.y}px)`;
+      }
+      requestAnimationFrame(draw);
+    };
+    requestAnimationFrame(draw);
+  }
+</script>
