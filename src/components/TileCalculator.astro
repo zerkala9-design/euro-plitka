@@ -233,7 +233,14 @@ function generateRows(panel) {
   addRow(p, true,  sw, sw, f);
   addRow(m, true,  halfSide, halfSide, f);
 
-  const total = rows.reduce((s, r) => s + r.price, 0);
+  let total = rows.reduce((s, r) => s + r.price, 0);
+
+  // Срібло — фіксована ціна за м²: квадрати 3000 грн/м², ромби 3600 грн/м²
+  if (Number(panel.input.color) === 1) {
+    const areaM2 = (panel.input.width / 1000) * (panel.input.height / 1000);
+    const rate = panel.mode === 'fit' ? 3600 : 3000;
+    total = Math.round(areaM2 * rate);
+  }
 
   return {
     rows,
