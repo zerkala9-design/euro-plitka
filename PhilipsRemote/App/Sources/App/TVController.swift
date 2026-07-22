@@ -131,10 +131,14 @@ final class TVController {
         if !state.isConnected { await connect(to: device) }
     }
 
-    /// Call when the app is backgrounded: stop retry attempts to save battery.
-    /// iOS suspends the socket anyway; we reconnect on the next foreground.
+    /// Call when the app is backgrounded: cleanly close the connection so the
+    /// TV frees its single remote session (otherwise the stale session blocks
+    /// the next reconnect and forces a re‑pair). We reconnect on foreground.
     func enterBackground() {
         reconnectTask?.cancel(); reconnectTask = nil
+        Task { [atv] in await atv?.disconnect() }
+        atv = nil
+        if state.isConnected || state == .connecting { state = .disconnected }
     }
 
     // MARK: - Live Activity
