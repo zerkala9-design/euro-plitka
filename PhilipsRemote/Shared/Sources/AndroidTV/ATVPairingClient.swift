@@ -10,14 +10,16 @@ import Security
 public actor ATVPairingClient {
 
     private let host: String
+    private let deviceName: String
     private var connection: ATVConnection?
     private var iterator: AsyncStream<Data>.Iterator?
     private var identity: ATVCrypto.Identity?
     private var serverModulus = Data()
     private var serverExponent = Data()
 
-    public init(host: String) {
+    public init(host: String, deviceName: String = "iPhone") {
         self.host = host
+        self.deviceName = deviceName
     }
 
     // Fields
@@ -57,7 +59,7 @@ public actor ATVPairingClient {
             base(&m)
             m.writeMessage(Field.pairingRequest) { r in
                 r.writeString(1, "androidtvremote")
-                r.writeString(2, "iPhone")
+                r.writeString(2, deviceName)     // client name shown/stored by the TV
             }
         }
         try await expectOK()

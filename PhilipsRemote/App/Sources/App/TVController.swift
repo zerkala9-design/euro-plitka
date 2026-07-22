@@ -46,6 +46,20 @@ final class TVController {
         self.settings = settings
     }
 
+    /// A stable, unique name this install presents to the TV, so two phones are
+    /// paired as distinct remotes (iOS hides the real device name, returning a
+    /// generic "iPhone" for everyone).
+    static let thisDeviceName: String = {
+        let key = "atvDeviceName"
+        if let saved = UserDefaults.standard.string(forKey: key), !saved.isEmpty {
+            return saved
+        }
+        let suffix = String(UUID().uuidString.prefix(4))
+        let name = "iPhone-\(suffix)"
+        UserDefaults.standard.set(name, forKey: key)
+        return name
+    }()
+
     // MARK: - Connection lifecycle
 
     private var atv: ATVRemoteClient?
@@ -64,7 +78,7 @@ final class TVController {
 
         // Android TV Remote v2 (ports 6466/6467). The trusted client cert stored
         // in the Keychain during pairing is the credential — no token needed.
-        let client = ATVRemoteClient(host: device.host)
+        let client = ATVRemoteClient(host: device.host, deviceName: Self.thisDeviceName)
         self.atv = client
         // Reconnect automatically if the TV or iOS drops the socket.
         await client.setOnClose { [weak self] in

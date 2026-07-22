@@ -21,7 +21,7 @@ final class PairingViewModel {
 
     func begin(pairing device: TVDevice) async {
         phase = .requesting
-        let client = ATVPairingClient(host: device.host)
+        let client = ATVPairingClient(host: device.host, deviceName: TVController.thisDeviceName)
         self.client = client
         do {
             try await client.begin()      // TV now displays the code

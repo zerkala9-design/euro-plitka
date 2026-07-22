@@ -6,6 +6,7 @@ import Foundation
 public actor ATVRemoteClient {
 
     private let host: String
+    private let deviceName: String
     private var connection: ATVConnection?
     private var readerTask: Task<Void, Never>?
     public private(set) var isReady = false
@@ -19,7 +20,10 @@ public actor ATVRemoteClient {
     /// its keyboard).
     private var onTextFocus: (@Sendable () -> Void)?
 
-    public init(host: String) { self.host = host }
+    public init(host: String, deviceName: String = "iPhone") {
+        self.host = host
+        self.deviceName = deviceName
+    }
 
     /// Register a handler invoked once if the connection drops on its own.
     public func setOnClose(_ handler: @escaping @Sendable () -> Void) {
@@ -192,7 +196,7 @@ public actor ATVRemoteClient {
         m.writeMessage(Field.configure) { c in
             c.writeInt(1, 622)               // code1
             c.writeMessage(2) { d in         // device_info
-                d.writeString(1, "iPhone")   // model
+                d.writeString(1, deviceName) // model / name shown by the TV
                 d.writeString(2, "Apple")    // vendor
                 d.writeInt(3, 1)             // unknown1
                 d.writeString(4, "1")        // unknown2
