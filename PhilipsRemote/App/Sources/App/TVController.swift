@@ -221,7 +221,8 @@ final class TVController {
             return
         }
         await atv.sendKey(code)
-        await AppLog.shared.info("Sent \(key.rawValue)", category: "command")
+        // Log without blocking the command path (keeps key presses snappy).
+        Task { await AppLog.shared.info("Sent \(key.rawValue)", category: "command") }
     }
 
     // MARK: - Press & hold (auto‑repeat while a key is held)

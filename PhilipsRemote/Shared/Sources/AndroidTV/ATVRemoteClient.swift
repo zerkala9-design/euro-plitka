@@ -97,7 +97,6 @@ public actor ATVRemoteClient {
                 // TV focused a text field — offer the phone keyboard. The
                 // counters we address it with come from the batch edit below.
                 _ = reader.readBytes()
-                print("ATV IME: text field focused (keyInject)")
                 onTextFocus?()
             case Field.imeBatchEdit where tag.wire == 2:
                 parseImeCounters(fromBatchEdit: reader.readBytes() ?? Data())
@@ -118,7 +117,6 @@ public actor ATVRemoteClient {
             default: reader.skip(wire: tag.wire)
             }
         }
-        print("ATV IME: counters ime=\(imeCounter ?? -1) field=\(fieldCounter ?? -1)")
         onTextFocus?()
     }
 
@@ -159,12 +157,8 @@ public actor ATVRemoteClient {
     /// Set the contents of the TV's currently focused text field. Requires the
     /// TV to have reported a focused field (see `canSendText`).
     public func sendText(_ text: String) {
-        guard let connection, let ic = imeCounter, let fc = fieldCounter else {
-            print("ATV IME: sendText skipped — no focused field (ime=\(imeCounter ?? -1) field=\(fieldCounter ?? -1))")
-            return
-        }
+        guard let connection, let ic = imeCounter, let fc = fieldCounter else { return }
         let cursor = max(0, text.utf16.count - 1)
-        print("ATV IME: sendText '\(text)' ime=\(ic) field=\(fc) cursor=\(cursor)")
         var m = ProtobufWriter()
         m.writeMessage(Field.imeBatchEdit) { b in        // RemoteImeBatchEdit
             b.writeInt(1, ic)                            // ime_counter
