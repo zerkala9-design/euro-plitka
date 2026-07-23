@@ -361,7 +361,7 @@ function updatePanelUI(mode, panel, rowData) {
   `;
 
   document.getElementById('price-' + mode).innerHTML = `
-    <span class="price-total">${fmt(rowData.total)}</span>
+    <span class="price-label">Ціна:</span> <span class="price-total">${fmt(rowData.total)}</span>
   `;
 
   // Зберігаємо для модалки
@@ -607,8 +607,20 @@ renderAll();
   }
   .panel-info b { color: var(--text); font-weight: 700; }
 
+  .panel-price {
+    margin-top: -6px;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+  }
+  .panel-price .price-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-mid);
+  }
   .panel-price .price-total {
-    font-size: 1.6rem;
+    font-size: 1.7rem;
     font-weight: 800;
     color: var(--gold);
   }
