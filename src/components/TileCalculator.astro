@@ -235,11 +235,18 @@ function generateRows(panel) {
 
   let total = rows.reduce((s, r) => s + r.price, 0);
 
-  // Срібло — фіксована ціна за м²: квадрати 3000 грн/м², ромби 3600 грн/м².
+  // Фіксована ціна за м² за кольором (квадрати / ромби):
+  //   Срібло — 3000 / 3600;  Бронза, Графіт — 4200 / 4800.
   // Націнка за фацет: 15мм → +10%, 20мм → ще +10% (×1.21).
-  if (Number(panel.input.color) === 1) {
+  {
+    const RATES = {
+      1: { cut: 3000, fit: 3600 }, // срібло
+      2: { cut: 4200, fit: 4800 }, // бронза
+      3: { cut: 4200, fit: 4800 }, // графіт
+    };
+    const r = RATES[Number(panel.input.color)] || RATES[1];
     const areaM2 = (panel.input.width / 1000) * (panel.input.height / 1000);
-    const rate = panel.mode === 'fit' ? 3600 : 3000;
+    const rate = panel.mode === 'fit' ? r.fit : r.cut;
     const facetV = Number(panel.input.facet); // 4 = 15мм, 5 = 20мм
     const facetMult = facetV === 4 ? 1.10 : facetV === 5 ? 1.21 : 1;
     total = Math.round(areaM2 * rate * facetMult);
