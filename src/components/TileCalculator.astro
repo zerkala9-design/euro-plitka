@@ -279,15 +279,15 @@ function drawPanel(mode, panel, info) {
   }
   dW = Math.round(dW); dH = Math.round(dH);
 
-  const MARGIN_TOP = 30, MARGIN_RIGHT = 34;
-  const VW = dW + MARGIN_RIGHT + 4;
+  const MARGIN_TOP = 30, MARGIN_RIGHT = 34, MARGIN_LEFT = 34;
+  const VW = MARGIN_LEFT + dW + MARGIN_RIGHT;
   const VH = dH + MARGIN_TOP + 4;
 
   svgEl.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
   svgEl.style.width = VW + 'px';
   svgEl.style.height = VH + 'px';
 
-  const ox = 2, oy = MARGIN_TOP;
+  const ox = MARGIN_LEFT, oy = MARGIN_TOP;
   const scaleX = dW / X.size;
   const scaleY = dH / Y.size;
   const tW = X.tile * scaleX;
