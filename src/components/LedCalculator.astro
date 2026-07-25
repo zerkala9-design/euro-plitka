@@ -46,7 +46,7 @@ const cfg = JSON.stringify(ledCalcConfig);
       </div>
       <label class="led-corner" id="cornerRow">
         <span class="led-corner__info">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 20V10a6 6 0 0 1 6-6h10"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="5.5"/></svg>
           <span class="led-corner__label">Заокруглені кути</span>
           <span class="led-corner__price">+600 грн</span>
         </span>
@@ -244,12 +244,17 @@ function updateSizeUI() {
   document.getElementById('labelW').textContent = isCircle ? 'Діаметр (мм)' : 'Ширина (мм)';
   if (isCircle) state.H = state.W;
   // фото типів підсвітки відповідно до форми
-  const variant = isCircle ? 'circle' : 'rect';
-  document.getElementById('typeImgBack').src = `/led-back-${variant}.png`;
-  document.getElementById('typeImgFront').src = `/led-front-${variant}.png`;
+  updateTypeImages();
   // Заокруглені кути актуальні лише для прямокутника
   const cornerRow = document.getElementById('cornerRow');
   if (cornerRow) cornerRow.style.display = isCircle ? 'none' : '';
+}
+
+// Фото типів підсвітки: коло / прямокутник / прямокутник із заокругленими кутами
+function updateTypeImages() {
+  const variant = state.shape === 'circle' ? 'circle' : (state.rounded ? 'rrect' : 'rect');
+  document.getElementById('typeImgBack').src = `/led-back-${variant}.png`;
+  document.getElementById('typeImgFront').src = `/led-front-${variant}.png`;
 }
 
 function recalc() {
@@ -300,6 +305,7 @@ function recalc() {
 // Заокруглені кути
 document.getElementById('roundedCorners')?.addEventListener('change', (e) => {
   state.rounded = e.target.checked;
+  updateTypeImages();
   recalc();
 });
 
