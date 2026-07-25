@@ -44,6 +44,17 @@ const cfg = JSON.stringify(ledCalcConfig);
           <span>Коло</span>
         </label>
       </div>
+      <label class="led-corner" id="cornerRow">
+        <span class="led-corner__info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 20V10a6 6 0 0 1 6-6h10"/></svg>
+          <span class="led-corner__label">Заокруглені кути</span>
+          <span class="led-corner__price">+600 грн</span>
+        </span>
+        <span class="led-toggle-switch">
+          <input type="checkbox" id="roundedCorners" />
+          <span class="led-toggle-track"></span>
+        </span>
+      </label>
     </div>
 
     <!-- 3. Розмір -->
@@ -152,7 +163,9 @@ let state = {
   qty: 1,
   mounting: false,
   delivery: false,
+  rounded: false,
 };
+const CORNER_PRICE = 600;
 
 const shapeLabels = { rect: 'Прямокутник', circle: 'Коло', oval: 'Овал' };
 
@@ -234,6 +247,9 @@ function updateSizeUI() {
   const variant = isCircle ? 'circle' : 'rect';
   document.getElementById('typeImgBack').src = `/led-back-${variant}.png`;
   document.getElementById('typeImgFront').src = `/led-front-${variant}.png`;
+  // Заокруглені кути актуальні лише для прямокутника
+  const cornerRow = document.getElementById('cornerRow');
+  if (cornerRow) cornerRow.style.display = isCircle ? 'none' : '';
 }
 
 function recalc() {
@@ -242,7 +258,10 @@ function recalc() {
   CFG.options.forEach(opt => {
     if (state.options[opt.id]) optionsTotal += opt.price;
   });
-  const unitPrice = base + optionsTotal;
+  // Заокруглені кути (лише для прямокутника) — +600 грн за дзеркало
+  const rounded = state.rounded && state.shape !== 'circle';
+  const cornerCost = rounded ? CORNER_PRICE : 0;
+  const unitPrice = base + optionsTotal + cornerCost;
   const mirrorTotal = unitPrice * state.qty;
   // Монтаж — 35% від вартості дзеркал
   const mountingCost = state.mounting ? Math.round(mirrorTotal * CFG.mountingPercent) : 0;
@@ -258,7 +277,7 @@ function recalc() {
 
   document.getElementById('summaryList').innerHTML = `
     <div class="led-summary__row"><span>Підсвітка</span><span>${typeLabel}</span></div>
-    <div class="led-summary__row"><span>Форма</span><span>${shapeLabel}</span></div>
+    <div class="led-summary__row"><span>Форма</span><span>${shapeLabel}${rounded ? ', заокруглені кути' : ''}</span></div>
     <div class="led-summary__row"><span>Розмір</span><span>${dimText}</span></div>
     <div class="led-summary__row"><span>Колір</span><span>${lightLabel}</span></div>
     <div class="led-summary__row"><span>Опції</span><span>${optLabels}</span></div>
@@ -275,8 +294,14 @@ function recalc() {
   document.getElementById('totalPrice').textContent = total.toLocaleString('uk-UA') + ' грн';
 
   // Зберігаємо для замовлення
-  window._ledOrderData = { typeLabel, shapeLabel, dimText, lightLabel, optLabels, unitPrice, qty: state.qty, mirrorTotal, mountingCost, deliveryCost, total };
+  window._ledOrderData = { typeLabel, shapeLabel: shapeLabel + (rounded ? ', заокруглені кути' : ''), dimText, lightLabel, optLabels, unitPrice, qty: state.qty, mirrorTotal, mountingCost, deliveryCost, total };
 }
+
+// Заокруглені кути
+document.getElementById('roundedCorners')?.addEventListener('change', (e) => {
+  state.rounded = e.target.checked;
+  recalc();
+});
 
 // Кількість
 let qty = 1;
@@ -439,6 +464,18 @@ recalc();
   #ledCalc .led-shape-grid .led-type-card { padding: 7px 8px; gap: 3px; }
   #ledCalc .led-shape-ico { width: 26px; height: 26px; color: var(--text-muted); transition: color 0.2s; }
   #ledCalc .led-shape-grid span { font-size: 0.72rem; }
+  /* Заокруглені кути */
+  #ledCalc .led-corner {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    margin-top: 12px; padding: 12px 16px;
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    background: var(--white); cursor: pointer;
+  }
+  #ledCalc .led-corner:has(input:checked) { border-color: var(--gold); background: var(--gold-pale); }
+  #ledCalc .led-corner__info { display: flex; align-items: center; gap: 10px; }
+  #ledCalc .led-corner__info svg { width: 22px; height: 22px; color: var(--gold); flex-shrink: 0; }
+  #ledCalc .led-corner__label { font-weight: 600; font-size: 0.92rem; color: var(--text); }
+  #ledCalc .led-corner__price { font-size: 0.82rem; font-weight: 700; color: var(--gold); }
   #ledCalc .led-shape-grid .led-type-card:has(input:checked) .led-shape-ico { color: var(--gold); }
   #ledCalc .led-shape-grid span { font-size: 0.78rem; }
   #ledCalc .led-type-card.selected, #ledCalc .led-type-card:has(input:checked) {
