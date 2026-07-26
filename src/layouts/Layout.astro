@@ -1,14 +1,27 @@
 ---
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { site } from '../data/site';
+import { site, commerce } from '../data/site';
 import '../styles/global.css';
+
+interface ProductInfo {
+  name: string;
+  description: string;
+  /** Шлях(и) до зображень від кореня сайту, напр. '/led-front-rect.png'. */
+  image: string | string[];
+  /** Стартова ціна ("від") у гривнях. */
+  price: number;
+  /** Категорія товару (таксономія Google Product Category). */
+  category: string;
+  sku?: string;
+}
 
 interface Props {
   title: string;
   description?: string;
   canonical?: string;
   ogImage?: string;
+  product?: ProductInfo;
 }
 
 const {
@@ -16,11 +29,72 @@ const {
   description = 'Дзеркальна плитка та LED дзеркала в Києві. Виготовлення панно, монтаж, доставка. Онлайн-калькулятор.',
   canonical,
   ogImage = '/hero-on.jpg',
+  product,
 } = Astro.props;
 
 const origin = 'https://euro-plitka.com.ua';
 const url = canonical ?? `${origin}${Astro.url.pathname}`;
 const ogImageUrl = `${origin}${ogImage}`;
+
+// Product / Offer розмітка для сторінок товарів (Google Merchant listings).
+const abs = (p: string) => (p.startsWith('http') ? p : `${origin}${p}`);
+const priceValidUntil = `${new Date().getUTCFullYear() + 1}-12-31`;
+
+const productLd = product && {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: product.name,
+  description: product.description,
+  image: (Array.isArray(product.image) ? product.image : [product.image]).map(abs),
+  category: product.category,
+  brand: { '@type': 'Brand', name: site.name },
+  ...(product.sku ? { sku: product.sku } : {}),
+  offers: {
+    '@type': 'Offer',
+    url,
+    priceCurrency: commerce.currency,
+    price: product.price,
+    priceValidUntil,
+    itemCondition: 'https://schema.org/NewCondition',
+    availability: 'https://schema.org/InStock',
+    seller: { '@type': 'Organization', name: site.name },
+    shippingDetails: {
+      '@type': 'OfferShippingDetails',
+      shippingRate: {
+        '@type': 'MonetaryAmount',
+        value: commerce.shippingRate,
+        currency: commerce.currency,
+      },
+      shippingDestination: {
+        '@type': 'DefinedRegion',
+        addressCountry: commerce.country,
+      },
+      deliveryTime: {
+        '@type': 'ShippingDeliveryTime',
+        handlingTime: {
+          '@type': 'QuantitativeValue',
+          minValue: commerce.handlingDays.min,
+          maxValue: commerce.handlingDays.max,
+          unitCode: 'DAY',
+        },
+        transitTime: {
+          '@type': 'QuantitativeValue',
+          minValue: commerce.transitDays.min,
+          maxValue: commerce.transitDays.max,
+          unitCode: 'DAY',
+        },
+      },
+    },
+    hasMerchantReturnPolicy: {
+      '@type': 'MerchantReturnPolicy',
+      applicableCountry: commerce.country,
+      returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+      merchantReturnDays: commerce.returnDays,
+      returnMethod: 'https://schema.org/ReturnByMail',
+      returnFees: 'https://schema.org/ReturnShippingFees',
+    },
+  },
+};
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -73,6 +147,7 @@ const jsonLd = {
   <meta name="twitter:description" content={description} />
   <meta name="twitter:image" content={ogImageUrl} />
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  {productLd && <script type="application/ld+json" set:html={JSON.stringify(productLd)} />}
 </head>
 <body>
   <Header />

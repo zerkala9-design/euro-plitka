@@ -13,6 +13,21 @@ export const site = {
   },
 };
 
+// Спільні комерційні параметри для структурованих даних (Product/Offer).
+// Google Merchant listings вимагають ці поля — редагуйте значення тут за потреби.
+export const commerce = {
+  currency: 'UAH',
+  country: 'UA',
+  // Орієнтовна ставка доставки для розмітки (Нова Пошта — за тарифами перевізника).
+  shippingRate: 1500,
+  // Термін повернення, днів (стандарт роздрібної торгівлі в Україні).
+  returnDays: 14,
+  // Термін виготовлення (робочих днів) — використовується як handling time.
+  handlingDays: { min: 3, max: 7 },
+  // Орієнтовний час доставки перевізником, днів.
+  transitDays: { min: 1, max: 3 },
+};
+
 export const nav = [
   { label: 'Головна',           path: '/' },
   { label: 'Каталог',           path: '/katalog/' },
