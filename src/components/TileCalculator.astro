@@ -103,9 +103,9 @@ const panelData = {};
 
 // Кольори превʼю панно за кольором дзеркала (як в оригіналі)
 const TILE_THEME = {
-  1: { c1: '#f2f2f2', c2: '#c8c8c8', line: '#9a9a9a' }, // Серебро
-  2: { c1: '#f0e0b0', c2: '#d4a84b', line: '#a9821f' }, // Бронза
-  3: { c1: '#d6d6d6', c2: '#8f8f8f', line: '#5a5a5a' }, // Графіт
+  1: { c1: '#e3e7ea', c2: '#b7bfc6', c3: '#fbfdff', line: '#8f9aa2' }, // Срібло
+  2: { c1: '#e9d49a', c2: '#c99a3c', c3: '#fbf1d4', line: '#9c761a' }, // Бронза
+  3: { c1: '#c7ccd0', c2: '#7f868c', c3: '#eef1f3', line: '#565c61' }, // Графіт
 };
 
 // --- Ціна (з app.js) ---
@@ -326,16 +326,36 @@ function drawPanel(mode, panel, info) {
       <clipPath id="${clipId}">
         <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" />
       </clipPath>
+      <!-- скло дзеркала: базовий відбивний градієнт -->
       <linearGradient id="${gradId}" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="${theme.c1}"/>
-        <stop offset="55%" stop-color="${theme.c2}"/>
-        <stop offset="100%" stop-color="${theme.c1}"/>
+        <stop offset="0%"  stop-color="${theme.c1}"/>
+        <stop offset="42%" stop-color="${theme.c2}"/>
+        <stop offset="58%" stop-color="${theme.c3}"/>
+        <stop offset="100%" stop-color="${theme.c2}"/>
       </linearGradient>
+      <!-- діагональний світловий відблиск (як на реальному дзеркалі) -->
+      <linearGradient id="${gradId}-sheen" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%"  stop-color="#ffffff" stop-opacity="0"/>
+        <stop offset="38%" stop-color="#ffffff" stop-opacity="0"/>
+        <stop offset="50%" stop-color="#ffffff" stop-opacity="0.5"/>
+        <stop offset="62%" stop-color="#ffffff" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      </linearGradient>
+      <filter id="${gradId}-sh" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.18"/>
+      </filter>
     </defs>
-    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId})" />
-    <g clip-path="url(#${clipId})" stroke="${theme.line}" stroke-width="0.9" opacity="0.8">${lines}</g>
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId})" filter="url(#${gradId}-sh)"/>
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId}-sheen)"/>
+    <!-- фаска: гравіровані грані (тінь + підсвітка) -->
+    <g clip-path="url(#${clipId})">
+      <g stroke="rgba(0,0,0,0.28)" stroke-width="1" transform="translate(0.7,0.7)">${lines}</g>
+      <g stroke="rgba(255,255,255,0.8)" stroke-width="1" transform="translate(-0.6,-0.6)">${lines}</g>
+      <g stroke="${theme.line}" stroke-width="0.5" opacity="0.5">${lines}</g>
+    </g>
     ${cuttedRect}
-    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="${theme.line}" stroke-width="1.8"/>
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="${theme.line}" stroke-width="2"/>
+    <rect x="${(ox+1).toFixed(1)}" y="${(oy+1).toFixed(1)}" width="${(dW-2).toFixed(1)}" height="${(dH-2).toFixed(1)}" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
     <line x1="${ox}" y1="${oy-12}" x2="${ox+dW}" y2="${oy-12}" stroke="${dimColor}" stroke-width="1.4"/>
     <line x1="${ox}" y1="${oy-17}" x2="${ox}" y2="${oy-6}" stroke="${dimColor}" stroke-width="1.4"/>
     <line x1="${ox+dW}" y1="${oy-17}" x2="${ox+dW}" y2="${oy-6}" stroke="${dimColor}" stroke-width="1.4"/>
