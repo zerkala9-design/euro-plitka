@@ -301,7 +301,7 @@ function drawPanel(mode, panel, info) {
   const hx = tW / 2, hy = tH / 2;
   const theme = TILE_THEME[Number(panel.input.color)] || TILE_THEME[1];
   const facetMM = [0, 0, 5, 10, 15, 20][Number(panel.input.facet)] || 10;
-  const baseD = Math.min(hx, hy) * Math.min(0.28, 0.05 + facetMM * 0.010); // глибина фаски (px), більший фацет → ширша
+  const baseD = Math.min(hx, hy) * Math.min(0.22, 0.03 + facetMM * 0.008); // глибина фаски (px), більший фацет → ширша
 
   const oL = ox, oT = oy, oR = ox + dW, oB = oy + dH;
   const lightX = -0.7071, lightY = -0.7071; // світло згори-зліва
