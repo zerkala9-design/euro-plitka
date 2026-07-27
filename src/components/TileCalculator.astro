@@ -293,38 +293,104 @@ function drawPanel(mode, panel, info) {
   const tW = X.tile * scaleX;
   const tH = Y.tile * scaleY;
 
-  // Кожен ромб — окреме плоске дзеркало з фацетом (скошена рамка по 4 краях).
-  // Ромбова решітка: центри в точках (p·tW/2, q·tH/2), де p+q парне.
+  // Кожна плитка — окреме плоске дзеркало з фацетом по всьому контуру.
+  // Ромб обрізається по краю панелі → повний ромб / трикутник / пʼятикутник,
+  // і фаска йде по ВСІХ його сторонах (включно з прямим краєм біля периметра).
   const cols = Math.ceil(X.size / X.tile) + 1;
   const rows = Math.ceil(Y.size / Y.tile) + 1;
   const hx = tW / 2, hy = tH / 2;
   const theme = TILE_THEME[Number(panel.input.color)] || TILE_THEME[1];
-  // Глибина фацета (частина півдіагоналі) залежить від обраного фацета 0…20 мм
   const facetMM = [0, 0, 5, 10, 15, 20][Number(panel.input.facet)] || 10;
-  const k = Math.min(0.30, 0.12 + facetMM * 0.009);
+  const baseD = Math.min(hx, hy) * Math.min(0.34, 0.16 + facetMM * 0.010); // глибина фаски (px)
+
+  const oL = ox, oT = oy, oR = ox + dW, oB = oy + dH;
+  const lightX = -0.7071, lightY = -0.7071; // світло згори-зліва
+
+  // Обрізка опуклого багатокутника прямокутником [oL,oT,oR,oB]
+  function clipHalf(poly, keep, isX, val) {
+    const out = [];
+    for (let i = 0; i < poly.length; i++) {
+      const a = poly[i], b = poly[(i + 1) % poly.length];
+      const ain = keep(a), bin = keep(b);
+      if (ain) out.push(a);
+      if (ain !== bin) {
+        const t = isX ? (val - a[0]) / (b[0] - a[0]) : (val - a[1]) / (b[1] - a[1]);
+        out.push([a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])]);
+      }
+    }
+    return out;
+  }
+  function clipRect(poly) {
+    let p = poly;
+    p = clipHalf(p, v => v[0] >= oL, true, oL);  if (p.length < 3) return p;
+    p = clipHalf(p, v => v[0] <= oR, true, oR);  if (p.length < 3) return p;
+    p = clipHalf(p, v => v[1] >= oT, false, oT); if (p.length < 3) return p;
+    p = clipHalf(p, v => v[1] <= oB, false, oB); return p;
+  }
+
+  const fnum = n => n.toFixed(1);
+  const ptsStr = pl => pl.map(v => `${fnum(v[0])},${fnum(v[1])}`).join(' ');
 
   let facets = '';  // затінені грані фацета (обʼємний скіс)
-  let edges = '';   // тонкі лінії: контур ромба + межа плоскої частини
-
-  const quad = (ax, ay, bx, by, cx2, cy2, dx, dy, col, op) =>
-    `<polygon points="${ax.toFixed(1)},${ay.toFixed(1)} ${bx.toFixed(1)},${by.toFixed(1)} ${cx2.toFixed(1)},${cy2.toFixed(1)} ${dx.toFixed(1)},${dy.toFixed(1)}" fill="${col}" fill-opacity="${op}"/>`;
+  let edges = '';   // контур плитки + межа плоскої частини
 
   for (let q = 0; q <= 2 * rows; q++) {
     for (let p = (q % 2); p <= 2 * cols; p += 2) {
       const cx = ox + p * hx, cy = oy + q * hy;
-      // зовнішні вершини ромба: T(верх) R(право) B(низ) L(ліво)
-      const Tx = cx, Ty = cy - hy, Rx = cx + hx, Ry = cy, Bx = cx, By = cy + hy, Lx = cx - hx, Ly = cy;
-      // внутрішні (плоска частина) — відступ на глибину фацета
-      const ihy = hy * (1 - k), ihx = hx * (1 - k);
-      const tx = cx, ty = cy - ihy, rx = cx + ihx, ry = cy, bx = cx, by = cy + ihy, lx = cx - ihx, ly = cy;
-      // 4 грані фацета зі світлотінню (світло згори-зліва)
-      facets += quad(Lx, Ly, Tx, Ty, tx, ty, lx, ly, '#ffffff', 0.42); // верх-ліво — найсвітліша
-      facets += quad(Tx, Ty, Rx, Ry, rx, ry, tx, ty, '#ffffff', 0.18); // верх-право
-      facets += quad(Rx, Ry, Bx, By, bx, by, rx, ry, '#000000', 0.20); // низ-право — найтемніша
-      facets += quad(Bx, By, Lx, Ly, lx, ly, bx, by, '#000000', 0.11); // низ-ліво
-      // контур ромба (шов між плитками) + межа плоскої частини
-      edges += `<polygon points="${Tx.toFixed(1)},${Ty.toFixed(1)} ${Rx.toFixed(1)},${Ry.toFixed(1)} ${Bx.toFixed(1)},${By.toFixed(1)} ${Lx.toFixed(1)},${Ly.toFixed(1)}" fill="none" stroke="${theme.line}" stroke-width="0.9" stroke-opacity="0.55"/>`;
-      edges += `<polygon points="${tx.toFixed(1)},${ty.toFixed(1)} ${rx.toFixed(1)},${ry.toFixed(1)} ${bx.toFixed(1)},${by.toFixed(1)} ${lx.toFixed(1)},${ly.toFixed(1)}" fill="none" stroke="#ffffff" stroke-width="0.6" stroke-opacity="0.6"/>`;
+      const diamond = [[cx, cy - hy], [cx + hx, cy], [cx, cy + hy], [cx - hx, cy]];
+      const poly = clipRect(diamond);
+      const n = poly.length;
+      if (n < 3) continue;
+
+      // центроїд
+      let gx = 0, gy = 0;
+      for (const v of poly) { gx += v[0]; gy += v[1]; }
+      gx /= n; gy /= n;
+
+      // безпечна глибина фаски: не більша за 0.8 відстані центроїда до найближчої сторони
+      let minDist = Infinity;
+      const norm = [];
+      for (let i = 0; i < n; i++) {
+        const a = poly[i], b = poly[(i + 1) % n];
+        let ex = b[0] - a[0], ey = b[1] - a[1];
+        const len = Math.hypot(ex, ey) || 1; ex /= len; ey /= len;
+        let nx = -ey, ny = ex;                       // нормаль
+        if ((gx - a[0]) * nx + (gy - a[1]) * ny < 0) { nx = -nx; ny = -ny; } // всередину
+        norm.push([nx, ny, ex, ey]);
+        const dist = (gx - a[0]) * nx + (gy - a[1]) * ny;
+        if (dist < minDist) minDist = dist;
+      }
+      const d = Math.min(baseD, minDist * 0.8);
+      if (d < 0.6) continue; // занадто дрібно — пропускаємо
+
+      // внутрішній контур (зсув кожної сторони всередину на d, перетин сусідніх)
+      const inner = [];
+      for (let i = 0; i < n; i++) {
+        const [nx0, ny0, ex0, ey0] = norm[(i - 1 + n) % n];
+        const [nx1, ny1, ex1, ey1] = norm[i];
+        const a0 = poly[(i - 1 + n) % n], a1 = poly[i];
+        const P0 = [a0[0] + nx0 * d, a0[1] + ny0 * d];
+        const P1 = [a1[0] + nx1 * d, a1[1] + ny1 * d];
+        const denom = ex0 * ey1 - ey0 * ex1;
+        if (Math.abs(denom) < 1e-6) { inner.push(P1); continue; }
+        const t = ((P1[0] - P0[0]) * ey1 - (P1[1] - P0[1]) * ex1) / denom;
+        inner.push([P0[0] + ex0 * t, P0[1] + ey0 * t]);
+      }
+
+      // грань фацета для кожної сторони — трапеція з світлотінню за нахилом
+      for (let i = 0; i < n; i++) {
+        const a = poly[i], b = poly[(i + 1) % n];
+        const ia = inner[i], ib = inner[(i + 1) % n];
+        const [nx, ny] = norm[i];
+        const shade = -(nx * lightX + ny * lightY); // грань дивиться назовні (−нормаль)
+        const col = shade >= 0 ? '#ffffff' : '#000000';
+        const op = (shade >= 0
+          ? Math.min(0.44, shade * 0.40 + 0.05)
+          : Math.min(0.26, -shade * 0.20 + 0.04)).toFixed(3);
+        facets += `<polygon points="${fnum(a[0])},${fnum(a[1])} ${fnum(b[0])},${fnum(b[1])} ${fnum(ib[0])},${fnum(ib[1])} ${fnum(ia[0])},${fnum(ia[1])}" fill="${col}" fill-opacity="${op}"/>`;
+      }
+      edges += `<polygon points="${ptsStr(poly)}" fill="none" stroke="${theme.line}" stroke-width="0.9" stroke-opacity="0.55"/>`;
+      edges += `<polygon points="${ptsStr(inner)}" fill="none" stroke="#ffffff" stroke-width="0.6" stroke-opacity="0.6"/>`;
     }
   }
 
@@ -340,17 +406,6 @@ function drawPanel(mode, panel, info) {
     cuttedRect = `<rect x="${ox}" y="${oy + dH}" width="${dW}" height="${cutPx.toFixed(1)}" fill="rgba(80,80,80,0.22)" stroke="#888" stroke-width="0.8"/>`;
   }
 
-  // Фацет по периметру: скошений бордюр по всьому краю дзеркала (4 грані зі світлотінню)
-  const bw = Math.max(6, 5 + facetMM * 0.6);
-  const oL = ox, oT = oy, oR = ox + dW, oB = oy + dH;
-  const iL = ox + bw, iT = oy + bw, iR = ox + dW - bw, iB = oy + dH - bw;
-  const f2 = (n) => n.toFixed(1);
-  const border =
-    `<polygon points="${f2(oL)},${f2(oT)} ${f2(oR)},${f2(oT)} ${f2(iR)},${f2(iT)} ${f2(iL)},${f2(iT)}" fill="#ffffff" fill-opacity="0.40"/>` + // верх — світло
-    `<polygon points="${f2(oL)},${f2(oT)} ${f2(iL)},${f2(iT)} ${f2(iL)},${f2(iB)} ${f2(oL)},${f2(oB)}" fill="#ffffff" fill-opacity="0.26"/>` + // ліво
-    `<polygon points="${f2(oR)},${f2(oT)} ${f2(oR)},${f2(oB)} ${f2(iR)},${f2(iB)} ${f2(iR)},${f2(iT)}" fill="#000000" fill-opacity="0.20"/>` + // право — тінь
-    `<polygon points="${f2(oL)},${f2(oB)} ${f2(iL)},${f2(iB)} ${f2(iR)},${f2(iB)} ${f2(oR)},${f2(oB)}" fill="#000000" fill-opacity="0.16"/>` + // низ — тінь
-    `<rect x="${f2(iL)}" y="${f2(iT)}" width="${f2(iR-iL)}" height="${f2(iB-iT)}" fill="none" stroke="#ffffff" stroke-width="0.7" stroke-opacity="0.6"/>`;
 
   svgEl.innerHTML = `
     <defs>
@@ -380,8 +435,6 @@ function drawPanel(mode, panel, info) {
     <g clip-path="url(#${clipId})">${facets}</g>
     <!-- контури: шов між ромбами + межа плоскої частини -->
     <g clip-path="url(#${clipId})">${edges}</g>
-    <!-- фацет по периметру дзеркала -->
-    <g clip-path="url(#${clipId})">${border}</g>
     ${cuttedRect}
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="${theme.line}" stroke-width="2"/>
     <rect x="${(ox+1).toFixed(1)}" y="${(oy+1).toFixed(1)}" width="${(dW-2).toFixed(1)}" height="${(dH-2).toFixed(1)}" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
