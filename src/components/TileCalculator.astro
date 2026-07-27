@@ -301,7 +301,7 @@ function drawPanel(mode, panel, info) {
   const hx = tW / 2, hy = tH / 2;
   const theme = TILE_THEME[Number(panel.input.color)] || TILE_THEME[1];
   const facetMM = [0, 0, 5, 10, 15, 20][Number(panel.input.facet)] || 10;
-  const baseD = Math.min(hx, hy) * Math.min(0.34, 0.16 + facetMM * 0.010); // глибина фаски (px)
+  const baseD = Math.min(hx, hy) * Math.min(0.40, 0.20 + facetMM * 0.011); // глибина фаски (px)
 
   const oL = ox, oT = oy, oR = ox + dW, oB = oy + dH;
   const lightX = -0.7071, lightY = -0.7071; // світло згори-зліва
@@ -360,7 +360,7 @@ function drawPanel(mode, panel, info) {
         const dist = (gx - a[0]) * nx + (gy - a[1]) * ny;
         if (dist < minDist) minDist = dist;
       }
-      const d = Math.min(baseD, minDist * 0.8);
+      const d = Math.min(baseD, minDist * 0.92);
       if (d < 0.6) continue; // занадто дрібно — пропускаємо
 
       // внутрішній контур (зсув кожної сторони всередину на d, перетин сусідніх)
@@ -389,10 +389,12 @@ function drawPanel(mode, panel, info) {
           : Math.min(0.26, -shade * 0.20 + 0.04)).toFixed(3);
         facets += `<polygon points="${fnum(a[0])},${fnum(a[1])} ${fnum(b[0])},${fnum(b[1])} ${fnum(ib[0])},${fnum(ib[1])} ${fnum(ia[0])},${fnum(ia[1])}" fill="${col}" fill-opacity="${op}"/>`;
       }
-      // контур плитки (шов) + видима лінія-складка фаски (сіра, читається і на світлих гранях) + білий блік
-      edges += `<polygon points="${ptsStr(poly)}" fill="none" stroke="${theme.line}" stroke-width="0.9" stroke-opacity="0.6"/>`;
-      edges += `<polygon points="${ptsStr(inner)}" fill="none" stroke="${theme.line}" stroke-width="0.8" stroke-opacity="0.5"/>`;
-      edges += `<g transform="translate(-0.5,-0.5)"><polygon points="${ptsStr(inner)}" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.55"/></g>`;
+      // Шов між плитками (V-паз: тінь + блік) — чіткий кристалічний край
+      edges += `<g transform="translate(0.5,0.5)"><polygon points="${ptsStr(poly)}" fill="none" stroke="${theme.line}" stroke-width="0.8" stroke-opacity="0.5"/></g>`;
+      edges += `<polygon points="${ptsStr(poly)}" fill="none" stroke="${theme.line}" stroke-width="1" stroke-opacity="0.75"/>`;
+      // Лінія-складка фаски (межа плоскої частини): сіра + білий блік — видима на будь-якій грані
+      edges += `<polygon points="${ptsStr(inner)}" fill="none" stroke="${theme.line}" stroke-width="0.9" stroke-opacity="0.6"/>`;
+      edges += `<g transform="translate(-0.6,-0.6)"><polygon points="${ptsStr(inner)}" fill="none" stroke="#ffffff" stroke-width="0.7" stroke-opacity="0.7"/></g>`;
     }
   }
 
