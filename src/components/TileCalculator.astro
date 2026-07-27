@@ -313,7 +313,6 @@ function drawPanel(mode, panel, info) {
 
   // Колір превʼю за обраним кольором дзеркала
   const theme = TILE_THEME[Number(panel.input.color)] || TILE_THEME[1];
-  const mirrorImg = { 1: '/mirror-silver.jpg', 2: '/mirror-bronze.jpg', 3: '/mirror-graphite.jpg' }[Number(panel.input.color)] || '/mirror-silver.jpg';
 
   // Cutted (cut-режим): смуга знизу яка відрізається
   let cuttedRect = '';
@@ -327,29 +326,25 @@ function drawPanel(mode, panel, info) {
       <clipPath id="${clipId}">
         <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" />
       </clipPath>
-      <!-- скло дзеркала: базовий відбивний градієнт -->
+      <!-- скло дзеркала: рівний гладкий градієнт (без плям) -->
       <linearGradient id="${gradId}" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%"  stop-color="${theme.c1}"/>
-        <stop offset="42%" stop-color="${theme.c2}"/>
-        <stop offset="58%" stop-color="${theme.c3}"/>
+        <stop offset="0%"   stop-color="${theme.c3}"/>
+        <stop offset="50%"  stop-color="${theme.c1}"/>
         <stop offset="100%" stop-color="${theme.c2}"/>
       </linearGradient>
-      <!-- діагональний світловий відблиск (як на реальному дзеркалі) -->
-      <linearGradient id="${gradId}-sheen" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%"  stop-color="#ffffff" stop-opacity="0"/>
-        <stop offset="38%" stop-color="#ffffff" stop-opacity="0"/>
-        <stop offset="50%" stop-color="#ffffff" stop-opacity="0.5"/>
-        <stop offset="62%" stop-color="#ffffff" stop-opacity="0"/>
+      <!-- мʼякий відблиск угорі-ліворуч (один, без плям) -->
+      <radialGradient id="${gradId}-hi" cx="28%" cy="16%" r="85%">
+        <stop offset="0%"  stop-color="#ffffff" stop-opacity="0.55"/>
+        <stop offset="45%" stop-color="#ffffff" stop-opacity="0.12"/>
         <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-      </linearGradient>
+      </radialGradient>
     </defs>
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId})"/>
-    <image x="${ox}" y="${oy}" width="${dW}" height="${dH}" href="${mirrorImg}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipId})"/>
-    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId}-sheen)" clip-path="url(#${clipId})"/>
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId}-hi)" clip-path="url(#${clipId})"/>
     <!-- фаска: чіткі гравіровані грані (тінь + підсвітка) -->
     <g clip-path="url(#${clipId})">
-      <g stroke="rgba(0,0,0,0.4)" stroke-width="1" transform="translate(0.6,0.6)">${lines}</g>
-      <g stroke="rgba(255,255,255,0.95)" stroke-width="1" transform="translate(-0.6,-0.6)">${lines}</g>
+      <g stroke="rgba(0,0,0,0.34)" stroke-width="1" transform="translate(0.6,0.6)">${lines}</g>
+      <g stroke="rgba(255,255,255,0.9)" stroke-width="1" transform="translate(-0.6,-0.6)">${lines}</g>
     </g>
     ${cuttedRect}
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="${theme.line}" stroke-width="2"/>
