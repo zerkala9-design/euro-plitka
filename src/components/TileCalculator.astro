@@ -357,8 +357,9 @@ function drawPanel(mode, panel, info) {
   let facets = '';  // затінені грані фацета (обʼємний скіс)
   let edges = '';   // контур плитки + межа плоскої частини
 
-  for (let q = 0; q <= 2 * rows; q++) {
-    for (let p = (q % 2); p <= 2 * cols; p += 2) {
+  for (let q = -1; q <= 2 * rows + 1; q++) {
+    for (let p = -1; p <= 2 * cols + 1; p++) {
+      if (((p + q) & 1) === 0) continue; // ромби на непарних вузлах → цілі трикутники в кутах
       const cx = ox + p * hx, cy = oy + q * hy;
       const diamond = [[cx, cy - hy], [cx + hx, cy], [cx, cy + hy], [cx - hx, cy]];
       const poly = cleanPoly(clipRect(diamond));
