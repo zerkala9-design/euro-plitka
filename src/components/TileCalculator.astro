@@ -313,6 +313,7 @@ function drawPanel(mode, panel, info) {
 
   // Колір превʼю за обраним кольором дзеркала
   const theme = TILE_THEME[Number(panel.input.color)] || TILE_THEME[1];
+  const mirrorImg = { 1: '/mirror-silver.jpg', 2: '/mirror-bronze.jpg', 3: '/mirror-graphite.jpg' }[Number(panel.input.color)] || '/mirror-silver.jpg';
 
   // Cutted (cut-режим): смуга знизу яка відрізається
   let cuttedRect = '';
@@ -349,12 +350,12 @@ function drawPanel(mode, panel, info) {
       </linearGradient>
     </defs>
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId})"/>
-    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId}-win)" clip-path="url(#${clipId})"/>
+    <image x="${ox}" y="${oy}" width="${dW}" height="${dH}" href="${mirrorImg}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipId})"/>
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId}-spec)" clip-path="url(#${clipId})"/>
     <!-- фаска: чіткі гравіровані грані (тінь + підсвітка) -->
     <g clip-path="url(#${clipId})">
-      <g stroke="rgba(0,0,0,0.32)" stroke-width="1" transform="translate(0.6,0.6)">${lines}</g>
-      <g stroke="rgba(255,255,255,0.95)" stroke-width="1" transform="translate(-0.6,-0.6)">${lines}</g>
+      <g stroke="rgba(0,0,0,0.34)" stroke-width="1" transform="translate(0.7,0.7)">${lines}</g>
+      <g stroke="rgba(255,255,255,0.98)" stroke-width="1" transform="translate(-0.6,-0.6)">${lines}</g>
     </g>
     ${cuttedRect}
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="${theme.line}" stroke-width="2"/>
