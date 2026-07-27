@@ -301,7 +301,7 @@ function drawPanel(mode, panel, info) {
   const hx = tW / 2, hy = tH / 2;
   const theme = TILE_THEME[Number(panel.input.color)] || TILE_THEME[1];
   const facetMM = [0, 0, 5, 10, 15, 20][Number(panel.input.facet)] || 10;
-  const baseD = Math.min(hx, hy) * Math.min(0.28, 0.05 + facetMM * 0.010); // глибина фаски (px), більший фацет → ширша
+  const baseD = Math.min(hx, hy) * Math.min(0.36, 0.15 + facetMM * 0.010); // глибина фаски (px), більший фацет → ширша
 
   const oL = ox, oT = oy, oR = ox + dW, oB = oy + dH;
   const lightX = -0.7071, lightY = -0.7071; // світло згори-зліва
@@ -414,13 +414,13 @@ function drawPanel(mode, panel, info) {
       // кутові лінії-стики фацета: зовнішній кут → внутрішній кут (як на малюнку)
       for (let i = 0; i < n; i++) {
         const a = poly[i], ia = inner[i];
-        edges += `<line x1="${fnum(a[0])}" y1="${fnum(a[1])}" x2="${fnum(ia[0])}" y2="${fnum(ia[1])}" stroke="${theme.line}" stroke-width="0.7" stroke-opacity="0.5"/>`;
+        edges += `<line x1="${fnum(a[0])}" y1="${fnum(a[1])}" x2="${fnum(ia[0])}" y2="${fnum(ia[1])}" stroke="${theme.line}" stroke-width="0.9" stroke-opacity="0.75"/>`;
       }
       // Тонкий шов між плитками
-      edges += `<polygon points="${ptsStr(poly)}" fill="none" stroke="${theme.line}" stroke-width="0.5" stroke-opacity="0.55"/>`;
-      // Лінія-складка фаски (межа плоскої частини): сіра + білий блік — видима на будь-якій грані
-      edges += `<polygon points="${ptsStr(inner)}" fill="none" stroke="${theme.line}" stroke-width="0.9" stroke-opacity="0.6"/>`;
-      edges += `<g transform="translate(-0.6,-0.6)"><polygon points="${ptsStr(inner)}" fill="none" stroke="#ffffff" stroke-width="0.7" stroke-opacity="0.7"/></g>`;
+      edges += `<polygon points="${ptsStr(poly)}" fill="none" stroke="${theme.line}" stroke-width="0.7" stroke-opacity="0.8"/>`;
+      // Лінія-складка фаски (межа плоскої частини): сіра + білий блік — чіткіша
+      edges += `<polygon points="${ptsStr(inner)}" fill="none" stroke="${theme.line}" stroke-width="1.1" stroke-opacity="0.85"/>`;
+      edges += `<g transform="translate(-0.6,-0.6)"><polygon points="${ptsStr(inner)}" fill="none" stroke="#ffffff" stroke-width="0.8" stroke-opacity="0.8"/></g>`;
     }
   }
 
