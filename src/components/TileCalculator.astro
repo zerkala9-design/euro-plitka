@@ -103,9 +103,9 @@ const panelData = {};
 
 // Кольори превʼю панно за кольором дзеркала (як в оригіналі)
 const TILE_THEME = {
-  1: { c1: '#f2f2f2', c2: '#c8c8c8', line: '#9a9a9a' }, // Серебро
-  2: { c1: '#f0e0b0', c2: '#d4a84b', line: '#a9821f' }, // Бронза
-  3: { c1: '#d6d6d6', c2: '#8f8f8f', line: '#5a5a5a' }, // Графіт
+  1: { c1: '#eef3f7', c2: '#cbd4dc', c3: '#ffffff', line: '#96a1a9' }, // Срібло
+  2: { c1: '#f0dea4', c2: '#caa049', c3: '#fdf6dd', line: '#9c761a' }, // Бронза
+  3: { c1: '#d3d9dd', c2: '#868d93', c3: '#f1f4f6', line: '#565c61' }, // Графіт
 };
 
 // --- Ціна (з app.js) ---
@@ -293,16 +293,131 @@ function drawPanel(mode, panel, info) {
   const tW = X.tile * scaleX;
   const tH = Y.tile * scaleY;
 
-  // Малюємо діагональні лінії у кожній клітинці (як оригінал)
-  let lines = '';
+  // Кожна плитка — окреме плоске дзеркало з фацетом по всьому контуру.
+  // Ромб обрізається по краю панелі → повний ромб / трикутник / пʼятикутник,
+  // і фаска йде по ВСІХ його сторонах (включно з прямим краєм біля периметра).
   const cols = Math.ceil(X.size / X.tile) + 1;
   const rows = Math.ceil(Y.size / Y.tile) + 1;
-  for (let n = 0; n <= rows; n++) {
-    for (let r = 0; r <= cols; r++) {
-      const x0 = ox + r * tW, y0 = oy + n * tH;
-      const x1 = ox + (r + 1) * tW, y1 = oy + (n + 1) * tH;
-      lines += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" />`;
-      lines += `<line x1="${x0.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y0.toFixed(1)}" />`;
+  const hx = tW / 2, hy = tH / 2;
+  const theme = TILE_THEME[Number(panel.input.color)] || TILE_THEME[1];
+  const facetMM = [0, 0, 5, 10, 15, 20][Number(panel.input.facet)] || 10;
+  const baseD = Math.min(hx, hy) * Math.min(0.34, 0.09 + facetMM * 0.011); // глибина фаски (px), більший фацет → ширша
+
+  const oL = ox, oT = oy, oR = ox + dW, oB = oy + dH;
+  const lightX = -0.7071, lightY = -0.7071; // світло згори-зліва
+
+  // Обрізка опуклого багатокутника прямокутником [oL,oT,oR,oB]
+  function clipHalf(poly, keep, isX, val) {
+    const out = [];
+    for (let i = 0; i < poly.length; i++) {
+      const a = poly[i], b = poly[(i + 1) % poly.length];
+      const ain = keep(a), bin = keep(b);
+      if (ain) out.push(a);
+      if (ain !== bin) {
+        const t = isX ? (val - a[0]) / (b[0] - a[0]) : (val - a[1]) / (b[1] - a[1]);
+        out.push([a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])]);
+      }
+    }
+    return out;
+  }
+  function clipRect(poly) {
+    let p = poly;
+    p = clipHalf(p, v => v[0] >= oL, true, oL);  if (p.length < 3) return p;
+    p = clipHalf(p, v => v[0] <= oR, true, oR);  if (p.length < 3) return p;
+    p = clipHalf(p, v => v[1] >= oT, false, oT); if (p.length < 3) return p;
+    p = clipHalf(p, v => v[1] <= oB, false, oB); return p;
+  }
+  // прибрати дублі та колінеарні точки (клип по вершині створює нульові сторони → NaN нормалі)
+  function cleanPoly(poly) {
+    const out = [];
+    for (let i = 0; i < poly.length; i++) {
+      const a = poly[i];
+      const b = out.length ? out[out.length - 1] : poly[poly.length - 1];
+      if (Math.hypot(a[0] - b[0], a[1] - b[1]) > 0.4) out.push(a);
+    }
+    // замкнутість: перша й остання не збігаються
+    while (out.length > 1 && Math.hypot(out[0][0] - out[out.length - 1][0], out[0][1] - out[out.length - 1][1]) < 0.4) out.pop();
+    // прибрати майже колінеарні вершини
+    const res = [];
+    const m = out.length;
+    for (let i = 0; i < m; i++) {
+      const prev = out[(i - 1 + m) % m], cur = out[i], next = out[(i + 1) % m];
+      const v1x = cur[0] - prev[0], v1y = cur[1] - prev[1];
+      const v2x = next[0] - cur[0], v2y = next[1] - cur[1];
+      const cross = v1x * v2y - v1y * v2x;
+      const l1 = Math.hypot(v1x, v1y), l2 = Math.hypot(v2x, v2y);
+      if (Math.abs(cross) > 0.5 * l1 * l2 * 0.02) res.push(cur); // не колінеарна
+    }
+    return res.length >= 3 ? res : out;
+  }
+
+  const fnum = n => n.toFixed(1);
+  const ptsStr = pl => pl.map(v => `${fnum(v[0])},${fnum(v[1])}`).join(' ');
+
+  let facets = '';  // затінені грані фацета (обʼємний скіс)
+  let edges = '';   // контур плитки + межа плоскої частини
+
+  for (let q = 0; q <= 2 * rows; q++) {
+    for (let p = (q % 2); p <= 2 * cols; p += 2) {
+      const cx = ox + p * hx, cy = oy + q * hy;
+      const diamond = [[cx, cy - hy], [cx + hx, cy], [cx, cy + hy], [cx - hx, cy]];
+      const poly = cleanPoly(clipRect(diamond));
+      const n = poly.length;
+      if (n < 3) continue;
+
+      // центроїд
+      let gx = 0, gy = 0;
+      for (const v of poly) { gx += v[0]; gy += v[1]; }
+      gx /= n; gy /= n;
+
+      // безпечна глибина фаски: не більша за 0.8 відстані центроїда до найближчої сторони
+      let minDist = Infinity;
+      const norm = [];
+      for (let i = 0; i < n; i++) {
+        const a = poly[i], b = poly[(i + 1) % n];
+        let ex = b[0] - a[0], ey = b[1] - a[1];
+        const len = Math.hypot(ex, ey) || 1; ex /= len; ey /= len;
+        let nx = -ey, ny = ex;                       // нормаль
+        if ((gx - a[0]) * nx + (gy - a[1]) * ny < 0) { nx = -nx; ny = -ny; } // всередину
+        norm.push([nx, ny, ex, ey]);
+        const dist = (gx - a[0]) * nx + (gy - a[1]) * ny;
+        if (dist < minDist) minDist = dist;
+      }
+      const d = Math.min(baseD, minDist * 0.92);
+      if (d < 0.6) continue; // занадто дрібно — пропускаємо
+
+      // внутрішній контур (зсув кожної сторони всередину на d, перетин сусідніх)
+      const inner = [];
+      for (let i = 0; i < n; i++) {
+        const [nx0, ny0, ex0, ey0] = norm[(i - 1 + n) % n];
+        const [nx1, ny1, ex1, ey1] = norm[i];
+        const a0 = poly[(i - 1 + n) % n], a1 = poly[i];
+        const P0 = [a0[0] + nx0 * d, a0[1] + ny0 * d];
+        const P1 = [a1[0] + nx1 * d, a1[1] + ny1 * d];
+        const denom = ex0 * ey1 - ey0 * ex1;
+        if (Math.abs(denom) < 1e-6) { inner.push(P1); continue; }
+        const t = ((P1[0] - P0[0]) * ey1 - (P1[1] - P0[1]) * ex1) / denom;
+        inner.push([P0[0] + ex0 * t, P0[1] + ey0 * t]);
+      }
+
+      // грань фацета для кожної сторони — трапеція з світлотінню за нахилом
+      for (let i = 0; i < n; i++) {
+        const a = poly[i], b = poly[(i + 1) % n];
+        const ia = inner[i], ib = inner[(i + 1) % n];
+        const [nx, ny] = norm[i];
+        const shade = -(nx * lightX + ny * lightY); // грань дивиться назовні (−нормаль)
+        const col = shade >= 0 ? '#ffffff' : '#000000';
+        const op = (shade >= 0
+          ? Math.min(0.44, shade * 0.40 + 0.05)
+          : Math.min(0.26, -shade * 0.20 + 0.04)).toFixed(3);
+        facets += `<polygon points="${fnum(a[0])},${fnum(a[1])} ${fnum(b[0])},${fnum(b[1])} ${fnum(ib[0])},${fnum(ib[1])} ${fnum(ia[0])},${fnum(ia[1])}" fill="${col}" fill-opacity="${op}"/>`;
+      }
+      // Шов між плитками (V-паз: тінь + блік) — чіткий кристалічний край
+      edges += `<g transform="translate(0.5,0.5)"><polygon points="${ptsStr(poly)}" fill="none" stroke="${theme.line}" stroke-width="0.8" stroke-opacity="0.5"/></g>`;
+      edges += `<polygon points="${ptsStr(poly)}" fill="none" stroke="${theme.line}" stroke-width="1" stroke-opacity="0.75"/>`;
+      // Лінія-складка фаски (межа плоскої частини): сіра + білий блік — видима на будь-якій грані
+      edges += `<polygon points="${ptsStr(inner)}" fill="none" stroke="${theme.line}" stroke-width="0.9" stroke-opacity="0.6"/>`;
+      edges += `<g transform="translate(-0.6,-0.6)"><polygon points="${ptsStr(inner)}" fill="none" stroke="#ffffff" stroke-width="0.7" stroke-opacity="0.7"/></g>`;
     }
   }
 
@@ -311,9 +426,6 @@ function drawPanel(mode, panel, info) {
   const fs = 13;
   const dimColor = '#9a7420';
 
-  // Колір превʼю за обраним кольором дзеркала
-  const theme = TILE_THEME[Number(panel.input.color)] || TILE_THEME[1];
-
   // Cutted (cut-режим): смуга знизу яка відрізається
   let cuttedRect = '';
   if (mode === 'cut' && Y.cutted) {
@@ -321,21 +433,38 @@ function drawPanel(mode, panel, info) {
     cuttedRect = `<rect x="${ox}" y="${oy + dH}" width="${dW}" height="${cutPx.toFixed(1)}" fill="rgba(80,80,80,0.22)" stroke="#888" stroke-width="0.8"/>`;
   }
 
+
   svgEl.innerHTML = `
     <defs>
       <clipPath id="${clipId}">
         <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" />
       </clipPath>
-      <linearGradient id="${gradId}" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="${theme.c1}"/>
-        <stop offset="55%" stop-color="${theme.c2}"/>
+      <!-- відбиття кімнати: світла стеля/вікно вгорі → темніша підлога внизу -->
+      <linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%"   stop-color="${theme.c3}"/>
+        <stop offset="30%"  stop-color="${theme.c1}"/>
+        <stop offset="72%"  stop-color="${theme.c2}"/>
         <stop offset="100%" stop-color="${theme.c1}"/>
       </linearGradient>
+      <!-- відбите вікно: вертикальна світла смуга -->
+      <linearGradient id="${gradId}-win" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"  stop-color="#ffffff" stop-opacity="0"/>
+        <stop offset="24%" stop-color="#ffffff" stop-opacity="0"/>
+        <stop offset="33%" stop-color="#ffffff" stop-opacity="0.22"/>
+        <stop offset="42%" stop-color="#ffffff" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      </linearGradient>
     </defs>
-    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId})" />
-    <g clip-path="url(#${clipId})" stroke="${theme.line}" stroke-width="0.9" opacity="0.8">${lines}</g>
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId})"/>
+    <!-- легке відбите вікно (плоске дзеркало, без діагонального блиску) -->
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId}-win)" clip-path="url(#${clipId})"/>
+    <!-- фацети кожного ромба: обʼємні скошені грані -->
+    <g clip-path="url(#${clipId})">${facets}</g>
+    <!-- контури: шов між ромбами + межа плоскої частини -->
+    <g clip-path="url(#${clipId})">${edges}</g>
     ${cuttedRect}
-    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="${theme.line}" stroke-width="1.8"/>
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="${theme.line}" stroke-width="2"/>
+    <rect x="${(ox+1).toFixed(1)}" y="${(oy+1).toFixed(1)}" width="${(dW-2).toFixed(1)}" height="${(dH-2).toFixed(1)}" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
     <line x1="${ox}" y1="${oy-12}" x2="${ox+dW}" y2="${oy-12}" stroke="${dimColor}" stroke-width="1.4"/>
     <line x1="${ox}" y1="${oy-17}" x2="${ox}" y2="${oy-6}" stroke="${dimColor}" stroke-width="1.4"/>
     <line x1="${ox+dW}" y1="${oy-17}" x2="${ox+dW}" y2="${oy-6}" stroke="${dimColor}" stroke-width="1.4"/>
