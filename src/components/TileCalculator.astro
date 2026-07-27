@@ -340,6 +340,18 @@ function drawPanel(mode, panel, info) {
     cuttedRect = `<rect x="${ox}" y="${oy + dH}" width="${dW}" height="${cutPx.toFixed(1)}" fill="rgba(80,80,80,0.22)" stroke="#888" stroke-width="0.8"/>`;
   }
 
+  // Фацет по периметру: скошений бордюр по всьому краю дзеркала (4 грані зі світлотінню)
+  const bw = Math.max(6, 5 + facetMM * 0.6);
+  const oL = ox, oT = oy, oR = ox + dW, oB = oy + dH;
+  const iL = ox + bw, iT = oy + bw, iR = ox + dW - bw, iB = oy + dH - bw;
+  const f2 = (n) => n.toFixed(1);
+  const border =
+    `<polygon points="${f2(oL)},${f2(oT)} ${f2(oR)},${f2(oT)} ${f2(iR)},${f2(iT)} ${f2(iL)},${f2(iT)}" fill="#ffffff" fill-opacity="0.40"/>` + // верх — світло
+    `<polygon points="${f2(oL)},${f2(oT)} ${f2(iL)},${f2(iT)} ${f2(iL)},${f2(iB)} ${f2(oL)},${f2(oB)}" fill="#ffffff" fill-opacity="0.26"/>` + // ліво
+    `<polygon points="${f2(oR)},${f2(oT)} ${f2(oR)},${f2(oB)} ${f2(iR)},${f2(iB)} ${f2(iR)},${f2(iT)}" fill="#000000" fill-opacity="0.20"/>` + // право — тінь
+    `<polygon points="${f2(oL)},${f2(oB)} ${f2(iL)},${f2(iB)} ${f2(iR)},${f2(iB)} ${f2(oR)},${f2(oB)}" fill="#000000" fill-opacity="0.16"/>` + // низ — тінь
+    `<rect x="${f2(iL)}" y="${f2(iT)}" width="${f2(iR-iL)}" height="${f2(iB-iT)}" fill="none" stroke="#ffffff" stroke-width="0.7" stroke-opacity="0.6"/>`;
+
   svgEl.innerHTML = `
     <defs>
       <clipPath id="${clipId}">
@@ -368,6 +380,8 @@ function drawPanel(mode, panel, info) {
     <g clip-path="url(#${clipId})">${facets}</g>
     <!-- контури: шов між ромбами + межа плоскої частини -->
     <g clip-path="url(#${clipId})">${edges}</g>
+    <!-- фацет по периметру дзеркала -->
+    <g clip-path="url(#${clipId})">${border}</g>
     ${cuttedRect}
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="${theme.line}" stroke-width="2"/>
     <rect x="${(ox+1).toFixed(1)}" y="${(oy+1).toFixed(1)}" width="${(dW-2).toFixed(1)}" height="${(dH-2).toFixed(1)}" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
