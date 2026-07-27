@@ -293,16 +293,23 @@ function drawPanel(mode, panel, info) {
   const tW = X.tile * scaleX;
   const tH = Y.tile * scaleY;
 
-  // Малюємо діагональні лінії у кожній клітинці (як оригінал)
+  // Діагональні лінії + тривимірна фаска (кожна грань шейдиться світлом/тінню)
   let lines = '';
+  let facets = '';
   const cols = Math.ceil(X.size / X.tile) + 1;
   const rows = Math.ceil(Y.size / Y.tile) + 1;
   for (let n = 0; n <= rows; n++) {
     for (let r = 0; r <= cols; r++) {
       const x0 = ox + r * tW, y0 = oy + n * tH;
       const x1 = ox + (r + 1) * tW, y1 = oy + (n + 1) * tH;
-      lines += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" />`;
-      lines += `<line x1="${x0.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y0.toFixed(1)}" />`;
+      const xc = x0 + tW / 2, yc = y0 + tH / 2;
+      const p0 = x0.toFixed(1), q0 = y0.toFixed(1), p1 = x1.toFixed(1), q1 = y1.toFixed(1), pc = xc.toFixed(1), qc = yc.toFixed(1);
+      lines += `<line x1="${p0}" y1="${q0}" x2="${p1}" y2="${q1}"/><line x1="${p0}" y1="${q1}" x2="${p1}" y2="${q0}"/>`;
+      // 4 грані ромба: верх — світло, низ — тінь, боки — напівтони (обʼємний скіс)
+      facets += `<polygon points="${p0},${q0} ${p1},${q0} ${pc},${qc}" fill="#fff" fill-opacity="0.16"/>`;
+      facets += `<polygon points="${p0},${q1} ${p1},${q1} ${pc},${qc}" fill="#000" fill-opacity="0.14"/>`;
+      facets += `<polygon points="${p0},${q0} ${p0},${q1} ${pc},${qc}" fill="#fff" fill-opacity="0.05"/>`;
+      facets += `<polygon points="${p1},${q0} ${p1},${q1} ${pc},${qc}" fill="#000" fill-opacity="0.06"/>`;
     }
   }
 
@@ -313,7 +320,6 @@ function drawPanel(mode, panel, info) {
 
   // Колір превʼю за обраним кольором дзеркала
   const theme = TILE_THEME[Number(panel.input.color)] || TILE_THEME[1];
-  const mirrorImg = { 1: '/mirror-silver.jpg', 2: '/mirror-bronze.jpg', 3: '/mirror-graphite.jpg' }[Number(panel.input.color)] || '/mirror-silver.jpg';
 
   // Cutted (cut-режим): смуга знизу яка відрізається
   let cuttedRect = '';
@@ -350,12 +356,15 @@ function drawPanel(mode, panel, info) {
       </linearGradient>
     </defs>
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId})"/>
-    <image x="${ox}" y="${oy}" width="${dW}" height="${dH}" href="${mirrorImg}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipId})"/>
+    <!-- обʼємна фаска: шейдовані грані ромбів -->
+    <g clip-path="url(#${clipId})">${facets}</g>
+    <!-- відбите вікно + дзеркальний блиск поверх фасок -->
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId}-win)" clip-path="url(#${clipId})"/>
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId}-spec)" clip-path="url(#${clipId})"/>
-    <!-- фаска: чіткі гравіровані грані (тінь + підсвітка) -->
+    <!-- чіткі грані: тінь + підсвітка -->
     <g clip-path="url(#${clipId})">
-      <g stroke="rgba(0,0,0,0.34)" stroke-width="1" transform="translate(0.7,0.7)">${lines}</g>
-      <g stroke="rgba(255,255,255,0.98)" stroke-width="1" transform="translate(-0.6,-0.6)">${lines}</g>
+      <g stroke="rgba(0,0,0,0.3)" stroke-width="1" transform="translate(0.7,0.7)">${lines}</g>
+      <g stroke="rgba(255,255,255,0.95)" stroke-width="1" transform="translate(-0.6,-0.6)">${lines}</g>
     </g>
     ${cuttedRect}
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="${theme.line}" stroke-width="2"/>
