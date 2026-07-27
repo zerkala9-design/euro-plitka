@@ -411,6 +411,11 @@ function drawPanel(mode, panel, info) {
         const op = Math.min(0.40, shade * 0.36 + 0.05).toFixed(3);
         facets += `<polygon points="${fnum(a[0])},${fnum(a[1])} ${fnum(b[0])},${fnum(b[1])} ${fnum(ib[0])},${fnum(ib[1])} ${fnum(ia[0])},${fnum(ia[1])}" fill="#ffffff" fill-opacity="${op}"/>`;
       }
+      // кутові лінії-стики фацета: зовнішній кут → внутрішній кут (як на малюнку)
+      for (let i = 0; i < n; i++) {
+        const a = poly[i], ia = inner[i];
+        edges += `<line x1="${fnum(a[0])}" y1="${fnum(a[1])}" x2="${fnum(ia[0])}" y2="${fnum(ia[1])}" stroke="${theme.line}" stroke-width="0.7" stroke-opacity="0.5"/>`;
+      }
       // Шов між плитками (V-паз: тінь + блік) — чіткий кристалічний край
       edges += `<g transform="translate(0.5,0.5)"><polygon points="${ptsStr(poly)}" fill="none" stroke="${theme.line}" stroke-width="0.8" stroke-opacity="0.5"/></g>`;
       edges += `<polygon points="${ptsStr(poly)}" fill="none" stroke="${theme.line}" stroke-width="1" stroke-opacity="0.75"/>`;
