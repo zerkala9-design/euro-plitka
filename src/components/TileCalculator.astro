@@ -313,6 +313,7 @@ function drawPanel(mode, panel, info) {
 
   // Колір превʼю за обраним кольором дзеркала
   const theme = TILE_THEME[Number(panel.input.color)] || TILE_THEME[1];
+  const mirrorImg = { 1: '/mirror-silver.jpg', 2: '/mirror-bronze.jpg', 3: '/mirror-graphite.jpg' }[Number(panel.input.color)] || '/mirror-silver.jpg';
 
   // Cutted (cut-режим): смуга знизу яка відрізається
   let cuttedRect = '';
@@ -346,7 +347,8 @@ function drawPanel(mode, panel, info) {
       </filter>
     </defs>
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId})" filter="url(#${gradId}-sh)"/>
-    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId}-sheen)"/>
+    <image x="${ox}" y="${oy}" width="${dW}" height="${dH}" href="${mirrorImg}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipId})"/>
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId}-sheen)" clip-path="url(#${clipId})"/>
     <!-- фаска: гравіровані грані (тінь + підсвітка) -->
     <g clip-path="url(#${clipId})">
       <g stroke="rgba(0,0,0,0.28)" stroke-width="1" transform="translate(0.7,0.7)">${lines}</g>
