@@ -401,14 +401,14 @@ function drawPanel(mode, panel, info) {
         inner.push([P0[0] + ex0 * t, P0[1] + ey0 * t]);
       }
 
-      // грань фацета для кожної сторони — лише світлі підсвітки (без темних тіней)
+      // Смуга фацета — світліша за плоский центр (скошена грань ловить світло).
+      // Заливаємо весь фацет-ринг білим (усі сторони) + напрямне підсвічування.
       for (let i = 0; i < n; i++) {
         const a = poly[i], b = poly[(i + 1) % n];
         const ia = inner[i], ib = inner[(i + 1) % n];
         const [nx, ny] = norm[i];
         const shade = -(nx * lightX + ny * lightY); // грань дивиться назовні (−нормаль)
-        if (shade <= 0) continue; // темні грані не малюємо
-        const op = Math.min(0.40, shade * 0.36 + 0.05).toFixed(3);
+        const op = Math.min(0.72, 0.28 + Math.max(0, shade) * 0.34).toFixed(3);
         facets += `<polygon points="${fnum(a[0])},${fnum(a[1])} ${fnum(b[0])},${fnum(b[1])} ${fnum(ib[0])},${fnum(ib[1])} ${fnum(ia[0])},${fnum(ia[1])}" fill="#ffffff" fill-opacity="${op}"/>`;
       }
       // кутові лінії-стики фацета: зовнішній кут → внутрішній кут (як на малюнку)
