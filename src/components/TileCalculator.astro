@@ -389,8 +389,10 @@ function drawPanel(mode, panel, info) {
           : Math.min(0.26, -shade * 0.20 + 0.04)).toFixed(3);
         facets += `<polygon points="${fnum(a[0])},${fnum(a[1])} ${fnum(b[0])},${fnum(b[1])} ${fnum(ib[0])},${fnum(ib[1])} ${fnum(ia[0])},${fnum(ia[1])}" fill="${col}" fill-opacity="${op}"/>`;
       }
-      edges += `<polygon points="${ptsStr(poly)}" fill="none" stroke="${theme.line}" stroke-width="0.9" stroke-opacity="0.55"/>`;
-      edges += `<polygon points="${ptsStr(inner)}" fill="none" stroke="#ffffff" stroke-width="0.6" stroke-opacity="0.6"/>`;
+      // контур плитки (шов) + видима лінія-складка фаски (сіра, читається і на світлих гранях) + білий блік
+      edges += `<polygon points="${ptsStr(poly)}" fill="none" stroke="${theme.line}" stroke-width="0.9" stroke-opacity="0.6"/>`;
+      edges += `<polygon points="${ptsStr(inner)}" fill="none" stroke="${theme.line}" stroke-width="0.8" stroke-opacity="0.5"/>`;
+      edges += `<g transform="translate(-0.5,-0.5)"><polygon points="${ptsStr(inner)}" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.55"/></g>`;
     }
   }
 
