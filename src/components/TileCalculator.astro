@@ -301,7 +301,7 @@ function drawPanel(mode, panel, info) {
   const hx = tW / 2, hy = tH / 2;
   const theme = TILE_THEME[Number(panel.input.color)] || TILE_THEME[1];
   const facetMM = [0, 0, 5, 10, 15, 20][Number(panel.input.facet)] || 10;
-  const baseD = Math.min(hx, hy) * Math.min(0.34, 0.09 + facetMM * 0.011); // глибина фаски (px), більший фацет → ширша
+  const baseD = Math.min(hx, hy) * Math.min(0.28, 0.05 + facetMM * 0.010); // глибина фаски (px), більший фацет → ширша
 
   const oL = ox, oT = oy, oR = ox + dW, oB = oy + dH;
   const lightX = -0.7071, lightY = -0.7071; // світло згори-зліва
@@ -357,8 +357,9 @@ function drawPanel(mode, panel, info) {
   let facets = '';  // затінені грані фацета (обʼємний скіс)
   let edges = '';   // контур плитки + межа плоскої частини
 
-  for (let q = 0; q <= 2 * rows; q++) {
-    for (let p = (q % 2); p <= 2 * cols; p += 2) {
+  for (let q = -1; q <= 2 * rows + 1; q++) {
+    for (let p = -1; p <= 2 * cols + 1; p++) {
+      if (((p + q) & 1) === 0) continue; // ромби на непарних вузлах → цілі трикутники в кутах
       const cx = ox + p * hx, cy = oy + q * hy;
       const diamond = [[cx, cy - hy], [cx + hx, cy], [cx, cy + hy], [cx - hx, cy]];
       const poly = cleanPoly(clipRect(diamond));
@@ -439,25 +440,9 @@ function drawPanel(mode, panel, info) {
       <clipPath id="${clipId}">
         <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" />
       </clipPath>
-      <!-- відбиття кімнати: світла стеля/вікно вгорі → темніша підлога внизу -->
-      <linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%"   stop-color="${theme.c3}"/>
-        <stop offset="30%"  stop-color="${theme.c1}"/>
-        <stop offset="72%"  stop-color="${theme.c2}"/>
-        <stop offset="100%" stop-color="${theme.c1}"/>
-      </linearGradient>
-      <!-- відбите вікно: вертикальна світла смуга -->
-      <linearGradient id="${gradId}-win" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%"  stop-color="#ffffff" stop-opacity="0"/>
-        <stop offset="24%" stop-color="#ffffff" stop-opacity="0"/>
-        <stop offset="33%" stop-color="#ffffff" stop-opacity="0.22"/>
-        <stop offset="42%" stop-color="#ffffff" stop-opacity="0"/>
-        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-      </linearGradient>
     </defs>
-    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId})"/>
-    <!-- легке відбите вікно (плоске дзеркало, без діагонального блиску) -->
-    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId}-win)" clip-path="url(#${clipId})"/>
+    <!-- рівний однорідний колір дзеркала (без переливу) -->
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="${theme.c1}"/>
     <!-- фацети кожного ромба: обʼємні скошені грані -->
     <g clip-path="url(#${clipId})">${facets}</g>
     <!-- контури: шов між ромбами + межа плоскої частини -->
