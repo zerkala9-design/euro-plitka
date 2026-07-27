@@ -327,6 +327,29 @@ function drawPanel(mode, panel, info) {
     p = clipHalf(p, v => v[1] >= oT, false, oT); if (p.length < 3) return p;
     p = clipHalf(p, v => v[1] <= oB, false, oB); return p;
   }
+  // прибрати дублі та колінеарні точки (клип по вершині створює нульові сторони → NaN нормалі)
+  function cleanPoly(poly) {
+    const out = [];
+    for (let i = 0; i < poly.length; i++) {
+      const a = poly[i];
+      const b = out.length ? out[out.length - 1] : poly[poly.length - 1];
+      if (Math.hypot(a[0] - b[0], a[1] - b[1]) > 0.4) out.push(a);
+    }
+    // замкнутість: перша й остання не збігаються
+    while (out.length > 1 && Math.hypot(out[0][0] - out[out.length - 1][0], out[0][1] - out[out.length - 1][1]) < 0.4) out.pop();
+    // прибрати майже колінеарні вершини
+    const res = [];
+    const m = out.length;
+    for (let i = 0; i < m; i++) {
+      const prev = out[(i - 1 + m) % m], cur = out[i], next = out[(i + 1) % m];
+      const v1x = cur[0] - prev[0], v1y = cur[1] - prev[1];
+      const v2x = next[0] - cur[0], v2y = next[1] - cur[1];
+      const cross = v1x * v2y - v1y * v2x;
+      const l1 = Math.hypot(v1x, v1y), l2 = Math.hypot(v2x, v2y);
+      if (Math.abs(cross) > 0.5 * l1 * l2 * 0.02) res.push(cur); // не колінеарна
+    }
+    return res.length >= 3 ? res : out;
+  }
 
   const fnum = n => n.toFixed(1);
   const ptsStr = pl => pl.map(v => `${fnum(v[0])},${fnum(v[1])}`).join(' ');
@@ -338,7 +361,7 @@ function drawPanel(mode, panel, info) {
     for (let p = (q % 2); p <= 2 * cols; p += 2) {
       const cx = ox + p * hx, cy = oy + q * hy;
       const diamond = [[cx, cy - hy], [cx + hx, cy], [cx, cy + hy], [cx - hx, cy]];
-      const poly = clipRect(diamond);
+      const poly = cleanPoly(clipRect(diamond));
       const n = poly.length;
       if (n < 3) continue;
 
