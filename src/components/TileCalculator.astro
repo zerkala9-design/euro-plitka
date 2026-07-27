@@ -342,18 +342,14 @@ function drawPanel(mode, panel, info) {
         <stop offset="62%" stop-color="#ffffff" stop-opacity="0"/>
         <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
       </linearGradient>
-      <filter id="${gradId}-sh" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.18"/>
-      </filter>
     </defs>
-    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId})" filter="url(#${gradId}-sh)"/>
+    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId})"/>
     <image x="${ox}" y="${oy}" width="${dW}" height="${dH}" href="${mirrorImg}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipId})"/>
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId}-sheen)" clip-path="url(#${clipId})"/>
-    <!-- фаска: гравіровані грані (тінь + підсвітка) -->
+    <!-- фаска: чіткі гравіровані грані (тінь + підсвітка) -->
     <g clip-path="url(#${clipId})">
-      <g stroke="rgba(0,0,0,0.28)" stroke-width="1" transform="translate(0.7,0.7)">${lines}</g>
-      <g stroke="rgba(255,255,255,0.8)" stroke-width="1" transform="translate(-0.6,-0.6)">${lines}</g>
-      <g stroke="${theme.line}" stroke-width="0.5" opacity="0.5">${lines}</g>
+      <g stroke="rgba(0,0,0,0.4)" stroke-width="1" transform="translate(0.6,0.6)">${lines}</g>
+      <g stroke="rgba(255,255,255,0.95)" stroke-width="1" transform="translate(-0.6,-0.6)">${lines}</g>
     </g>
     ${cuttedRect}
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="${theme.line}" stroke-width="2"/>
