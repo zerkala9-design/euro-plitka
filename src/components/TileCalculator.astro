@@ -293,30 +293,45 @@ function drawPanel(mode, panel, info) {
   const tW = X.tile * scaleX;
   const tH = Y.tile * scaleY;
 
-  // Діагональна сітка. Кожна плитка — плоске дзеркало зі скошеним фацетом
-  // по краю (як на реальному дзеркалі): по лініях сітки йде яскрава фаска-смуга.
-  let lines = '';
+  // Кожен ромб — окреме плоске дзеркало з фацетом (скошена рамка по 4 краях).
+  // Ромбова решітка: центри в точках (p·tW/2, q·tH/2), де p+q парне.
   const cols = Math.ceil(X.size / X.tile) + 1;
   const rows = Math.ceil(Y.size / Y.tile) + 1;
-  for (let n = 0; n <= rows; n++) {
-    for (let r = 0; r <= cols; r++) {
-      const x0 = ox + r * tW, y0 = oy + n * tH;
-      const x1 = ox + (r + 1) * tW, y1 = oy + (n + 1) * tH;
-      const p0 = x0.toFixed(1), q0 = y0.toFixed(1), p1 = x1.toFixed(1), q1 = y1.toFixed(1);
-      lines += `<line x1="${p0}" y1="${q0}" x2="${p1}" y2="${q1}"/><line x1="${p0}" y1="${q1}" x2="${p1}" y2="${q0}"/>`;
+  const hx = tW / 2, hy = tH / 2;
+  const theme = TILE_THEME[Number(panel.input.color)] || TILE_THEME[1];
+  // Глибина фацета (частина півдіагоналі) залежить від обраного фацета 0…20 мм
+  const facetMM = [0, 0, 5, 10, 15, 20][Number(panel.input.facet)] || 10;
+  const k = Math.min(0.30, 0.12 + facetMM * 0.009);
+
+  let facets = '';  // затінені грані фацета (обʼємний скіс)
+  let edges = '';   // тонкі лінії: контур ромба + межа плоскої частини
+
+  const quad = (ax, ay, bx, by, cx2, cy2, dx, dy, col, op) =>
+    `<polygon points="${ax.toFixed(1)},${ay.toFixed(1)} ${bx.toFixed(1)},${by.toFixed(1)} ${cx2.toFixed(1)},${cy2.toFixed(1)} ${dx.toFixed(1)},${dy.toFixed(1)}" fill="${col}" fill-opacity="${op}"/>`;
+
+  for (let q = 0; q <= 2 * rows; q++) {
+    for (let p = (q % 2); p <= 2 * cols; p += 2) {
+      const cx = ox + p * hx, cy = oy + q * hy;
+      // зовнішні вершини ромба: T(верх) R(право) B(низ) L(ліво)
+      const Tx = cx, Ty = cy - hy, Rx = cx + hx, Ry = cy, Bx = cx, By = cy + hy, Lx = cx - hx, Ly = cy;
+      // внутрішні (плоска частина) — відступ на глибину фацета
+      const ihy = hy * (1 - k), ihx = hx * (1 - k);
+      const tx = cx, ty = cy - ihy, rx = cx + ihx, ry = cy, bx = cx, by = cy + ihy, lx = cx - ihx, ly = cy;
+      // 4 грані фацета зі світлотінню (світло згори-зліва)
+      facets += quad(Lx, Ly, Tx, Ty, tx, ty, lx, ly, '#ffffff', 0.42); // верх-ліво — найсвітліша
+      facets += quad(Tx, Ty, Rx, Ry, rx, ry, tx, ty, '#ffffff', 0.18); // верх-право
+      facets += quad(Rx, Ry, Bx, By, bx, by, rx, ry, '#000000', 0.20); // низ-право — найтемніша
+      facets += quad(Bx, By, Lx, Ly, lx, ly, bx, by, '#000000', 0.11); // низ-ліво
+      // контур ромба (шов між плитками) + межа плоскої частини
+      edges += `<polygon points="${Tx.toFixed(1)},${Ty.toFixed(1)} ${Rx.toFixed(1)},${Ry.toFixed(1)} ${Bx.toFixed(1)},${By.toFixed(1)} ${Lx.toFixed(1)},${Ly.toFixed(1)}" fill="none" stroke="${theme.line}" stroke-width="0.9" stroke-opacity="0.55"/>`;
+      edges += `<polygon points="${tx.toFixed(1)},${ty.toFixed(1)} ${rx.toFixed(1)},${ry.toFixed(1)} ${bx.toFixed(1)},${by.toFixed(1)} ${lx.toFixed(1)},${ly.toFixed(1)}" fill="none" stroke="#ffffff" stroke-width="0.6" stroke-opacity="0.6"/>`;
     }
   }
-  // Ширина фаски-смуги залежить від обраного фацета (0…20 мм) і розміру плитки
-  const facetMM = [0, 0, 5, 10, 15, 20][Number(panel.input.facet)] || 10;
-  const bevelW = Math.max(2.2, Math.min(tW, tH) * (0.05 + facetMM * 0.006));
 
   const clipId = 'cl-' + mode;
   const gradId = 'gr-' + mode;
   const fs = 13;
   const dimColor = '#9a7420';
-
-  // Колір превʼю за обраним кольором дзеркала
-  const theme = TILE_THEME[Number(panel.input.color)] || TILE_THEME[1];
 
   // Cutted (cut-режим): смуга знизу яка відрізається
   let cuttedRect = '';
@@ -341,28 +356,18 @@ function drawPanel(mode, panel, info) {
       <linearGradient id="${gradId}-win" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%"  stop-color="#ffffff" stop-opacity="0"/>
         <stop offset="24%" stop-color="#ffffff" stop-opacity="0"/>
-        <stop offset="33%" stop-color="#ffffff" stop-opacity="0.5"/>
+        <stop offset="33%" stop-color="#ffffff" stop-opacity="0.22"/>
         <stop offset="42%" stop-color="#ffffff" stop-opacity="0"/>
         <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
       </linearGradient>
-      <!-- діагональний дзеркальний блиск -->
-      <linearGradient id="${gradId}-spec" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="46%" stop-color="#ffffff" stop-opacity="0"/>
-        <stop offset="53%" stop-color="#ffffff" stop-opacity="0.55"/>
-        <stop offset="60%" stop-color="#ffffff" stop-opacity="0"/>
-      </linearGradient>
     </defs>
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId})"/>
-    <!-- відбите вікно + дзеркальний блиск (плоске дзеркало) -->
+    <!-- легке відбите вікно (плоске дзеркало, без діагонального блиску) -->
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId}-win)" clip-path="url(#${clipId})"/>
-    <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="url(#${gradId}-spec)" clip-path="url(#${clipId})"/>
-    <!-- фаска по краях плиток: яскрава скошена смуга + чіткий шов + підсвітка -->
-    <g clip-path="url(#${clipId})">
-      <g stroke="#ffffff" stroke-opacity="0.42" stroke-width="${bevelW.toFixed(1)}" stroke-linecap="butt">${lines}</g>
-      <g stroke="#000000" stroke-opacity="0.07" stroke-width="${bevelW.toFixed(1)}" transform="translate(0.6,0.6)">${lines}</g>
-      <g stroke="${theme.line}" stroke-opacity="0.5" stroke-width="0.9">${lines}</g>
-      <g stroke="#ffffff" stroke-opacity="0.85" stroke-width="0.6" transform="translate(-0.5,-0.5)">${lines}</g>
-    </g>
+    <!-- фацети кожного ромба: обʼємні скошені грані -->
+    <g clip-path="url(#${clipId})">${facets}</g>
+    <!-- контури: шов між ромбами + межа плоскої частини -->
+    <g clip-path="url(#${clipId})">${edges}</g>
     ${cuttedRect}
     <rect x="${ox}" y="${oy}" width="${dW}" height="${dH}" fill="none" stroke="${theme.line}" stroke-width="2"/>
     <rect x="${(ox+1).toFixed(1)}" y="${(oy+1).toFixed(1)}" width="${(dW-2).toFixed(1)}" height="${(dH-2).toFixed(1)}" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
