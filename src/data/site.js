@@ -6,6 +6,9 @@ export const site = {
   email: 'info-plitka@ukr.net',
   address: 'вул. Вадима Гетьмана, 27, Київ',
   workingHours: 'Пн–Пт: 10:00–18:00',
+  // Web3Forms access key — заявки з форм замовлення надсилаються на пошту.
+  // Отримати ключ: https://web3forms.com (безкоштовно). Вставити сюди.
+  formAccessKey: 'd5f0f39f-b375-4c7c-952a-a89541c570c4',
   social: {
     instagram: 'https://www.instagram.com/dzerkala_kyiv/',
     facebook: '',
