@@ -493,35 +493,27 @@ import TileCalculator from '../components/TileCalculator.astro';
       shortcuts && shortcuts.classList.remove('is-lit');
     });
 
+    // Дешева CSS-маска radial-gradient (без canvas.toDataURL — інакше сильні гальма)
+    const R = SPOTLIGHT_R;
+    let frame = 0;
     const draw = () => {
-      if (active && canvas.width && canvas.height) {
+      if (active) {
         smooth.x += (mouse.x - smooth.x) * 0.1;
         smooth.y += (mouse.y - smooth.y) * 0.1;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const g = ctx.createRadialGradient(smooth.x, smooth.y, 0, smooth.x, smooth.y, SPOTLIGHT_R);
-        g.addColorStop(0,    'rgba(255,255,255,1)');
-        g.addColorStop(0.4,  'rgba(255,255,255,1)');
-        g.addColorStop(0.6,  'rgba(255,255,255,0.75)');
-        g.addColorStop(0.75, 'rgba(255,255,255,0.4)');
-        g.addColorStop(0.88, 'rgba(255,255,255,0.12)');
-        g.addColorStop(1,    'rgba(255,255,255,0)');
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(smooth.x, smooth.y, SPOTLIGHT_R, 0, Math.PI * 2);
-        ctx.fill();
-        const url = canvas.toDataURL();
-        reveal.style.webkitMaskImage = `url(${url})`;
-        reveal.style.maskImage = `url(${url})`;
-        if (glow) glow.style.transform = `translate(${smooth.x}px, ${smooth.y}px)`;
+        const x = smooth.x.toFixed(1), y = smooth.y.toFixed(1);
+        const mask = `radial-gradient(circle ${R}px at ${x}px ${y}px, #000 0%, #000 40%, rgba(0,0,0,0.55) 66%, rgba(0,0,0,0.16) 86%, transparent 100%)`;
+        reveal.style.webkitMaskImage = mask;
+        reveal.style.maskImage = mask;
+        if (glow) glow.style.transform = `translate(${x}px, ${y}px)`;
 
-        // кнопки зʼявляються, коли пляма доходить до їхнього місця
-        if (shortcuts) {
+        // кнопки зʼявляються, коли пляма доходить до їхнього місця (рахуємо рідше)
+        if (shortcuts && (frame++ & 3) === 0) {
           const hr = hero.getBoundingClientRect();
           const sr = shortcuts.getBoundingClientRect();
           const cx = sr.left + sr.width / 2 - hr.left;
           const cy = sr.top + sr.height / 2 - hr.top;
           const dist = Math.hypot(smooth.x - cx, smooth.y - cy);
-          shortcuts.classList.toggle('is-lit', dist < SPOTLIGHT_R + Math.max(sr.width, sr.height) / 2);
+          shortcuts.classList.toggle('is-lit', dist < R + Math.max(sr.width, sr.height) / 2);
         }
       }
       requestAnimationFrame(draw);
