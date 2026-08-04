@@ -1,11 +1,27 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import LedCalculator from '../components/LedCalculator.astro';
+
+const faq = [
+  { q: 'Яка різниця між фоновою та фронтальною підсвіткою?', a: 'Фонова підсвітка розміщена за дзеркалом і створює м’яке атмосферне сяйво навколо (ефект «парящого» дзеркала). Фронтальна підсвітка вбудована по периметру лицьової сторони й дає рівномірне яскраве світло без тіней — ідеально для макіяжу та гоління.' },
+  { q: 'Скільки коштує LED дзеркало на замовлення?', a: 'Ціна залежить від типу підсвітки, форми, розміру та додаткових опцій. Точну вартість миттєво порахує калькулятор на цій сторінці — оберіть параметри й побачите суму одразу.' },
+  { q: 'Який колір підсвітки обрати?', a: 'Тепле світло 3000K — затишне, для спальні. Нейтральне 4000K — універсальне. Холодне 6000K — яскраве й функціональне, для ванної та гардеробної. Опційно доступний дімер для регулювання яскравості.' },
+  { q: 'Чи можна зробити дзеркало за моїм розміром?', a: 'Так, усі LED дзеркала виготовляються за індивідуальними розмірами під ваше приміщення — прямокутні або круглі, із заокругленими кутами за бажанням.' },
+  { q: 'Що таке підігрів і навіщо він?', a: 'Підігрів (+400 грн) — це нагрівальний елемент за дзеркалом, який запобігає запотіванню у ванній після душу. Дзеркало завжди залишається чистим і прозорим.' },
+  { q: 'Скільки виготовляється LED дзеркало?', a: 'Виготовлення займає 3–7 робочих днів залежно від складності та опцій. Доставка по Києву та по всій Україні.' },
+];
+
+const breadcrumbs = [
+  { name: 'Головна', path: '/' },
+  { name: 'LED дзеркала', path: '/led-dzerkalo/' },
+];
 ---
 
 <Layout
   title="LED Дзеркала на замовлення — калькулятор ціни онлайн"
   description="Онлайн-калькулятор LED дзеркала: оберіть тип, розмір, колір підсвітки, опції. Миттєвий розрахунок ціни. Виготовлення 3-7 днів."
+  breadcrumbs={breadcrumbs}
+  faq={faq}
 >
   <div class="page-hero page-hero--dark">
     <div class="container">
@@ -77,6 +93,21 @@ import LedCalculator from '../components/LedCalculator.astro';
       </div>
     </div>
   </section>
+
+  <section class="section faq-section">
+    <div class="container">
+      <div class="section-label">Запитання та відповіді</div>
+      <h2>Про LED дзеркала</h2>
+      <div class="faq">
+        {faq.map((item) => (
+          <div class="faq-item">
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
 </Layout>
 
 <style>
@@ -130,8 +161,20 @@ import LedCalculator from '../components/LedCalculator.astro';
   .option-item strong { display: block; color: var(--text); font-size: 0.95rem; margin-bottom: 4px; }
   .option-item p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; margin: 0; }
 
+  .faq-section { background: var(--bg); }
+  .faq-section h2 { color: var(--text); }
+  .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 28px; }
+  .faq-item {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px; transition: border-color 0.2s;
+  }
+  .faq-item:hover { border-color: rgba(201,168,76,0.3); }
+  .faq-item h3 { margin-bottom: 10px; color: var(--gold); font-size: 1.05rem; }
+  .faq-item p { font-size: 0.93rem; color: var(--text-muted); line-height: 1.7; margin: 0; }
+
   @media (max-width: 768px) {
     .backlight-grid { grid-template-columns: 1fr; }
     .options-grid { grid-template-columns: 1fr; }
+    .faq { grid-template-columns: 1fr; }
   }
 </style>

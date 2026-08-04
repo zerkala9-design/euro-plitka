@@ -4,11 +4,15 @@ import Footer from '../components/Footer.astro';
 import { site } from '../data/site';
 import '../styles/global.css';
 
+interface Crumb { name: string; path: string; }
+interface Faq { q: string; a: string; }
 interface Props {
   title: string;
   description?: string;
   canonical?: string;
   ogImage?: string;
+  breadcrumbs?: Crumb[];
+  faq?: Faq[];
 }
 
 const {
@@ -16,6 +20,8 @@ const {
   description = 'Дзеркальна плитка та LED дзеркала в Києві. Виготовлення панно, монтаж, доставка. Онлайн-калькулятор.',
   canonical,
   ogImage = '/hero-on.jpg',
+  breadcrumbs,
+  faq,
 } = Astro.props;
 
 const origin = 'https://euro-plitka.com.ua';
@@ -44,6 +50,27 @@ const jsonLd = {
   },
   sameAs: [site.social.instagram, site.social.telegram].filter(Boolean),
 };
+
+const breadcrumbLd = breadcrumbs && breadcrumbs.length ? {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: breadcrumbs.map((c, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: c.name,
+    item: `${origin}${c.path}`,
+  })),
+} : null;
+
+const faqLd = faq && faq.length ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+} : null;
 ---
 
 <!doctype html>
@@ -73,6 +100,8 @@ const jsonLd = {
   <meta name="twitter:description" content={description} />
   <meta name="twitter:image" content={ogImageUrl} />
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  {breadcrumbLd && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />}
+  {faqLd && <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />}
 </head>
 <body>
   <Header />
