@@ -1,8 +1,6 @@
-name: Build & Deploy to Hestia (FTP)
+name: Build & Deploy to Hestia (FTP) — DEPRECATED, use Cloudflare Pages
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch: {}
 
 jobs:
