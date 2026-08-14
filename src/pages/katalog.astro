@@ -7,11 +7,20 @@ const products = [
   { img: '/panno-geometry.png', name: 'Флоренція',  desc: 'Трикутні грані — стильне рішення для мінімалістичних інтерʼєрів.', price: 'від 2 450 грн/м²' },
   { img: '/panno-diagonal.png', name: 'Комо',       desc: 'Лаконічні діагоналі — простір та чистота форм.',                 price: 'від 2 300 грн/м²' },
 ];
+
+const faq = [
+  { q: 'Чи можна замовити панно за власним розміром?', a: 'Так, кожне дзеркальне панно виготовляється під розміри вашої стіни. Оберіть дизайн у каталозі та розрахуйте вартість у калькуляторі під конкретні розміри.' },
+  { q: 'З яких кольорів дзеркала роблять панно?', a: 'Срібло (класичне), бронза (тепле золотисте) та графіт (темне). Будь-який дизайн доступний у всіх трьох кольорах, з фацетом або без.' },
+  { q: 'Чи можна зробити панно за власним ескізом?', a: 'Так, окрім готових дизайнів з каталогу ми виготовляємо панно за вашим ескізом — будь-який візерунок і розкрій. Надішліть ідею через форму контактів.' },
+  { q: 'Скільки коштує дзеркальне панно?', a: 'Вартість залежить від дизайну, кольору, фацету та площі — від 2300 грн/м². Точну ціну під ваші розміри миттєво порахує калькулятор.' },
+];
 ---
 
 <Layout
-  title="Каталог дзеркальних панно"
-  description="Каталог дзеркальних панно для передпокою та вітальні. Абстракція, шеврон, геометрія, діагоналі. Розрахунок вартості онлайн."
+  title="Каталог дзеркальних панно — купити в Києві | Євро Плитка"
+  description="Каталог дзеркальних панно на стіну: асиметрія, шеврон, геометрія, діагоналі. Виготовлення під ваш розмір, розрахунок вартості онлайн."
+  breadcrumbs={[{ name: 'Головна', path: '/' }, { name: 'Каталог', path: '/katalog/' }]}
+  faq={faq}
 >
   <div class="page-hero">
     <div class="container">
@@ -39,6 +48,21 @@ const products = [
               </div>
             </div>
           </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section faq-section">
+    <div class="container">
+      <div class="section-label">Запитання та відповіді</div>
+      <h2>Про дзеркальні панно</h2>
+      <div class="faq">
+        {faq.map((item) => (
+          <div class="faq-item">
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
         ))}
       </div>
     </div>
@@ -93,6 +117,15 @@ const products = [
   .cta-banner .btn--ghost { color: #fff; border-color: rgba(255,255,255,0.35); background: transparent; }
   .cta-banner .btn--ghost:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
 
+  .faq-section { background: var(--bg); }
+  .faq-section h2 { color: var(--text); margin-bottom: 8px; }
+  .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+  .faq-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; transition: border-color 0.2s; }
+  .faq-item:hover { border-color: rgba(201,168,76,0.3); }
+  .faq-item h3 { margin-bottom: 10px; color: var(--gold); font-size: 1.05rem; }
+  .faq-item p { font-size: 0.93rem; color: var(--text-muted); line-height: 1.7; margin: 0; }
+
   @media (max-width: 1000px) { .cat-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px) { .faq { grid-template-columns: 1fr; } }
   @media (max-width: 460px) { .cat-grid { grid-template-columns: 1fr; } }
 </style>
