@@ -1,8 +1,26 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const faq = [
+  { q: 'Ви виготовляєте дзеркала за індивідуальними розмірами?', a: 'Так, усі вироби — дзеркальна плитка, панно та LED дзеркала — виготовляються під ваші розміри. Точний розкрій на ЧПУ дає мінімум відходів і акуратні краї.' },
+  { q: 'Чи робите ви монтаж, чи тільки виготовлення?', a: 'Робимо повний цикл: виготовлення, доставка та монтаж під ключ. Досвідчена бригада встановить дзеркальну плитку або LED дзеркало по Києву та області. На виконані роботи діє гарантія.' },
+  { q: 'Скільки часу займає виготовлення?', a: 'Дзеркальна плитка та панно — зазвичай 3–7 робочих днів, LED дзеркала — 3–7 днів залежно від опцій. Точний термін підтверджуємо при замовленні.' },
+  { q: 'Куди доставляєте?', a: 'По Києву — власним транспортом, по всій Україні — Новою Поштою. Дзеркала пакуємо у захисний матеріал, що гарантує цілісність при перевезенні.' },
+  { q: 'Як дізнатись вартість?', a: 'Найшвидше — через онлайн-калькулятори на сайті: для плитки/панно та для LED дзеркал. Введіть розміри й параметри — і побачите точну ціну одразу.' },
+];
+
+const breadcrumbs = [
+  { name: 'Головна', path: '/' },
+  { name: 'Послуги', path: '/poslugy/' },
+];
 ---
 
-<Layout title="Послуги — Євро Плитка Київ" description="Послуги Євро Плитка: виготовлення та монтаж дзеркальної плитки, LED дзеркал в Києві.">
+<Layout
+  title="Послуги — виготовлення та монтаж дзеркал у Києві | Євро Плитка"
+  description="Виготовлення дзеркальної плитки, панно та LED дзеркал на замовлення. Монтаж під ключ, доставка по Києву та Україні. Гарантія на роботи."
+  breadcrumbs={breadcrumbs}
+  faq={faq}
+>
   <div class="page-hero page-hero--dark">
     <div class="container">
       <div class="breadcrumb"><a href="/">Головна</a><span>›</span><span>Послуги</span></div>
@@ -54,6 +72,21 @@ import Layout from '../layouts/Layout.astro';
             <a href="/dostavka" class="service-link">Умови доставки →</a>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section faq-section">
+    <div class="container">
+      <div class="section-label">Запитання та відповіді</div>
+      <h2>Часті запитання про послуги</h2>
+      <div class="faq">
+        {faq.map((item) => (
+          <div class="faq-item">
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
+        ))}
       </div>
     </div>
   </section>
@@ -118,8 +151,17 @@ import Layout from '../layouts/Layout.astro';
   }
   .service-link:hover { opacity: 0.7; }
 
+  .faq-section { background: var(--bg); }
+  .faq-section h2 { color: var(--text); margin-bottom: 8px; }
+  .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+  .faq-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; transition: border-color 0.2s; }
+  .faq-item:hover { border-color: rgba(201,168,76,0.3); }
+  .faq-item h3 { margin-bottom: 10px; color: var(--gold); font-size: 1.05rem; }
+  .faq-item p { font-size: 0.93rem; color: var(--text-muted); line-height: 1.7; margin: 0; }
+
   @media (max-width: 560px) {
     .service-card { flex-direction: column; gap: 12px; }
     .service-card__num { font-size: 1.6rem; }
+    .faq { grid-template-columns: 1fr; }
   }
 </style>
