@@ -134,16 +134,16 @@ struct DPadView: View {
                 Task { await controller.send(.confirm) }
             } label: {
                 Text("OK")
-                    .font(.title3.bold())
+                    .font(.title2.bold())
                     .foregroundStyle(.white)
-                    .frame(width: 72, height: 72)
+                    .frame(width: 80, height: 80)
                     .background(Circle().fill(.tint.opacity(0.9)))
                     .overlay(Circle().strokeBorder(.white.opacity(0.3), lineWidth: 1.5))
-                    .shadow(color: .accentColor.opacity(0.6), radius: 11)
+                    .shadow(color: .accentColor.opacity(0.6), radius: 12)
             }
             .buttonStyle(.plain)
         }
-        .frame(width: 216, height: 216)
+        .frame(width: 252, height: 252)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Navigation pad")
     }
@@ -154,10 +154,10 @@ struct DPadView: View {
         // only in its own region (otherwise the top view in the ZStack would
         // swallow every touch).
         Image(systemName: key.systemImage)
-            .font(.title2.weight(.semibold))
+            .font(.title.weight(.semibold))
             .foregroundStyle(.secondary)
             .scaleEffect(pressedDirection == key && !reduceMotion ? 1.3 : 1)
-            .frame(width: 76, height: 76)
+            .frame(width: 84, height: 84)
             .contentShape(Rectangle())
             .gesture(
                 DragGesture(minimumDistance: 0)

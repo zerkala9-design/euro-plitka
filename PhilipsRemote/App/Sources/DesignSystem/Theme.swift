@@ -49,7 +49,7 @@ enum Theme {
     static let cornerRadiusSmall: CGFloat = 14
 
     static let spacing: CGFloat = 16
-    static let buttonSize: CGFloat = 66
+    static let buttonSize: CGFloat = 56
 }
 
 // MARK: - Color helpers
