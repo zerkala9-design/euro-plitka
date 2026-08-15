@@ -27,7 +27,7 @@ final class AppModel {
     /// Called on first appearance.
     func bootstrap() async {
         PhoneConnectivity.shared.activate()
-        if settings.autoDiscovery { startDiscovery() }
+        // Connection is IP‑based only (no Wi‑Fi/Bonjour scan).
         if let device = deviceStore.selectedDevice, device.isPaired {
             if settings.wakeOnLaunch { await controller.wake() }
             await controller.connect(to: device)

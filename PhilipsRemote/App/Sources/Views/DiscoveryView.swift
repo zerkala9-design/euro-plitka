@@ -24,32 +24,20 @@ struct DiscoveryView: View {
                         }
                     }
 
-                    section(title: model.isScanning ? "Searching…" : "Found on your network") {
-                        if model.discovered.isEmpty {
-                            ScanningPlaceholder(isScanning: model.isScanning)
-                        } else {
-                            ForEach(model.discovered) { device in
-                                DeviceRow(device: device) { select(device) }
-                            }
-                        }
+                    Button { showManualAdd = true } label: {
+                        Label("Add TV by IP", systemImage: "plus.circle.fill")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 15)
+                            .background(.tint, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .foregroundStyle(.white)
                     }
+                    .buttonStyle(.plain)
                 }
                 .padding()
             }
             .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Philips Remote")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        model.isScanning ? model.stopDiscovery() : model.startDiscovery()
-                    } label: {
-                        Image(systemName: model.isScanning ? "stop.circle" : "arrow.clockwise")
-                    }
-                }
-                ToolbarItem(placement: .topBarLeading) {
-                    Button { showManualAdd = true } label: { Image(systemName: "plus") }
-                }
-            }
             .sheet(item: $pairingTarget) { device in
                 PairingView(device: device)
             }
@@ -59,9 +47,8 @@ struct DiscoveryView: View {
                 Button("Add") { addManual() }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("Enter your TV's local IP address if it wasn't found automatically.")
+                Text("Enter your TV's local IP address. Find it on the TV under Settings → Network.")
             }
-            .task { if model.discovered.isEmpty { model.startDiscovery() } }
         }
     }
 
@@ -71,9 +58,9 @@ struct DiscoveryView: View {
                 .font(.system(size: 54))
                 .foregroundStyle(.tint)
                 .padding(.top, 12)
-            Text("Control every Philips TV")
+            Text("Connect your TV")
                 .font(.title2.bold())
-            Text("We'll find your Android TV or Google TV on Wi‑Fi. Tap to connect.")
+            Text("Add your Android TV by its IP address (on the TV: Settings → Network), then enter the code shown on screen.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

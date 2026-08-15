@@ -9,6 +9,9 @@ struct DevicesView: View {
     @Environment(TVController.self) private var controller
     @Environment(\.dismiss) private var dismiss
     @State private var editing: TVDevice?
+    @State private var showManualAdd = false
+    @State private var manualHost = ""
+    @State private var pairingTarget: TVDevice?
 
     var body: some View {
         NavigationStack {
@@ -28,10 +31,9 @@ struct DevicesView: View {
 
                 Section {
                     Button {
-                        dismiss()
-                        model.startDiscovery()
+                        showManualAdd = true
                     } label: {
-                        Label("Add another TV", systemImage: "plus.circle.fill")
+                        Label("Add TV by IP", systemImage: "plus.circle.fill")
                     }
                 }
             }
@@ -41,7 +43,25 @@ struct DevicesView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } } }
             .sheet(item: $editing) { device in EditDeviceView(device: device) }
+            .sheet(item: $pairingTarget) { device in PairingView(device: device) }
+            .alert("Add TV by IP", isPresented: $showManualAdd) {
+                TextField("192.168.0.10", text: $manualHost)
+                    .keyboardType(.numbersAndPunctuation)
+                Button("Add") { addManual() }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Enter your TV's local IP address (on the TV: Settings → Network).")
+            }
         }
+    }
+
+    private func addManual() {
+        let host = manualHost.trimmingCharacters(in: .whitespaces)
+        guard !host.isEmpty else { return }
+        let device = DiscoveryService.androidDevice(host: host, name: "Philips TV")
+        store.upsert(device)
+        manualHost = ""
+        pairingTarget = device
     }
 
     private func deviceRow(_ device: TVDevice) -> some View {
