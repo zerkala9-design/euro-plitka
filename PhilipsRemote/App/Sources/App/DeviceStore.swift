@@ -61,6 +61,10 @@ final class DeviceStore {
         update(device) { $0.room = room }
     }
 
+    func setMacAddress(_ mac: String?, for device: TVDevice) {
+        update(device) { $0.macAddress = (mac?.isEmpty == true) ? nil : mac }
+    }
+
     func toggleFavorite(_ device: TVDevice) {
         update(device) { $0.isFavorite.toggle() }
     }

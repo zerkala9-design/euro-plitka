@@ -104,6 +104,7 @@ struct EditDeviceView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var name = ""
     @State private var room: Room = .livingRoom
+    @State private var mac = ""
 
     var body: some View {
         NavigationStack {
@@ -117,10 +118,18 @@ struct EditDeviceView: View {
                     }
                     .pickerStyle(.inline)
                 }
+                Section {
+                    TextField("F0:35:75:20:BE:84", text: $mac)
+                        .textInputAutocapitalization(.characters)
+                        .autocorrectionDisabled()
+                } header: {
+                    Text("MAC address (Wake on LAN)")
+                } footer: {
+                    Text("Lets the app turn the TV on when it's off. Find it on the TV: Settings → Network → View network settings. Also enable ‘Wake on LAN / Wake on WiFi’ on the TV.")
+                }
                 Section("Details") {
                     LabeledContent("Model", value: device.model)
                     LabeledContent("IP", value: device.host)
-                    if let mac = device.macAddress { LabeledContent("MAC", value: mac) }
                 }
             }
             .scrollContentBackground(.hidden)
@@ -132,12 +141,13 @@ struct EditDeviceView: View {
                     Button("Save") {
                         store.setName(name, for: device)
                         store.setRoom(room, for: device)
+                        store.setMacAddress(mac.trimmingCharacters(in: .whitespaces), for: device)
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             }
-            .onAppear { name = device.name; room = device.room }
+            .onAppear { name = device.name; room = device.room; mac = device.macAddress ?? "" }
         }
     }
 }

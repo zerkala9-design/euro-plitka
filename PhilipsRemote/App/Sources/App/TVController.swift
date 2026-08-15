@@ -448,12 +448,11 @@ final class TVController {
     }
 
     func powerToggle() async {
-        if state.isConnected {
-            await send(.standby)     // KEYCODE_POWER toggles standby
-        } else {
-            await wake()             // Wake‑on‑LAN for a fully sleeping TV
-            if let device { scheduleReconnect(to: device, delay: 2) }
-        }
+        // Wake‑on‑LAN in case the TV is fully off (needs its MAC + WoL enabled),
+        // then the power key: `send` reconnects first, so a TV in networked
+        // standby turns on; a connected TV toggles to standby.
+        await wake()
+        await send(.standby)     // KEYCODE_POWER
     }
 
     // MARK: - Diagnostics
