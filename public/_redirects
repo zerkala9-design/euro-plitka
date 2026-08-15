@@ -5,3 +5,5 @@
 /index.php?route=article/article*   /   301
 # Будь-який інший старий index.php → головна
 /index.php*   /   301
+# Стара сторінка панно (зі старими параметрами сортування) → каталог
+/dzerkalne-panno*   /katalog/   301
