@@ -1,0 +1,9 @@
+# 301 редиректи зі старих URL (OpenCart) на актуальні сторінки
+# Старі товари → каталог
+/index.php?route=product/product*   /katalog/   301
+# Старі статті → головна
+/index.php?route=article/article*   /   301
+# Будь-який інший старий index.php → головна
+/index.php*   /   301
+# Стара сторінка панно (зі старими параметрами сортування) → каталог
+/dzerkalne-panno*   /katalog/   301

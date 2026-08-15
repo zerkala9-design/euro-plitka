@@ -1,0 +1,131 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TileCalculator from '../components/TileCalculator.astro';
+
+const faq = [
+  { q: 'Що таке дзеркальна плитка ромбом?', a: 'Це дзеркальне панно, викладене з ромбоподібних (діамантових) елементів. Ромбовий розкрій виглядає ефектніше за класичний квадрат — грані ловлять світло під різними кутами й створюють глибину та гру відблисків на стіні.' },
+  { q: 'Чим ромб відрізняється від квадратного розкрою?', a: 'Квадрат — це спокійна класична сітка. Ромб (діамант) розвертає елементи на 45° — панно виглядає динамічнішим і візуально розширює простір. У калькуляторі ви одразу бачите обидва варіанти й обираєте той, що подобається.' },
+  { q: 'Який фацет краще для ромбової плитки?', a: 'Фацет підкреслює грані кожного ромба — чим ширший фацет (10–20 мм), тим виразніша огранка та блиск. Для стриманого вигляду беруть фацет 5 мм або без фацету. Усі варіанти доступні в калькуляторі.' },
+  { q: 'У яких кольорах є ромбова плитка?', a: 'Срібло — класичне прозоре дзеркало, бронза — тепле золотисто-коричневе, графіт — темне сучасне. Ромбовий розкрій доступний у всіх трьох кольорах з будь-яким фацетом.' },
+  { q: 'Скільки коштує дзеркальна плитка ромбом?', a: 'Ціна залежить від площі, кольору та фацету: срібло — від 3000 грн/м², бронза та графіт — від 4200 грн/м². Точну вартість під ваші розміри миттєво порахує калькулятор на цій сторінці.' },
+  { q: 'Чи робите монтаж ромбового панно?', a: 'Так, виконуємо повний цикл — виготовлення на ЧПУ, доставку та монтаж під ключ по Києву та області. Ромбовий розкрій вимагає точного вирівнювання, тому монтаж краще довірити нашій бригаді.' },
+];
+
+const breadcrumbs = [
+  { name: 'Головна', path: '/' },
+  { name: 'Дзеркальна плитка', path: '/dzerkalna-plitka/' },
+  { name: 'Ромб / діамант', path: '/dzerkalna-plitka-romb/' },
+];
+---
+
+<Layout
+  title="Дзеркальна плитка ромбом (діамант) — калькулятор ціни"
+  description="Дзеркальна плитка ромбом (діамантовий розкрій) з фацетом. Срібло, бронза, графіт. Онлайн-калькулятор панно під ваш розмір. Доставка по Києву та Україні."
+  breadcrumbs={breadcrumbs}
+  faq={faq}
+>
+  <div class="page-hero page-hero--dark">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Головна</a><span>›</span><a href="/dzerkalna-plitka/">Дзеркальна плитка</a><span>›</span><span>Ромб / діамант</span></div>
+      <div class="section-label">Діамантовий розкрій</div>
+      <h1>Дзеркальна плитка ромбом</h1>
+      <p class="hero-sub">Ефектна огранка · фацет 0–20 мм · срібло, бронза, графіт · розрахунок ціни онлайн</p>
+    </div>
+  </div>
+
+  <section class="section intro-section">
+    <div class="container">
+      <p class="intro-lead">Ромбовий (діамантовий) розкрій — найефектніший спосіб оформити стіну дзеркальною плиткою. Елементи розвернуті на 45°, а фацет по краях кожного ромба ловить світло під різними кутами й створює глибину та блиск. Таке панно візуально розширює простір і працює як головний акцент інтер'єру.</p>
+      <div class="intro-features">
+        <div class="intro-feature">
+          <span class="intro-feature__icon">◆</span>
+          <div>
+            <strong>Гра світла</strong>
+            <p>Грані ромбів розсіюють світло — панно «живе» при різному освітленні</p>
+          </div>
+        </div>
+        <div class="intro-feature">
+          <span class="intro-feature__icon">◆</span>
+          <div>
+            <strong>Розширює простір</strong>
+            <p>Діагональний розкрій візуально збільшує стіну та кімнату</p>
+          </div>
+        </div>
+        <div class="intro-feature">
+          <span class="intro-feature__icon">◆</span>
+          <div>
+            <strong>Точний розкрій</strong>
+            <p>Виготовлення на ЧПУ — рівні грані та акуратні стики</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <TileCalculator />
+
+  <section class="section">
+    <div class="container">
+      <div class="section-label">Запитання та відповіді</div>
+      <h2>Про дзеркальну плитку ромбом</h2>
+      <div class="faq">
+        {faq.map((item) => (
+          <div class="faq-item">
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero--dark {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 0 32px;
+  }
+  .page-hero--dark .breadcrumb a { color: var(--text-muted); }
+  .page-hero--dark .breadcrumb { color: var(--text-muted); margin-bottom: 14px; font-size: 0.85rem; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .page-hero--dark h1 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); color: var(--text); margin-bottom: 10px; }
+  .hero-sub { color: var(--text-muted); font-size: 1rem; }
+
+  .section-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .intro-section { background: var(--bg); padding: 32px 0; border-bottom: 1px solid var(--border); }
+  .intro-lead { font-size: 1.05rem; color: var(--text-mid); line-height: 1.8; max-width: 72ch; margin-bottom: 28px; }
+  .intro-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .intro-feature {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px;
+    transition: border-color 0.2s;
+  }
+  .intro-feature:hover { border-color: rgba(201,168,76,0.3); }
+  .intro-feature__icon { color: var(--gold); font-size: 1rem; flex-shrink: 0; margin-top: 3px; }
+  .intro-feature strong { display: block; color: var(--text); font-size: 1rem; margin-bottom: 4px; }
+  .intro-feature p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; margin: 0; }
+
+  .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 28px; }
+  .faq-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    transition: border-color 0.2s;
+  }
+  .faq-item:hover { border-color: rgba(201,168,76,0.3); }
+  .faq-item h3 { margin-bottom: 10px; color: var(--gold); font-size: 1.05rem; }
+  .faq-item p { font-size: 0.93rem; color: var(--text-muted); line-height: 1.7; margin: 0; }
+
+  @media (max-width: 768px) { .intro-features { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) { .faq { grid-template-columns: 1fr; } }
+</style>
