@@ -448,11 +448,26 @@ final class TVController {
     }
 
     func powerToggle() async {
-        // Wake‑on‑LAN in case the TV is fully off (needs its MAC + WoL enabled),
-        // then the power key: `send` reconnects first, so a TV in networked
-        // standby turns on; a connected TV toggles to standby.
-        await wake()
+        // Try to reach the TV and toggle power (send reconnects first).
         await send(.standby)     // KEYCODE_POWER
+        // If we couldn't reach it, it's in deep sleep — wake it and retry.
+        if !state.isConnected { await powerOn() }
+    }
+
+    /// Wake a sleeping TV: send Wake‑on‑LAN and keep trying to connect for a
+    /// few seconds (waking + reopening the remote port takes time). Needs the
+    /// TV's MAC set and Wake‑on‑LAN enabled on the TV.
+    func powerOn() async {
+        guard let device, device.isPaired else { return }
+        for _ in 0..<5 {
+            await wake()                       // Wake‑on‑LAN magic packet
+            try? await Task.sleep(for: .seconds(2))
+            await connect(to: device)
+            if state.isConnected {
+                await send(.standby)           // turn the screen on if still in standby
+                return
+            }
+        }
     }
 
     // MARK: - Diagnostics
