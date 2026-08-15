@@ -96,10 +96,8 @@ final class TVController {
             startLiveActivity()
         } catch let error as PhilipsError {
             state = .failed(error.localizedDescription)
-            if wantsConnection, settings.autoReconnect { scheduleReconnect(to: device) }
         } catch {
             state = .failed(error.localizedDescription)
-            if wantsConnection, settings.autoReconnect { scheduleReconnect(to: device) }
         }
     }
 
@@ -114,11 +112,23 @@ final class TVController {
         LiveActivityController.shared.end()
     }
 
-    /// The live control channel dropped on its own — try to restore it silently.
+    /// The control channel dropped — most likely another phone took the TV's
+    /// single remote slot. Don't fight for it (that causes a reconnect war);
+    /// we'll grab it back on the next button press via `ensureConnected()`.
     private func handleDropped(generation: Int) {
         guard generation == connectionGeneration, wantsConnection else { return }
-        state = .connecting
-        if let device, settings.autoReconnect { scheduleReconnect(to: device, delay: 1.5) }
+        atv = nil
+        state = .disconnected
+    }
+
+    /// Make sure we hold the TV's remote session before sending a command.
+    /// This is what lets two phones share one TV: whoever presses last
+    /// reconnects and takes control.
+    private func ensureConnected() async {
+        if state.isConnected, atv != nil { return }
+        if state == .connecting { return }         // a connect is already in flight
+        guard let device, device.isPaired else { return }
+        await connect(to: device)
     }
 
     // MARK: - Foreground / background
@@ -220,10 +230,12 @@ final class TVController {
     // MARK: - Commands
 
     func send(_ key: RemoteKey) async {
-        guard let atv, let code = ATVKeyCode(key) else {
+        guard let code = ATVKeyCode(key) else {
             Haptics.shared.warning()
             return
         }
+        await ensureConnected()          // grab the TV back if another phone took it
+        guard let atv else { return }
         await atv.sendKey(code)
         // Log without blocking the command path (keeps key presses snappy).
         Task { await AppLog.shared.info("Sent \(key.rawValue)", category: "command") }
@@ -262,12 +274,15 @@ final class TVController {
     /// cursor‑based web apps) mishandle.
     func beginPress(_ key: RemoteKey) {
         endPress()   // release anything still held
-        guard let atv, let code = ATVKeyCode(key) else {
+        guard let code = ATVKeyCode(key) else {
             Haptics.shared.warning()
             return
         }
         heldKey = key
-        Task { await atv.pressKey(code) }
+        Task { [weak self] in
+            await self?.ensureConnected()    // grab the TV back if another phone took it
+            await self?.atv?.pressKey(code)
+        }
         // Safety net: never leave a key stuck down if the release is missed.
         releaseTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(6))
