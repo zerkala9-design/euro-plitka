@@ -67,6 +67,11 @@ final class TVController {
     private var connectionGeneration = 0
     /// True while the app is foregrounded and should hold a live connection.
     private var wantsConnection = false
+    /// When the current connection was established (to tell a genuine network
+    /// blip from being repeatedly kicked by another phone).
+    private var lastConnectTime: Date?
+    /// How many times in a row we were dropped shortly after connecting.
+    private var quickDropCount = 0
 
     func connect(to device: TVDevice) async {
         disconnect(userInitiated: false)
@@ -93,6 +98,7 @@ final class TVController {
         do {
             try await client.connect()
             state = .connected
+            lastConnectTime = Date()
             startLiveActivity()
         } catch let error as PhilipsError {
             state = .failed(error.localizedDescription)
@@ -112,13 +118,21 @@ final class TVController {
         LiveActivityController.shared.end()
     }
 
-    /// The control channel dropped — most likely another phone took the TV's
-    /// single remote slot. Don't fight for it (that causes a reconnect war);
-    /// we'll grab it back on the next button press via `ensureConnected()`.
+    /// The control channel dropped. Keep a single phone alive by reconnecting,
+    /// but if we're being kicked repeatedly (another phone is actively using the
+    /// TV), yield instead of starting a reconnect war — we grab it back on the
+    /// next button press via `ensureConnected()`.
     private func handleDropped(generation: Int) {
         guard generation == connectionGeneration, wantsConnection else { return }
         atv = nil
         state = .disconnected
+
+        let lasted = lastConnectTime.map { Date().timeIntervalSince($0) } ?? .infinity
+        quickDropCount = lasted < 5 ? quickDropCount + 1 : 0
+
+        // Two consecutive quick drops ⇒ another phone wants the TV ⇒ yield.
+        guard quickDropCount < 2, let device, settings.autoReconnect else { return }
+        scheduleReconnect(to: device, delay: 1.5)
     }
 
     /// Make sure we hold the TV's remote session before sending a command.
