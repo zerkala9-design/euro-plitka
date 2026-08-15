@@ -193,12 +193,12 @@ struct RockerControl: View {
             rockerButton(topIcon, hold: onUp)
             Divider().background(.white.opacity(0.1))
             Button(action: { Haptics.shared.tap(); onCenter() }) {
-                VStack(spacing: 2) {
-                    Image(systemName: centerIcon).font(.subheadline)
-                    Text(label).font(.caption2.weight(.bold)).foregroundStyle(.secondary)
+                VStack(spacing: 3) {
+                    Image(systemName: centerIcon).font(.title3)
+                    Text(label).font(.caption.weight(.bold)).foregroundStyle(.secondary)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 10)
+                .padding(.vertical, 14)
             }
             .buttonStyle(.plain)
             Divider().background(.white.opacity(0.1))
@@ -212,9 +212,9 @@ struct RockerControl: View {
     private func rockerButton(_ icon: String, hold: @escaping (Bool) -> Void) -> some View {
         HoldButton(hold: hold) {
             Image(systemName: icon)
-                .font(.title2.weight(.semibold))
+                .font(.title.weight(.semibold))
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 18)
+                .padding(.vertical, 34)
                 .contentShape(Rectangle())
                 .foregroundStyle(.primary)
         }
