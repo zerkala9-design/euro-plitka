@@ -84,6 +84,7 @@ const cfg = JSON.stringify(tileCalcConfig);
       <div class="order-modal__box">
         <button class="order-modal__close" id="closeModal">✕</button>
         <h3 id="modalTitle">Дзеркальне панно</h3>
+        <div class="order-diag" id="orderDiag"></div>
         <table class="order-table" id="orderTable"></table>
         <div class="order-modal__form">
           <input type="text" placeholder="Ім'я та Прізвище" class="order-modal__input" id="modalName" />
@@ -256,8 +257,8 @@ function generateRows(panel) {
     rows,
     total,
     tileSize: sw,
-    d1: Math.round(d1),
-    d2: Math.round(d2),
+    d1: d1,
+    d2: d2,
     cols,
     rowCount,
     isSquare: f === 1,
@@ -474,7 +475,7 @@ function updatePanelUI(mode, panel, rowData) {
 
   document.getElementById('info-' + mode).innerHTML = `
     <span>Плитка: <b>${rowData.tileSize}×${rowData.tileSize} мм</b></span>
-    <span>Діагоналі: <b>${rowData.d1}×${rowData.d2} мм</b></span>
+    <span>Діагоналі: <b>${rowData.d1.toFixed(2)}×${rowData.d2.toFixed(2)} мм</b></span>
     <span>Сітка: <b>${rowData.cols}×${rowData.rowCount}</b></span>
   `;
 
@@ -557,22 +558,25 @@ function openModal(mode) {
   document.getElementById('modalTitle').textContent =
     `Панно ${panel.input.width}×${panel.input.height} мм (${modeNames[mode]})`;
 
+  document.getElementById('orderDiag').innerHTML =
+    `Діагональ ромба: <b>${rowData.d1.toFixed(2)} × ${rowData.d2.toFixed(2)} мм</b>`;
+
   const formNames = { 1: 'квадрат', 1.3: 'ромб' };
   const rows = rowData.rows.map(r => {
     const fName = r.triangle ? 'трикутник' : (formNames[r.form] || 'квадрат');
     return `<tr>
       <td>${fName}</td>
-      <td>${r.width}×${r.height}</td>
-      <td>${facetName} мм</td>
+      <td class="num">${r.width}×${r.height}</td>
+      <td class="num">${facetName} мм</td>
       <td>${colorName}</td>
-      <td>${r.quantity} шт.</td>
-      <td><b>${fmt(r.price)}</b></td>
+      <td class="num">${r.quantity} шт.</td>
+      <td class="num"><b class="cell-price">${fmt(r.price)}</b></td>
     </tr>`;
   }).join('');
 
   document.getElementById('orderTable').innerHTML = `
-    <thead><tr><th>Форма</th><th>Розмір</th><th>Фацет</th><th>Колір</th><th>К-во</th><th>Ціна</th></tr></thead>
-    <tbody>${rows}<tr class="order-total"><td colspan="4">Всього</td><td colspan="2"><b>${fmt(rowData.total)}</b></td></tr></tbody>
+    <thead><tr><th>Форма</th><th class="num">Розмір</th><th class="num">Фацет</th><th>Колір</th><th class="num">К-во</th><th class="num">Ціна</th></tr></thead>
+    <tbody>${rows}<tr class="order-total"><td colspan="4">Всього</td><td class="num" colspan="2"><b class="cell-price">${fmt(rowData.total)}</b></td></tr></tbody>
   `;
   document.getElementById('orderModal').classList.add('open');
 }
@@ -595,7 +599,8 @@ document.getElementById('submitOrder').addEventListener('click', async () => {
   if (!name || !phone) { alert("Будь ласка, вкажіть ім'я та телефон"); return; }
 
   const title = document.getElementById('modalTitle').textContent || 'Дзеркальне панно';
-  const summary = (document.getElementById('orderTable').innerText || '').replace(/\s*\n\s*/g, '\n').trim();
+  const diag = (document.getElementById('orderDiag').innerText || '').trim();
+  const summary = ((diag ? diag + '\n' : '') + (document.getElementById('orderTable').innerText || '')).replace(/\s*\n\s*/g, '\n').trim();
   const key = document.querySelector('meta[name="w3f-key"]')?.content;
   if (!key || key === 'WEB3FORMS_ACCESS_KEY') {
     alert('Форму ще не підключено до пошти. Зверніться, будь ласка, у Telegram або за телефоном.');
@@ -816,10 +821,21 @@ renderAll();
   .order-modal__close:hover { background: var(--bg-gray); color: var(--text); }
   .order-modal__box h3 { margin-bottom: 18px; color: var(--text); }
 
-  .order-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 0.85rem; }
-  .order-table th { text-align: left; padding: 7px 5px; background: var(--bg-gray); font-weight: 600; color: var(--text-muted); }
-  .order-table td { padding: 7px 5px; border-bottom: 1px solid var(--border); color: var(--text-mid); }
-  .order-total td { font-weight: 600; background: var(--gold-pale); color: var(--text); }
+  .order-diag {
+    font-size: 0.9rem; color: var(--text-mid);
+    margin-bottom: 14px; padding: 10px 14px;
+    background: var(--bg-gray); border-radius: var(--radius);
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  }
+  .order-diag b { color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .order-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 0.88rem; table-layout: fixed; }
+  .order-table th { text-align: left; padding: 9px 8px; background: var(--bg-gray); font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+  .order-table td { padding: 9px 8px; border-bottom: 1px solid var(--border); color: var(--text-mid); white-space: nowrap; }
+  .order-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .order-table .cell-price { font-weight: 800; color: var(--text); }
+  .order-total td { font-weight: 700; background: var(--gold-pale); color: var(--text); }
+  .order-total .cell-price { font-size: 1.05rem; font-weight: 800; }
 
   .order-modal__form { display: flex; flex-direction: column; gap: 10px; }
   .order-modal__input {
