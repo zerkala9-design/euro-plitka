@@ -831,15 +831,27 @@ renderAll();
   }
   .order-diag b { color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; }
 
-  .order-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 0.86rem; }
-  .order-table th { text-align: left; padding: 9px 10px; background: var(--bg-gray); font-weight: 600; color: var(--text-muted); white-space: nowrap; }
-  .order-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); color: var(--text-mid); white-space: nowrap; }
-  .order-table th:first-child, .order-table td:first-child { padding-left: 4px; }
-  .order-table th:last-child, .order-table td:last-child { padding-right: 4px; }
-  .order-table .num { text-align: right; font-variant-numeric: tabular-nums; }
-  .order-table .cell-price { font-weight: 800; color: var(--text); }
-  .order-total td { font-weight: 700; background: var(--gold-pale); color: var(--text); }
-  .order-total .cell-price { font-size: 1.05rem; font-weight: 800; }
+  /* Таблиця генерується через innerHTML — стилі мають бути глобальними (за унікальним #orderTable) */
+  :global(#orderTable) {
+    width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 0.86rem;
+    border: 1px solid rgba(0,0,0,0.18);
+  }
+  :global(#orderTable th) {
+    text-align: left; padding: 10px 12px; background: var(--bg-gray);
+    font-weight: 700; color: var(--text); white-space: nowrap;
+    border-bottom: 2px solid rgba(0,0,0,0.18); border-right: 1px solid rgba(0,0,0,0.14);
+  }
+  :global(#orderTable td) {
+    padding: 10px 12px; border-bottom: 1px solid rgba(0,0,0,0.14);
+    border-right: 1px solid rgba(0,0,0,0.14);
+    color: var(--text-mid); white-space: nowrap;
+  }
+  :global(#orderTable th:last-child), :global(#orderTable td:last-child) { border-right: none; }
+  :global(#orderTable tbody tr:nth-child(even):not(.order-total) td) { background: rgba(0,0,0,0.02); }
+  :global(#orderTable .num) { text-align: right; font-variant-numeric: tabular-nums; }
+  :global(#orderTable .cell-price) { font-weight: 800; color: var(--text); }
+  :global(#orderTable .order-total td) { font-weight: 700; background: var(--gold-pale); color: var(--text); border-top: 2px solid rgba(0,0,0,0.18); }
+  :global(#orderTable .order-total .cell-price) { font-size: 1.05rem; font-weight: 800; }
 
   .order-modal__form { display: flex; flex-direction: column; gap: 10px; }
   .order-modal__input {
