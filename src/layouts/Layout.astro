@@ -6,6 +6,7 @@ import '../styles/global.css';
 
 interface Crumb { name: string; path: string; }
 interface Faq { q: string; a: string; }
+interface Article { headline: string; datePublished: string; dateModified?: string; }
 interface Props {
   title: string;
   description?: string;
@@ -13,6 +14,7 @@ interface Props {
   ogImage?: string;
   breadcrumbs?: Crumb[];
   faq?: Faq[];
+  article?: Article;
 }
 
 const {
@@ -22,6 +24,7 @@ const {
   ogImage = '/hero-on.jpg',
   breadcrumbs,
   faq,
+  article,
 } = Astro.props;
 
 const origin = 'https://euro-plitka.com.ua';
@@ -60,6 +63,23 @@ const breadcrumbLd = breadcrumbs && breadcrumbs.length ? {
     name: c.name,
     item: `${origin}${c.path}`,
   })),
+} : null;
+
+const articleLd = article ? {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: article.headline,
+  description,
+  image: ogImageUrl,
+  datePublished: article.datePublished,
+  dateModified: article.dateModified ?? article.datePublished,
+  author: { '@type': 'Organization', name: site.name, url: origin },
+  publisher: {
+    '@type': 'Organization',
+    name: site.name,
+    logo: { '@type': 'ImageObject', url: `${origin}/apple-touch-icon.png` },
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
 } : null;
 
 const faqLd = faq && faq.length ? {
@@ -102,6 +122,7 @@ const faqLd = faq && faq.length ? {
   <meta name="twitter:image" content={ogImageUrl} />
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   {breadcrumbLd && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />}
+  {articleLd && <script type="application/ld+json" set:html={JSON.stringify(articleLd)} />}
   {faqLd && <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />}
 </head>
 <body>

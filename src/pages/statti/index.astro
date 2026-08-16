@@ -1,0 +1,80 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { articles } from '../../data/articles';
+
+const breadcrumbs = [
+  { name: 'Головна', path: '/' },
+  { name: 'Статті', path: '/statti/' },
+];
+
+const fmtDate = (iso) => new Date(iso).toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<Layout
+  title="Статті про дзеркальну плитку та LED дзеркала"
+  description="Корисні статті: як вибрати дзеркальну плитку, чим клеїти, що врахувати для ванної. Поради від виробника дзеркал у Києві."
+  breadcrumbs={breadcrumbs}
+>
+  <div class="page-hero page-hero--dark">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Головна</a><span>›</span><span>Статті</span></div>
+      <div class="section-label">Корисне</div>
+      <h1>Статті про дзеркала</h1>
+      <p class="hero-sub">Поради від виробника: як вибрати, як змонтувати та як доглядати за дзеркальною плиткою й LED дзеркалами</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="art-grid">
+        {articles.map((a) => (
+          <article class="art-card">
+            <div class="art-card__meta">
+              <time datetime={a.date}>{fmtDate(a.date)}</time>
+              <span>·</span>
+              <span>{a.readingTime}</span>
+            </div>
+            <h2><a href={`/statti/${a.slug}/`}>{a.title}</a></h2>
+            <p>{a.excerpt}</p>
+            <a href={`/statti/${a.slug}/`} class="art-card__more">Читати →</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero--dark {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 60px 0 48px;
+  }
+  .page-hero--dark .breadcrumb a { color: var(--text-muted); }
+  .page-hero--dark .breadcrumb { color: var(--text-muted); margin-bottom: 20px; font-size: 0.88rem; display: flex; gap: 8px; align-items: center; }
+  .page-hero--dark h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text); margin-bottom: 12px; }
+  .hero-sub { color: var(--text-muted); font-size: 1.1rem; max-width: 640px; }
+
+  .section-label {
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--gold); margin-bottom: 8px;
+  }
+
+  .art-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .art-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 32px;
+    display: flex; flex-direction: column;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .art-card:hover { border-color: rgba(201,168,76,0.4); transform: translateY(-3px); }
+  .art-card__meta { display: flex; gap: 8px; align-items: center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; }
+  .art-card h2 { font-size: 1.25rem; line-height: 1.35; margin-bottom: 12px; }
+  .art-card h2 a { color: var(--text); transition: color 0.15s; }
+  .art-card h2 a:hover { color: var(--gold); }
+  .art-card p { color: var(--text-muted); font-size: 0.93rem; line-height: 1.7; margin: 0 0 18px; flex: 1; }
+  .art-card__more { color: var(--gold); font-weight: 600; font-size: 0.9rem; margin-top: auto; }
+  .art-card__more:hover { opacity: 0.7; }
+
+  @media (max-width: 700px) { .art-grid { grid-template-columns: 1fr; } }
+</style>

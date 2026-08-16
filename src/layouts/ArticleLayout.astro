@@ -1,0 +1,144 @@
+---
+import Layout from './Layout.astro';
+import { articles, articleBySlug } from '../data/articles';
+
+interface Faq { q: string; a: string; }
+interface Props {
+  slug: string;
+  description: string;
+  faq?: Faq[];
+}
+
+const { slug, description, faq } = Astro.props;
+const meta = articleBySlug(slug);
+if (!meta) throw new Error(`Article not found: ${slug}`);
+
+const breadcrumbs = [
+  { name: 'Головна', path: '/' },
+  { name: 'Статті', path: '/statti/' },
+  { name: meta.title, path: `/statti/${slug}/` },
+];
+
+const fmtDate = (iso) => new Date(iso).toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
+const others = articles.filter((a) => a.slug !== slug).slice(0, 2);
+---
+
+<Layout
+  title={meta.title}
+  description={description}
+  breadcrumbs={breadcrumbs}
+  faq={faq}
+  article={{ headline: meta.title, datePublished: meta.date }}
+>
+  <article class="post">
+    <div class="container post__inner">
+      <div class="breadcrumb">
+        <a href="/">Головна</a><span>›</span><a href="/statti/">Статті</a><span>›</span><span>Стаття</span>
+      </div>
+      <div class="post__meta">
+        <time datetime={meta.date}>{fmtDate(meta.date)}</time>
+        <span>·</span>
+        <span>{meta.readingTime} читання</span>
+      </div>
+      <h1>{meta.title}</h1>
+
+      <div class="post__body">
+        <slot />
+      </div>
+
+      {faq && faq.length > 0 && (
+        <section class="post__faq">
+          <h2>Часті запитання</h2>
+          <div class="faq">
+            {faq.map((item) => (
+              <div class="faq-item">
+                <h3>{item.q}</h3>
+                <p>{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <div class="post__cta">
+        <div>
+          <strong>Порахуйте вартість за секунду</strong>
+          <p>Введіть розміри у калькуляторі — і побачите точну ціну одразу.</p>
+        </div>
+        <div class="post__cta-links">
+          <a href="/dzerkalna-plitka/#calculator" class="btn btn--primary">Калькулятор плитки</a>
+          <a href="/led-dzerkalo/" class="btn btn--ghost">LED дзеркала</a>
+        </div>
+      </div>
+
+      {others.length > 0 && (
+        <section class="post__more">
+          <div class="section-label">Читайте також</div>
+          <div class="more-grid">
+            {others.map((a) => (
+              <a href={`/statti/${a.slug}/`} class="more-card">
+                <span class="more-card__title">{a.title}</span>
+                <span class="more-card__excerpt">{a.excerpt}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .post { background: var(--bg); padding: 40px 0 60px; }
+  .post__inner { max-width: 760px; }
+  .breadcrumb { color: var(--text-muted); margin-bottom: 20px; font-size: 0.85rem; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .breadcrumb a { color: var(--text-muted); }
+  .breadcrumb a:hover { color: var(--gold); }
+  .post__meta { display: flex; gap: 8px; align-items: center; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px; }
+  .post h1 { font-size: clamp(1.6rem, 3.6vw, 2.4rem); color: var(--text); line-height: 1.25; margin-bottom: 28px; }
+
+  .post__body :global(h2) { font-size: 1.4rem; color: var(--text); margin: 36px 0 14px; }
+  .post__body :global(h3) { font-size: 1.12rem; color: var(--text); margin: 26px 0 10px; }
+  .post__body :global(p) { color: var(--text-mid); font-size: 1.02rem; line-height: 1.8; margin: 0 0 16px; }
+  .post__body :global(ul), .post__body :global(ol) { margin: 0 0 18px; padding-left: 22px; color: var(--text-mid); }
+  .post__body :global(li) { font-size: 1.02rem; line-height: 1.75; margin-bottom: 8px; }
+  .post__body :global(strong) { color: var(--text); }
+  .post__body :global(a) { color: var(--gold); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+  .post__body :global(.lead) { font-size: 1.12rem; color: var(--text); line-height: 1.75; margin-bottom: 24px; }
+  .post__body :global(.note) {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-left: 3px solid var(--gold); border-radius: 10px;
+    padding: 18px 22px; margin: 24px 0;
+  }
+  .post__body :global(.note p) { margin: 0; font-size: 0.98rem; }
+
+  .section-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 12px; }
+
+  .post__faq { margin-top: 48px; }
+  .post__faq h2 { font-size: 1.4rem; color: var(--text); margin-bottom: 20px; }
+  .faq { display: flex; flex-direction: column; gap: 14px; }
+  .faq-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 26px; }
+  .faq-item h3 { margin-bottom: 8px; color: var(--gold); font-size: 1.02rem; }
+  .faq-item p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.7; margin: 0; }
+
+  .post__cta {
+    margin-top: 48px; display: flex; gap: 24px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 28px 32px;
+  }
+  .post__cta strong { display: block; color: var(--text); font-size: 1.15rem; margin-bottom: 4px; }
+  .post__cta p { color: var(--text-muted); font-size: 0.92rem; margin: 0; }
+  .post__cta-links { display: flex; gap: 12px; flex-wrap: wrap; }
+  .post__cta .btn--ghost { border: 1px solid var(--border); color: var(--text); }
+
+  .post__more { margin-top: 48px; }
+  .more-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .more-card { display: block; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; transition: border-color 0.2s; }
+  .more-card:hover { border-color: rgba(201,168,76,0.4); }
+  .more-card__title { display: block; color: var(--text); font-weight: 600; font-size: 1.02rem; margin-bottom: 6px; }
+  .more-card__excerpt { display: block; color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; }
+
+  @media (max-width: 640px) {
+    .more-grid { grid-template-columns: 1fr; }
+    .post__cta { flex-direction: column; align-items: flex-start; }
+  }
+</style>

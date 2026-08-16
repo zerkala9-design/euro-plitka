@@ -22,6 +22,7 @@ export const nav = [
   { label: 'LED дзеркала',      path: '/led-dzerkalo/' },
   { label: 'Послуги',           path: '/poslugy/' },
   { label: 'Про нас',           path: '/pro-nas/' },
+  { label: 'Статті',            path: '/statti/' },
   { label: 'Доставка та оплата',path: '/dostavka/' },
   { label: 'Контакти',          path: '/kontakty/' },
 ];
