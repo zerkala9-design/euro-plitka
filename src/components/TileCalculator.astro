@@ -218,21 +218,22 @@ function generateRows(panel) {
   const facetVal = Number(panel.input.facet);
   const rows = [];
 
-  function addRow(qty, isTri, w, h, form) {
+  function addRow(qty, isTri, wP, hP, form) {
     if (!qty) return;
-    const row = { form, triangle: isTri, width: w, height: h, facet: facetVal, color: colorVal, quantity: qty };
+    // width/height (округлені) — для розрахунку ціни; wLabel/hLabel — точні (до сотих) для показу
+    const row = { form, triangle: isTri, width: Math.round(wP), height: Math.round(hP), wLabel: wP, hLabel: hP, facet: facetVal, color: colorVal, quantity: qty };
     row.price = calcPrice(row);
     rows.push(row);
   }
 
   const sw = Math.round(tileSide);
-  const halfSide = Number((d1 / 2).toFixed(0));
+  const halfSideP = d1 / 2;
 
-  addRow(c, false, sw, sw, f);
-  addRow(u, true,  sw, sw, f);
-  addRow(d, true,  sw, sw, f);
-  addRow(p, true,  sw, sw, f);
-  addRow(m, true,  halfSide, halfSide, f);
+  addRow(c, false, tileSide, tileSide, f);
+  addRow(u, true,  tileSide, tileSide, f);
+  addRow(d, true,  tileSide, tileSide, f);
+  addRow(p, true,  tileSide, tileSide, f);
+  addRow(m, true,  halfSideP, halfSideP, f);
 
   let total = rows.reduce((s, r) => s + r.price, 0);
 
@@ -257,6 +258,7 @@ function generateRows(panel) {
     rows,
     total,
     tileSize: sw,
+    tileSizePrecise: tileSide,
     d1: d1,
     d2: d2,
     cols,
@@ -474,7 +476,7 @@ function updatePanelUI(mode, panel, rowData) {
   const facetNames = ['', '0', '5', '10', '15', '20'];
 
   document.getElementById('info-' + mode).innerHTML = `
-    <span>Плитка: <b>${rowData.tileSize}×${rowData.tileSize} мм</b></span>
+    <span>Плитка: <b>${rowData.tileSizePrecise.toFixed(2)}×${rowData.tileSizePrecise.toFixed(2)} мм</b></span>
     <span>Діагоналі: <b>${rowData.d1.toFixed(2)}×${rowData.d2.toFixed(2)} мм</b></span>
     <span>Сітка: <b>${rowData.cols}×${rowData.rowCount}</b></span>
   `;
@@ -566,7 +568,7 @@ function openModal(mode) {
     const fName = r.triangle ? 'трикутник' : (formNames[r.form] || 'квадрат');
     return `<tr>
       <td>${fName}</td>
-      <td class="num">${r.width}×${r.height}</td>
+      <td class="num">${r.wLabel.toFixed(2)}×${r.hLabel.toFixed(2)}</td>
       <td class="num">${facetName} мм</td>
       <td>${colorName}</td>
       <td class="num">${r.quantity} шт.</td>
@@ -829,9 +831,11 @@ renderAll();
   }
   .order-diag b { color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; }
 
-  .order-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 0.88rem; table-layout: fixed; }
-  .order-table th { text-align: left; padding: 9px 8px; background: var(--bg-gray); font-weight: 600; color: var(--text-muted); white-space: nowrap; }
-  .order-table td { padding: 9px 8px; border-bottom: 1px solid var(--border); color: var(--text-mid); white-space: nowrap; }
+  .order-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 0.86rem; }
+  .order-table th { text-align: left; padding: 9px 10px; background: var(--bg-gray); font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+  .order-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); color: var(--text-mid); white-space: nowrap; }
+  .order-table th:first-child, .order-table td:first-child { padding-left: 4px; }
+  .order-table th:last-child, .order-table td:last-child { padding-right: 4px; }
   .order-table .num { text-align: right; font-variant-numeric: tabular-nums; }
   .order-table .cell-price { font-weight: 800; color: var(--text); }
   .order-total td { font-weight: 700; background: var(--gold-pale); color: var(--text); }
