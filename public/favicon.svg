@@ -1,21 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#201c12"/>
-      <stop offset="1" stop-color="#0f0d08"/>
+      <stop offset="0" stop-color="#221d13"/>
+      <stop offset="1" stop-color="#0e0c07"/>
     </linearGradient>
     <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#e6c477"/>
-      <stop offset="0.5" stop-color="#b89244"/>
+      <stop offset="0" stop-color="#f0d488"/>
+      <stop offset="0.5" stop-color="#c39a48"/>
       <stop offset="1" stop-color="#8f6f2e"/>
     </linearGradient>
-    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0.6" stop-color="#b89244" stop-opacity="0"/>
-      <stop offset="1" stop-color="#e6c477" stop-opacity="0.55"/>
+    <linearGradient id="goldV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f5e0a2"/>
+      <stop offset="1" stop-color="#a67f34"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.42" r="0.6">
+      <stop offset="0.45" stop-color="#c39a48" stop-opacity="0"/>
+      <stop offset="1" stop-color="#f0d488" stop-opacity="0.5"/>
     </radialGradient>
   </defs>
   <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bg)"/>
-  <circle cx="32" cy="32" r="21" fill="url(#glow)"/>
-  <circle cx="32" cy="32" r="17" fill="none" stroke="url(#gold)" stroke-width="4"/>
-  <path d="M24 24 Q32 20 40 24" fill="none" stroke="#f3e2b4" stroke-width="2.4" stroke-linecap="round" opacity="0.85"/>
+  <circle cx="32" cy="32" r="23" fill="url(#glow)"/>
+  <polygon points="32,10 54,32 32,54 10,32" fill="none" stroke="url(#goldV)" stroke-width="3.2" stroke-linejoin="round"/>
+  <polygon points="32,18 46,32 32,46 18,32" fill="none" stroke="url(#gold)" stroke-width="1.8" stroke-linejoin="round" opacity="0.9"/>
+  <line x1="32" y1="10" x2="32" y2="18" stroke="#f0d488" stroke-width="1.1" opacity="0.7"/>
+  <line x1="54" y1="32" x2="46" y2="32" stroke="#f0d488" stroke-width="1.1" opacity="0.7"/>
+  <line x1="32" y1="54" x2="32" y2="46" stroke="#f0d488" stroke-width="1.1" opacity="0.7"/>
+  <line x1="10" y1="32" x2="18" y2="32" stroke="#f0d488" stroke-width="1.1" opacity="0.7"/>
 </svg>
