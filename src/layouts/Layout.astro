@@ -7,6 +7,7 @@ import '../styles/global.css';
 interface Crumb { name: string; path: string; }
 interface Faq { q: string; a: string; }
 interface Article { headline: string; datePublished: string; dateModified?: string; }
+interface Product { name: string; lowPrice: number; unit?: string; }
 interface Props {
   title: string;
   description?: string;
@@ -15,6 +16,7 @@ interface Props {
   breadcrumbs?: Crumb[];
   faq?: Faq[];
   article?: Article;
+  product?: Product;
 }
 
 const {
@@ -25,6 +27,7 @@ const {
   breadcrumbs,
   faq,
   article,
+  product,
 } = Astro.props;
 
 const origin = 'https://euro-plitka.com.ua';
@@ -51,6 +54,9 @@ const jsonLd = {
     opens: '10:00',
     closes: '18:00',
   },
+  description: 'Виробник дзеркальної плитки, дзеркальних панно та LED дзеркал у Києві. Виготовлення на замовлення, монтаж під ключ, доставка по Україні.',
+  priceRange: '₴₴',
+  areaServed: ['Київ', 'Київська область', 'Україна'],
   sameAs: [site.social.instagram, site.social.telegram].filter(Boolean),
 };
 
@@ -80,6 +86,22 @@ const articleLd = article ? {
     logo: { '@type': 'ImageObject', url: `${origin}/apple-touch-icon.png` },
   },
   mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+} : null;
+
+const productLd = product ? {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: product.name,
+  image: ogImageUrl,
+  description,
+  brand: { '@type': 'Brand', name: site.name },
+  offers: {
+    '@type': 'AggregateOffer',
+    priceCurrency: 'UAH',
+    lowPrice: product.lowPrice,
+    availability: 'https://schema.org/InStock',
+    seller: { '@type': 'Organization', name: site.name },
+  },
 } : null;
 
 const faqLd = faq && faq.length ? {
@@ -123,6 +145,7 @@ const faqLd = faq && faq.length ? {
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   {breadcrumbLd && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />}
   {articleLd && <script type="application/ld+json" set:html={JSON.stringify(articleLd)} />}
+  {productLd && <script type="application/ld+json" set:html={JSON.stringify(productLd)} />}
   {faqLd && <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />}
 </head>
 <body>
