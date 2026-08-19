@@ -1074,12 +1074,53 @@ body {
 }
 
 
-/* ===== PANO LAYOUT (stack preview below so it doesn't cover color) ===== */
+/* ===== РОЗКРІЙ ДЗЕРКАЛ ===== */
 #view-geometry .grid-two{ grid-template-columns: 1fr !important; }
-.pano-field{ grid-template-columns: auto 1fr auto !important; }
-.pano-input{ min-width: 110px !important; width: 100% !important; text-align: center !important; font-weight: 700 !important; }
-.pano-select{ min-width: 140px !important; }
-.pano-options{ min-height: 260px; }
+.rz-chk{ display:flex; align-items:center; gap:9px; font-size:13px; color:#e5e7eb; cursor:pointer; }
+.rz-chk input{ width:16px; height:16px; accent-color:#ff7a2f; cursor:pointer; }
+.rz-warn{ color:#fca5a5; font-size:12px; line-height:1.5; margin:8px 0; }
+.rz-sheetbox{ margin-bottom:14px; }
+.rz-sheetbox .rz-cap{ font-size:12.5px; font-weight:700; color:#e5e7eb; margin-bottom:6px; }
+.rz-sheetbox .rz-cap span{ color:#9aa3b5; font-weight:500; }
+.rz-sheetbox svg{ width:100%; height:auto; display:block; background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.10); border-radius:0; }
+.rz-leftlist{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.rz-tag{ border-radius:8px; padding:3px 9px; font-size:11.5px; font-weight:700; font-variant-numeric:tabular-nums; }
+.rz-tag.ok{ background:rgba(34,197,94,.14); border:1px solid rgba(34,197,94,.45); color:#86efac; }
+.rz-tag.bad{ background:rgba(148,163,184,.12); border:1px solid rgba(148,163,184,.4); color:#cbd5e1; }
+.rz-base{ display:flex; flex-direction:column; gap:7px; }
+.rz-base-item{ display:flex; align-items:center; gap:9px; background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.10); border-radius:11px; padding:9px 11px; }
+.rz-base-item .dim{ font-weight:800; font-size:13.5px; font-variant-numeric:tabular-nums; color:#e5e7eb; }
+.rz-base-item .meta{ font-size:11px; color:#9aa3b5; margin-right:auto; }
+.rz-base-item button{ padding:6px 11px; border-radius:9px; border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.05); color:#e5e7eb; font-size:11.5px; font-weight:700; cursor:pointer; }
+.rz-base-item button.use{ border-color:rgba(34,197,94,.45); color:#86efac; background:rgba(34,197,94,.12); }
+.rz-base-item button.del{ border-color:rgba(248,113,113,.4); color:#fca5a5; background:rgba(248,113,113,.1); }
+.rz-base-empty{ font-size:12px; color:#9aa3b5; line-height:1.5; }
+
+@media print{
+  body *{ visibility:hidden !important; }
+  #rz-result-container, #rz-result-container *{ visibility:visible !important; }
+  #rz-result-container{ position:absolute; left:0; top:0; width:100%; background:#fff !important;
+    border:none !important; box-shadow:none !important; border-radius:0 !important;
+    padding:0 6px !important; overflow:hidden; }
+  #rz-result-container .result-main, #rz-result-container .card-sub{ color:#000 !important; }
+  .rz-sheetbox{ page-break-inside:avoid; break-inside:avoid; }
+  .rz-sheetbox .rz-cap, .rz-sheetbox .rz-cap span{ color:#000 !important; }
+  .rz-sheetbox svg{ background:#fff !important; border:1px solid #000 !important; }
+  svg .rz-sheet-outline{ stroke:#000 !important; fill:#fff !important; }
+  svg .rz-pc{ stroke:#000 !important; stroke-width:1 !important; fill:#fff !important; }
+  svg .rz-label{ fill:#000 !important; }
+  svg .rz-cut{ stroke:#000 !important; stroke-width:1.5 !important; }
+  svg .rz-cut2{ stroke:#000 !important; stroke-width:1 !important; }
+  svg .rz-rem{ stroke:none !important; fill:#f2f2f2 !important; }
+  svg .rz-rem-label{ fill:#444 !important; }
+  svg .rz-waste{ stroke:none !important; fill:#eaeaea !important; }
+  svg .rz-waste-label{ fill:#666 !important; }
+  .rz-tag.ok{ background:#fff !important; border:1px solid #666 !important; color:#000 !important; }
+  .rz-tag.bad{ background:#fff !important; border:1px solid #999 !important; color:#444 !important; }
+}
 
 
 /* ===== ORDERS FOLDERS + SHARED NARAD ===== */
@@ -2221,8 +2262,8 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
       <button class="nav-btn" data-view="wall" data-title="Калькулятор Спорт-залів">
         <span class="nav-btn-dot"></span> Калькулятор Спорт-залів
       </button>
-      <button class="nav-btn" data-view="geometry" data-title="Калькулятор ПАНО">
-        <span class="nav-btn-dot"></span> Калькулятор ПАНО
+      <button class="nav-btn" data-view="geometry" data-title="Розкрій дзеркал">
+        <span class="nav-btn-dot"></span> Розкрій дзеркал
       </button>
 
       <div class="nav-group-title">Операції</div>
@@ -2627,101 +2668,85 @@ html.rx-dark img, html.rx-dark video, html.rx-dark canvas{filter: invert(1) hue-
     </div>
   </div>
 
-  <!-- VIEW: GEOMETRY (PANO) -->
+  <!-- VIEW: РОЗКРІЙ ДЗЕРКАЛ -->
   <div class="view" id="view-geometry">
     <div class="card">
       <div class="card-title-row">
-        <div class="card-title">Калькулятор ПАНО (GeometryX)</div>
-        <div class="card-sub">Сітка ромбів для дзеркальних панелей</div>
+        <div class="card-title">Розкрій дзеркал</div>
+        <div class="card-sub">Розкладка деталей по листах із наскрізними різами</div>
       </div>
 
       <div class="grid-two">
         <div style="display:flex;flex-direction:column;gap:12px;">
-          
-<div class="card-sub" style="margin-bottom:6px;">Параметри панно</div>
 
-<div class="pano-topbar">
-  <div class="pano-field">
-    <div class="pano-label">↔ Ширина</div>
-    <input class="input pano-input" id="pano_width" type="number" min="1" value="1700">
-    <div class="pano-unit">мм</div>
-  </div>
-
-  <div class="pano-field">
-    <div class="pano-label">↕ Висота</div>
-    <input class="input pano-input" id="pano_height" type="number" min="1" value="2700">
-    <div class="pano-unit">мм</div>
-  </div>
-
-  <div class="pano-field">
-    <div class="pano-label">◻ Фацет</div>
-    <input class="input pano-input" id="pano_facet" type="number" min="0" value="10">
-    <div class="pano-unit">мм</div>
-  </div>
-
-  <div class="pano-field pano-color">
-    <div class="pano-label">💧 Колір</div>
-    <select class="select pano-select" id="pano_color">
-      <option value="silver" selected>Срібло</option>
-      <option value="bronze">Бронза</option>
-      <option value="graphite">Графіт</option>
-      <option value="diamond">Діамант</option>
-    </select>
-    <div class="pano-swatch" id="pano_color_swatch" title="Колір"></div>
-  </div>
-</div>
-
-<div class="pano-options" id="pano-options">
-  <!-- options injected by JS -->
-</div>
-
-<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
-  <button class="btn-primary" id="btn-calc-pano">Розрахувати</button>
-</div>
-
-<!-- advanced (kept for compatibility with existing calcPano logic) -->
-<div style="margin-top:10px;opacity:.65;font-size:11px;">
-  <details>
-    <summary style="cursor:pointer;">Додатково</summary>
-    <div class="form-grid-3" style="margin-top:10px;">
-      <div class="field">
-        <label for="pano_cols">Колонки (ромби)</label>
-        <input class="input" id="pano_cols" type="number" min="1" value="6">
-      </div>
-      <div class="field">
-        <label for="pano_rows">Ряди (ромби)</label>
-        <input class="input" id="pano_rows" type="number" min="1" value="6">
-      </div>
-      <div class="field">
-        <label for="pano_discount">Знижка, %</label>
-        <input class="input" id="pano_discount" type="number" min="0" value="0">
-      </div>
-    </div>
-  </details>
-</div>
-
-        </div>
-
-        <div id="pano-result-container" class="preview-box">
-          <button class="screenshot-btn" id="btn-pano-screenshot" title="Відправити в Telegram/Viber або завантажити PNG">📤 Відправити / завантажити</button>
-          
-          <div class="card-title-row">
-            <div class="result-main" id="pano-total-price">0 ₴</div>
-            <div class="card-sub" style="text-align:right;">
-              <div id="pano-area-info">0 м²</div>
-              <div id="pano-pieces-info">0 шт</div>
-              <div id="pano-result" class="card-sub" style="margin-top:6px; opacity:.9;">—</div>
+          <div class="form-grid-3">
+            <div class="field">
+              <label for="rz_sheet">Лист (заготовка)</label>
+              <select class="select" id="rz_sheet"></select>
+            </div>
+            <div class="field">
+              <label for="rz_thick">Товщина скла</label>
+              <select class="select" id="rz_thick">
+                <option value="5" selected>4 мм</option>
+                <option value="10">5 мм</option>
+                <option value="17">6 мм</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="rz_trim">Обрізка краю, мм</label>
+              <input class="input" id="rz_trim" type="number" min="0" value="0">
             </div>
           </div>
-          <div style="margin-top:8px;">
-            <svg id="pano-svg"></svg>
+
+          <div class="form-grid-2" id="rz-custom-row" style="display:none;">
+            <div class="field">
+              <label for="rz_cw">Ширина шматка, мм</label>
+              <input class="input" id="rz_cw" type="number" min="1" value="1200">
+            </div>
+            <div class="field">
+              <label for="rz_ch">Висота шматка, мм</label>
+              <input class="input" id="rz_ch" type="number" min="1" value="800">
+            </div>
           </div>
-          <div class="details-title">Деталізація</div>
-          <div id="pano-details" style="font-size:11px;line-height:1.6;color:#d1d5db;min-height:80px;">Натисни "Розрахувати".</div>
+
+          <div class="field">
+            <label for="rz_pieces">Розміри деталей (301x301-6 / 425x425-4 або 2000-200-5шт)</label>
+            <textarea class="input" id="rz_pieces" rows="3" style="font-family:ui-monospace,Menlo,Consolas,monospace;">301x301-6 / 425x425-4 / 600x400-3 / 800x300-2</textarea>
+          </div>
+
+          <label class="rz-chk">
+            <input type="checkbox" id="rz_rot" checked>
+            <span>Дозволити поворот деталі (економніший розкрій)</span>
+          </label>
+
+          <div class="card-sub" id="rz-mincut-note">Мін. смуга, яку можна відламати: 5 мм</div>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn-primary" id="btn-calc-rz">Розрахувати</button>
+            <button class="btn-secondary" id="btn-rz-print">🖨️ Роздрукувати</button>
+            <button class="btn-secondary" id="btn-rz-save-rem">➕ Зберегти залишки</button>
+          </div>
+
+          <div class="details-title">База залишків</div>
+          <div class="rz-base" id="rz-base-list"></div>
+        </div>
+
+        <div id="rz-result-container" class="preview-box">
+          <div class="card-title-row">
+            <div class="result-main" id="rz-sheets-count">0</div>
+            <div class="card-sub" style="text-align:right;">
+              <div id="rz-pieces-info">0 деталей</div>
+              <div id="rz-used-info">0% використано</div>
+              <div id="rz-waste-info" style="margin-top:6px;opacity:.9;">0% відходи</div>
+            </div>
+          </div>
+          <div id="rz-warn" class="rz-warn" style="display:none;"></div>
+          <div id="rz-sheets"></div>
         </div>
       </div>
     </div>
   </div>
+
 
   <!-- VIEW: INVENTORY -->
   <div class="view" id="view-inventory">
@@ -4257,7 +4282,7 @@ document.querySelectorAll(".calc-input").forEach(i => {
   
   document.getElementById("btn-calc-screenshot").addEventListener("click", () => takeScreenshot("calc-preview-box", "calc_result"));
   document.getElementById("btn-wall-screenshot").addEventListener("click", () => takeScreenshot("wall-result-container", "wall_result"));
-  document.getElementById("btn-pano-screenshot").addEventListener("click", () => takeScreenshot("pano-result-container", "pano_result"));
+  document.getElementById("btn-pano-screenshot")?.addEventListener("click", () => takeScreenshot("pano-result-container", "pano_result"));
 
   /* ===== GYM CALCULATOR (WALL SPLIT) ===== */
   function calcWall() {
@@ -4514,6 +4539,8 @@ document.querySelectorAll(".calc-input").forEach(i => {
 
   /* ===== PANO CALCULATOR ===== */
   function calcPano() {
+    // Калькулятор ПАНО замінено на «Розкрій дзеркал» — елементів більше немає, виходимо тихо.
+    if(!document.getElementById("pano_width")) return;
     syncState();
     const W = safeInt(document.getElementById("pano_width").value);
     const H = safeInt(document.getElementById("pano_height").value);
@@ -4651,8 +4678,8 @@ document.querySelectorAll(".calc-input").forEach(i => {
     }
   }
 
-  document.getElementById("btn-calc-pano").addEventListener("click", calcPano);
-  ["pano_width","pano_height","pano_cols","pano_rows"].forEach(id=>document.getElementById(id).addEventListener("change", calcPano));
+  document.getElementById("btn-calc-pano")?.addEventListener("click", calcPano);
+  ["pano_width","pano_height","pano_cols","pano_rows"].forEach(id=>document.getElementById(id)?.addEventListener("change", calcPano));
   
   function togglePanoBtn(id) {
     const btn = document.getElementById(id);
@@ -6343,6 +6370,352 @@ return c;
   
   renderClients();
 
+  /* ===== РОЗКРІЙ ДЗЕРКАЛ ===== */
+  var RZ_SHEETS = [
+    {n:"Лист 2250 × 1605", w:2250, h:1605},
+    {n:"Лист 2550 × 1605", w:2550, h:1605},
+    {n:"Лист 2750 × 1605", w:2750, h:1605},
+    {n:"Лист 3210 × 2250", w:3210, h:2250}
+  ];
+  var RZ_CUSTOM = RZ_SHEETS.length;
+  var RZ_USABLE_MIN = 100;   // вужче за це — обрізок, а не придатний залишок
+  var RZ_BASE_KEY = "rz_zalyshky";
+  var rzSheetRemnants = [];
+  var rzBaseMem = null;
+
+  function rzEl(id){ return document.getElementById(id); }
+
+  (function rzInitSheetSelect(){
+    var s = rzEl("rz_sheet"); if(!s) return;
+    RZ_SHEETS.forEach(function(x,i){
+      var o=document.createElement("option"); o.value=i; o.textContent=x.n; s.appendChild(o);
+    });
+    var oc=document.createElement("option"); oc.value=RZ_CUSTOM; oc.textContent="Свій шматок (ввести розмір)"; s.appendChild(oc);
+  })();
+
+  function rzCurrentSheet(){
+    var si=safeInt(rzEl("rz_sheet") ? rzEl("rz_sheet").value : 0, 0);
+    if(si===RZ_CUSTOM) return {n:"Свій шматок", w:safeInt(rzEl("rz_cw").value,1), h:safeInt(rzEl("rz_ch").value,1)};
+    return RZ_SHEETS[si] || RZ_SHEETS[0];
+  }
+
+  function rzParsePieces(t){
+    // Розміри W×H через x/х/×/*/-, кількість через -/:/пробіл, з необов'язковим "шт".
+    // Приклади: "301x301-6", "2000-200-5шт", "200x200 10 шт"
+    var out=[], re=/(\d+)\s*[xXхХ×*/-]\s*(\d+)(?:\s*[-–—:]\s*(\d+)\s*(?:шт\.?|штук)?)?/g, m;
+    while((m=re.exec(String(t||"")))){
+      var w=+m[1], h=+m[2], q=m[3]?+m[3]:1;
+      if(w>0&&h>0&&q>0) out.push({w:w,h:h,q:q});
+    }
+    return out;
+  }
+
+  // Гільйотинний розкрій, усі різи наскрізні: ряд на весь лист -> деталь на всю висоту ряду.
+  // minCut — мінімальна смуга, яку фізично можна відламати (залежить від товщини скла).
+  var RZ_SORTS = [
+    function(a,b){ return (b.h-a.h)||(b.w-a.w); },
+    function(a,b){ return (b.w-a.w)||(b.h-a.h); },
+    function(a,b){ return (b.w*b.h)-(a.w*a.h); },
+    function(a,b){ return Math.max(b.w,b.h)-Math.max(a.w,a.h); },
+    function(a,b){ return (b.w+b.h)-(a.w+a.h); }
+  ];
+
+  function rzRemnantsOf(sheet, localW, localH){
+    var out=[], usedH=0;
+    (sheet.shelves||[]).forEach(function(shelf){
+      shelf.cols.forEach(function(col){
+        var gap=shelf.h-col.usedH;
+        if(gap>1e-6) out.push({x:col.x, y:shelf.y+col.usedH, w:col.w, h:gap});
+      });
+      var rw=localW-shelf.usedW;
+      if(rw>1e-6) out.push({x:shelf.usedW, y:shelf.y, w:rw, h:shelf.h});
+      usedH=shelf.y+shelf.h;
+    });
+    var bh=localH-usedH;
+    if(bh>1e-6) out.push({x:0, y:usedH, w:localW, h:bh});
+    return out;
+  }
+
+  function rzBiggestRemnant(res){
+    var best=0;
+    res.sheets.forEach(function(s){
+      rzRemnantsOf(s,res.localW,res.localH).forEach(function(r){
+        if(Math.min(r.w,r.h)<RZ_USABLE_MIN) return;
+        if(r.w*r.h>best) best=r.w*r.h;
+      });
+    });
+    return best;
+  }
+
+  function rzPackRows(W,H,items,allowRot,sortFn,minCut){
+    var pcs=[]; items.forEach(function(it){ for(var i=0;i<it.q;i++) pcs.push({w:it.w,h:it.h}); });
+    pcs.sort(sortFn);
+    var sheets=[], skipped=0;
+    function newSheet(){ return {shelves:[], rects:[]}; }
+    function oriOf(p){ var a=[[p.w,p.h]]; if(allowRot && p.w!==p.h) a.push([p.h,p.w]); return a; }
+    function ok(gap,mc){ return gap<1e-6 || gap>=mc-1e-6; }
+    function tryExisting(p,mc){
+      var oris=oriOf(p);
+      for(var si=0; si<sheets.length; si++){
+        var sheet=sheets[si];
+        for(var shi=0; shi<sheet.shelves.length; shi++){
+          var shelf=sheet.shelves[shi];
+          for(var oi=0; oi<oris.length; oi++){
+            var w=oris[oi][0], h=oris[oi][1];
+            if(h<=shelf.h+1e-6 && shelf.usedW+w<=W+1e-6
+               && ok(shelf.h-h,mc) && ok(W-(shelf.usedW+w),mc)){
+              var nc={x:shelf.usedW,w:w,usedH:h};
+              shelf.cols.push(nc); shelf.usedW+=w;
+              sheet.rects.push({x:nc.x,y:shelf.y,w:w,h:h});
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+    function tryNewShelf(sheet,p,mc){
+      var oris=oriOf(p), usedH=0;
+      sheet.shelves.forEach(function(s){ usedH+=s.h; });
+      for(var oi=0; oi<oris.length; oi++){
+        var w=oris[oi][0], h=oris[oi][1];
+        if(w<=W+1e-6 && usedH+h<=H+1e-6 && ok(W-w,mc) && ok(H-(usedH+h),mc)){
+          sheet.shelves.push({y:usedH,h:h,usedW:w,cols:[{x:0,w:w,usedH:h}]});
+          sheet.rects.push({x:0,y:usedH,w:w,h:h});
+          return true;
+        }
+      }
+      return false;
+    }
+    pcs.forEach(function(p){
+      var fits=(p.w<=W&&p.h<=H) || (allowRot && p.h<=W&&p.w<=H);
+      if(!fits){ skipped++; return; }
+      if(tryExisting(p,minCut)) return;
+      for(var si=0; si<sheets.length; si++){ if(tryNewShelf(sheets[si],p,minCut)) return; }
+      var ns=newSheet(); sheets.push(ns);
+      if(tryNewShelf(ns,p,minCut)) return;
+      // деталь майже на весь лист — зрізати нічим, ставимо без обмеження, щоб не загубити
+      if(!tryNewShelf(ns,p,0)) skipped++;
+    });
+    return {sheets:sheets, skipped:skipped, pieces:pcs.length};
+  }
+
+  function rzPack(SW,SH,items,trim,allowRot,minCut){
+    var uw=SW-2*trim, uh=SH-2*trim, best=null;
+    RZ_SORTS.forEach(function(sortFn){
+      var rowRaw = rzPackRows(uw,uh,items,allowRot,sortFn,minCut);
+      var rowRes = {skipped:rowRaw.skipped, pieces:rowRaw.pieces, sheets:rowRaw.sheets, localW:uw, localH:uh};
+      var colRaw = rzPackRows(uh,uw,items,allowRot,sortFn,minCut);
+      var colRes = {
+        skipped:colRaw.skipped, pieces:colRaw.pieces, localW:uh, localH:uw,
+        sheets: colRaw.sheets.map(function(s){
+          return {shelves:s.shelves, rects:s.rects.map(function(r){ return {x:r.y,y:r.x,w:r.h,h:r.w}; })};
+        })
+      };
+      [["row",rowRes],["col",colRes]].forEach(function(pair){
+        var res=pair[1];
+        // за однакової кількості листів відходи однакові — тому далі важливо,
+        // щоб залишок був одним великим шматком
+        var score={sk:res.skipped, n:res.sheets.length, rem:rzBiggestRemnant(res)};
+        var better = !best || score.sk<best.score.sk
+          || (score.sk===best.score.sk && score.n<best.score.n)
+          || (score.sk===best.score.sk && score.n===best.score.n && score.rem>best.score.rem);
+        if(better) best={score:score, orientation:pair[0], res:res};
+      });
+    });
+    return {sheets:best.res.sheets, uw:uw, uh:uh, skipped:best.res.skipped, pieces:best.res.pieces,
+            orientation:best.orientation, localW:best.res.localW, localH:best.res.localH};
+  }
+
+  // Розміри по осях: ширина горизонтально зверху, висота вертикально зліва.
+  function rzDimLabels(X,Y,Wp,Hp,wv,hv,cls,color,pfx){
+    var out="", ws=(pfx?pfx+" ":"")+wv, hs=String(hv);
+    var wpx=String(ws).length*6.4+6, hpx=hs.length*6.4+6;
+    if(Wp>wpx && Hp>26)
+      out+='<text class="'+cls+'" x="'+(X+Wp/2).toFixed(1)+'" y="'+(Y+13).toFixed(1)+'" fill="'+color+'" font-size="11" font-weight="700" text-anchor="middle">'+ws+'</text>';
+    if(Hp>hpx && Wp>26){
+      var cx=(X+12).toFixed(1), cy=(Y+Hp/2).toFixed(1);
+      out+='<text class="'+cls+'" transform="rotate(-90 '+cx+' '+cy+')" x="'+cx+'" y="'+cy+'" fill="'+color+'" font-size="11" font-weight="700" text-anchor="middle">'+hs+'</text>';
+    }
+    return out;
+  }
+
+  function rzDraw(){
+    if(!rzEl("rz-sheets")) return;
+    var sh=rzCurrentSheet();
+    var trim=safeInt(rzEl("rz_trim").value,0);
+    var rot=rzEl("rz_rot").checked;
+    var minCut=safeInt(rzEl("rz_thick").value,5);
+    rzEl("rz-mincut-note").textContent="Мін. смуга, яку можна відламати: "+minCut+" мм";
+    var items=rzParsePieces(rzEl("rz_pieces").value);
+    if(!items.length){
+      rzEl("rz-sheets").innerHTML="";
+      rzEl("rz-sheets-count").textContent="0";
+      rzEl("rz-pieces-info").textContent="0 деталей";
+      rzEl("rz-used-info").textContent="0% використано";
+      rzEl("rz-waste-info").textContent="0% відходи";
+      rzEl("rz-warn").style.display="none";
+      rzSheetRemnants=[];
+      return;
+    }
+    var res=rzPack(sh.w,sh.h,items,trim,rot,minCut);
+
+    var area=0; res.sheets.forEach(function(s){ s.rects.forEach(function(r){ area+=r.w*r.h; }); });
+    var n=res.sheets.length, used = n>0 ? (area/(n*sh.w*sh.h)*100) : 0;
+    rzEl("rz-sheets-count").textContent=n+" лист"+(n===1?"":(n<5?"и":"ів"));
+    rzEl("rz-pieces-info").textContent=(res.pieces-res.skipped)+" деталей";
+    rzEl("rz-used-info").textContent=used.toFixed(0)+"% використано";
+    rzEl("rz-waste-info").textContent=(100-used).toFixed(0)+"% відходи";
+
+    var tooThin=[];
+    res.sheets.forEach(function(s){
+      rzRemnantsOf(s,res.localW,res.localH).forEach(function(r){
+        var m=Math.min(r.w,r.h);
+        if(m>1e-6 && m<minCut-1e-6){
+          var d = res.orientation==="col" ? [r.h,r.w] : [r.w,r.h];
+          tooThin.push(Math.round(d[0])+"×"+Math.round(d[1]));
+        }
+      });
+    });
+    var msgs=[];
+    if(res.skipped>0) msgs.push("⚠️ "+res.skipped+" деталей більші за лист — не помістились.");
+    if(tooThin.length) msgs.push("⚠️ Смуги тонші за "+minCut+" мм — відламати не вийде: "+tooThin.join(", ")+" мм.");
+    rzEl("rz-warn").style.display = msgs.length ? "block" : "none";
+    rzEl("rz-warn").textContent = msgs.join(" ");
+
+    var box=rzEl("rz-sheets"); box.innerHTML=""; rzSheetRemnants=[];
+    res.sheets.forEach(function(s,idx){
+      var wrap=document.createElement("div"); wrap.className="rz-sheetbox";
+      var W=560, scale=W/sh.w, H=sh.h*scale;
+      var svg='<svg viewBox="0 0 '+W+' '+H.toFixed(0)+'">';
+      svg+='<rect class="rz-sheet-outline" x="0" y="0" width="'+W+'" height="'+H.toFixed(1)+'" fill="rgba(255,255,255,0.04)" stroke="#64748b" stroke-width="1.5"/>';
+      var tx=trim*scale, tuw=res.uw*scale, tuh=res.uh*scale;
+      if(trim>0) svg+='<rect class="rz-trim" x="'+tx.toFixed(1)+'" y="'+tx.toFixed(1)+'" width="'+tuw.toFixed(1)+'" height="'+tuh.toFixed(1)+'" fill="none" stroke="rgba(255,122,0,0.35)" stroke-width="1"/>';
+
+      s.rects.forEach(function(r){
+        var x=(trim+r.x)*scale, y=(trim+r.y)*scale, w=r.w*scale, h=r.h*scale;
+        svg+='<rect class="rz-pc" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+h.toFixed(1)+'" fill="rgba(255,179,90,0.22)" stroke="#ef4444" stroke-width="1.1"/>';
+        svg+=rzDimLabels(x,y,w,h,r.w,r.h,"rz-label","#ffe6c7","");
+      });
+
+      (function(){
+        var toPhys = res.orientation==="col" ? function(x,y){ return [y,x]; } : function(x,y){ return [x,y]; };
+        // full=true — паралельний наскрізний різ через увесь лист
+        function line(x1,y1,x2,y2,wd,full){
+          var p1=toPhys(x1,y1), p2=toPhys(x2,y2);
+          var X1=(trim+p1[0])*scale, Y1=(trim+p1[1])*scale, X2=(trim+p2[0])*scale, Y2=(trim+p2[1])*scale;
+          if(full){ if(Math.abs(Y1-Y2)<0.01){ X1=0; X2=W; } else { Y1=0; Y2=H; } }
+          svg+='<line class="'+(full?"rz-cut":"rz-cut2")+'" x1="'+X1.toFixed(1)+'" y1="'+Y1.toFixed(1)+'" x2="'+X2.toFixed(1)+'" y2="'+Y2.toFixed(1)+'" stroke="'+(full?"#fff":"#ef4444")+'" stroke-width="'+wd+'"/>';
+        }
+        var usedH=0;
+        (s.shelves||[]).forEach(function(shelf,shi){
+          if(shi>0) line(0,shelf.y,res.localW,shelf.y,1.3,true);
+          shelf.cols.forEach(function(col,ci){
+            if(ci>0) line(col.x,shelf.y,col.x,shelf.y+shelf.h,1.1,false);
+          });
+          if(shelf.usedW < res.localW-1e-6) line(shelf.usedW,shelf.y,shelf.usedW,shelf.y+shelf.h,1.1,false);
+          usedH=shelf.y+shelf.h;
+        });
+        if(usedH>0 && usedH < res.localH-1e-6) line(0,usedH,res.localW,usedH,1.3,true);
+
+        rzRemnantsOf(s,res.localW,res.localH).forEach(function(r){
+          var p=toPhys(r.x,r.y), d=toPhys(r.w,r.h), rw=d[0], rh=d[1];
+          var X=(trim+p[0])*scale, Y=(trim+p[1])*scale, Wp=rw*scale, Hp=rh*scale;
+          if(Math.min(rw,rh)>=RZ_USABLE_MIN){
+            svg+='<rect class="rz-rem" x="'+X.toFixed(1)+'" y="'+Y.toFixed(1)+'" width="'+Wp.toFixed(1)+'" height="'+Hp.toFixed(1)+'" fill="rgba(34,197,94,0.10)" stroke="none"/>';
+            svg+=rzDimLabels(X,Y,Wp,Hp,Math.round(rw),Math.round(rh),"rz-rem-label","#86efac","");
+          } else {
+            svg+='<rect class="rz-waste" x="'+X.toFixed(1)+'" y="'+Y.toFixed(1)+'" width="'+Math.max(Wp,0.8).toFixed(1)+'" height="'+Math.max(Hp,0.8).toFixed(1)+'" fill="rgba(148,163,184,0.16)" stroke="none"/>';
+            svg+=rzDimLabels(X,Y,Wp,Hp,Math.round(rw),Math.round(rh),"rz-waste-label","#cbd5e1","✕");
+          }
+        });
+      })();
+      svg+='</svg>';
+
+      var rems=[], wastes=[];
+      rzRemnantsOf(s,res.localW,res.localH).forEach(function(r){
+        var d = res.orientation==="col" ? [r.h,r.w] : [r.w,r.h];
+        var o={w:Math.round(d[0]), h:Math.round(d[1])};
+        if(Math.min(d[0],d[1])>=RZ_USABLE_MIN) rems.push(o); else wastes.push(o);
+      });
+      var byArea=function(a,b){ return (b.w*b.h)-(a.w*a.h); };
+      rems.sort(byArea); wastes.sort(byArea);
+      rzSheetRemnants.push(rems);
+
+      var remTxt = rems.length ? " · залишок: "+rems[0].w+"×"+rems[0].h+" мм" : "";
+      var list='<div class="rz-leftlist">';
+      rems.forEach(function(o){ list+='<span class="rz-tag ok">'+o.w+'×'+o.h+'</span>'; });
+      wastes.forEach(function(o){ list+='<span class="rz-tag bad">✕ '+o.w+'×'+o.h+'</span>'; });
+      list+='</div>';
+      if(!rems.length && !wastes.length) list="";
+
+      wrap.innerHTML='<div class="rz-cap">Лист '+(idx+1)+' <span>· '+sh.w+'×'+sh.h+' мм · деталей: '+s.rects.length+remTxt+'</span></div>'+svg+list;
+      box.appendChild(wrap);
+    });
+  }
+
+  /* --- База залишків --- */
+  function rzBaseLoad(){
+    if(rzBaseMem) return rzBaseMem;
+    try{ rzBaseMem = JSON.parse(localStorage.getItem(RZ_BASE_KEY)) || []; }
+    catch(e){ rzBaseMem = []; }
+    if(!Array.isArray(rzBaseMem)) rzBaseMem = [];
+    return rzBaseMem;
+  }
+  function rzBaseSave(list){
+    rzBaseMem = list;
+    try{ localStorage.setItem(RZ_BASE_KEY, JSON.stringify(list)); }catch(e){}
+    rzRenderBase();
+  }
+  function rzRenderBase(){
+    var box=rzEl("rz-base-list"); if(!box) return;
+    var list=rzBaseLoad();
+    if(!list.length){
+      box.innerHTML='<div class="rz-base-empty">Порожньо. Порахуй розкрій і натисни «Зберегти залишки» — придатні шматки потраплять сюди й будуть доступні як заготовка.</div>';
+      return;
+    }
+    box.innerHTML="";
+    list.forEach(function(o,i){
+      var el=document.createElement("div"); el.className="rz-base-item";
+      var m2=(o.w*o.h/1e6).toFixed(2);
+      el.innerHTML='<span class="dim">'+o.w+' × '+o.h+'</span>'+
+                   '<span class="meta">мм · '+m2+' м² · '+(o.d||"")+'</span>'+
+                   '<button class="use" type="button">Використати</button>'+
+                   '<button class="del" type="button">✕</button>';
+      el.querySelector(".use").addEventListener("click", function(){
+        rzEl("rz_sheet").value=String(RZ_CUSTOM);
+        rzEl("rz-custom-row").style.display="grid";
+        rzEl("rz_cw").value=o.w; rzEl("rz_ch").value=o.h;
+        rzDraw();
+      });
+      el.querySelector(".del").addEventListener("click", function(){
+        var next=rzBaseLoad().slice(); next.splice(i,1); rzBaseSave(next);
+      });
+      box.appendChild(el);
+    });
+  }
+
+  if(rzEl("rz_sheet")){
+    rzEl("rz_sheet").addEventListener("change", function(){
+      rzEl("rz-custom-row").style.display = (safeInt(this.value,0)===RZ_CUSTOM) ? "grid" : "none";
+      rzDraw();
+    });
+    ["rz_trim","rz_pieces","rz_rot","rz_cw","rz_ch","rz_thick"].forEach(function(id){
+      var el=rzEl(id); if(!el) return;
+      el.addEventListener("input", rzDraw); el.addEventListener("change", rzDraw);
+    });
+    rzEl("btn-calc-rz").addEventListener("click", rzDraw);
+    rzEl("btn-rz-print").addEventListener("click", function(){ window.print(); });
+    rzEl("btn-rz-save-rem").addEventListener("click", function(){
+      var all=[]; rzSheetRemnants.forEach(function(r){ all=all.concat(r); });
+      if(!all.length){ alert("Придатних залишків немає — усе, що лишилось, вужче за "+RZ_USABLE_MIN+" мм."); return; }
+      var list=rzBaseLoad().slice(), today=new Date().toLocaleDateString("uk-UA");
+      all.forEach(function(o){ list.push({w:o.w, h:o.h, d:today}); });
+      list.sort(function(a,b){ return (b.w*b.h)-(a.w*a.h); });
+      rzBaseSave(list);
+    });
+  }
+
   /* ===== INIT ===== */
   applyUiScale(uiScaleEl ? uiScaleEl.value : 1);
   syncState();
@@ -6351,6 +6724,7 @@ return c;
   calculate();
   calcWall();
   calcPano();
+  try{ rzDraw(); rzRenderBase(); }catch(e){}
   renderOrders();
   updateAnalytics();
   renderSharedCalcs();
