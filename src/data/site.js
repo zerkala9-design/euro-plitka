@@ -70,7 +70,9 @@ export const ledCalcConfig = {
   mountingPercent: 0.35,  // монтаж = 35% від вартості дзеркала
   delivery: 1500,         // доставка — фіксовано 1500 грн
   minSize: 300,
-  maxSize: 2000,
+  maxSize: 2000,      // залишено для сумісності
+  maxW: 3000,         // макс. ширина, мм
+  maxH: 1600,         // макс. висота, мм
   defaultW: 400,
   defaultH: 600,
 };
