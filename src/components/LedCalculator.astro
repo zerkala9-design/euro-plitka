@@ -64,14 +64,14 @@ const cfg = JSON.stringify(ledCalcConfig);
         <label class="led-size-field" id="fieldW">
           <span id="labelW">Ширина (мм)</span>
           <div class="led-size-input">
-            <input type="number" id="ledW" value="400" min="300" max="2000" step="10" />
+            <input type="number" id="ledW" value="400" min="300" max="3000" step="10" />
             <span>мм</span>
           </div>
         </label>
         <label class="led-size-field" id="fieldH">
           <span>Висота (мм)</span>
           <div class="led-size-input">
-            <input type="number" id="ledH" value="600" min="300" max="2000" step="10" />
+            <input type="number" id="ledH" value="600" min="300" max="1600" step="10" />
             <span>мм</span>
           </div>
         </label>
@@ -333,6 +333,11 @@ document.querySelector('.led-type-card[data-type="back"]')?.classList.add('selec
 document.querySelectorAll('input[name="shape"]').forEach(r => {
   r.addEventListener('change', (e) => {
     state.shape = e.target.value;
+    // для кола діаметр обмежений меншою зі сторін — перезатискаємо, якщо треба
+    if (state.shape === 'circle') {
+      const capD = Math.min(CFG.maxW, CFG.maxH);
+      if (state.W > capD) { state.W = capD; const wi = document.getElementById('ledW'); if (wi) wi.value = capD; }
+    }
     document.querySelectorAll('.led-shape-grid .led-type-card').forEach(c => c.classList.remove('selected'));
     e.target.closest('.led-type-card')?.classList.add('selected');
     updateSizeUI();
@@ -342,11 +347,15 @@ document.querySelectorAll('input[name="shape"]').forEach(r => {
 document.querySelector('.led-shape-grid .led-type-card[data-shape="rect"]')?.classList.add('selected');
 
 // Розмір
-const clampSize = (v, fallback) => {
+const clampSize = (v, fallback, max) => {
   const n = parseInt(v);
   if (!n || isNaN(n)) return fallback;
-  return Math.min(CFG.maxSize, Math.max(CFG.minSize, n));
+  return Math.min(max, Math.max(CFG.minSize, n));
 };
+// макс. по осі; для кола — менша зі сторін (діаметр з квадратного листа)
+const maxFor = (id, shape) => shape === 'circle'
+  ? Math.min(CFG.maxW, CFG.maxH)
+  : (id === 'ledW' ? CFG.maxW : CFG.maxH);
 ['ledW', 'ledH'].forEach(id => {
   const inp = document.getElementById(id);
   // живий перерахунок під час набору (без жорсткого затискання, щоб не заважати друкувати)
@@ -358,7 +367,7 @@ const clampSize = (v, fallback) => {
   // затискаємо у допустимий діапазон, коли користувач залишає поле
   inp.addEventListener('change', (e) => {
     const fallback = id === 'ledW' ? CFG.defaultW : CFG.defaultH;
-    const v = clampSize(e.target.value, fallback);
+    const v = clampSize(e.target.value, fallback, maxFor(id, state.shape));
     e.target.value = v;
     if (id === 'ledW') { state.W = v; if (state.shape === 'circle') state.H = v; }
     else state.H = v;
