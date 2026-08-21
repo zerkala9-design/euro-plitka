@@ -160,22 +160,29 @@ function generatePanel(mode, input, customC) {
     }
   }
 
-  if (mode === 'cover' || mode === 'cut') {
+  if (mode === 'cover') {
     X.tile = Y.tile = X.size / X.grid;
     Y.grid = Math.floor(Y.size / X.tile);
-    if (mode === 'cover') {
-      Y.covered = Y.size - X.tile * Y.grid;
-    }
-    if (mode === 'cut') {
-      const cutLine = X.tile * Y.grid;
-      const remainder = Y.size - cutLine;
-      const halfTile = Math.ceil(X.tile / 2);
-      let finalLine = cutLine;
-      if (remainder >= halfTile) finalLine = cutLine + halfTile;
-      Y.sizeO = Y.size;
-      Y.size = Number(finalLine.toFixed(0));
-      Y.cutted = Y.sizeO - Y.size;
-    }
+    Y.covered = Y.size - X.tile * Y.grid;
+  }
+
+  if (mode === 'cut') {
+    // Квадрати: тримаємо ДІАГОНАЛЬ круглою і підганяємо РОЗМІР панно
+    // під ціле число діагоналей по обох сторонах.
+    // 1) базова діагональ від ширини та зуму, округлена до кроку 50 мм (5 см)
+    const d0 = X.size / X.grid;              // см
+    let D = Math.round(d0 / 5) * 5;          // округлення діагоналі до 50 мм
+    if (D < 20) D = 20;                       // не менше 200 мм
+    // 2) ціле число діагоналей по кожній стороні
+    const colsN = Math.max(1, Math.round(X.size / D));
+    const rowsN = Math.max(1, Math.round(Y.size / D));
+    X.sizeO = X.size; Y.sizeO = Y.size;       // введені розміри (для довідки)
+    X.tile = Y.tile = D;
+    X.grid = colsN; Y.grid = rowsN;
+    X.size = colsN * D;                        // підігнана ширина (см)
+    Y.size = rowsN * D;                        // підігнана висота (см)
+    X.adjusted = Math.abs(X.size - X.sizeO) > 0.001;
+    Y.adjusted = Math.abs(Y.size - Y.sizeO) > 0.001;
   }
 
   return { mode, input, X, Y };
@@ -247,7 +254,8 @@ function generateRows(panel) {
       3: { cut: 4200, fit: 4800 }, // графіт
     };
     const r = RATES[Number(panel.input.color)] || RATES[1];
-    const areaM2 = (panel.input.width / 1000) * (panel.input.height / 1000);
+    // Площа за ФАКТИЧНИМ розміром панно (для квадратів — підігнаним під розкрій)
+    const areaM2 = (X.size / 100) * (Y.size / 100);
     const rate = panel.mode === 'fit' ? r.fit : r.cut;
     const facetV = Number(panel.input.facet); // 4 = 15мм, 5 = 20мм
     const facetMult = facetV === 4 ? 1.10 : facetV === 5 ? 1.21 : 1;
@@ -264,6 +272,9 @@ function generateRows(panel) {
     cols,
     rowCount,
     isSquare: f === 1,
+    panelW: Math.round(X.size * 10),   // фактична ширина панно, мм
+    panelH: Math.round(Y.size * 10),   // фактична висота панно, мм
+    adjusted: !!(X.adjusted || Y.adjusted),
   };
 }
 
@@ -460,11 +471,11 @@ function drawPanel(mode, panel, info) {
     <line x1="${ox}" y1="${oy-12}" x2="${ox+dW}" y2="${oy-12}" stroke="${dimColor}" stroke-width="1.4"/>
     <line x1="${ox}" y1="${oy-17}" x2="${ox}" y2="${oy-6}" stroke="${dimColor}" stroke-width="1.4"/>
     <line x1="${ox+dW}" y1="${oy-17}" x2="${ox+dW}" y2="${oy-6}" stroke="${dimColor}" stroke-width="1.4"/>
-    <text x="${ox+dW/2}" y="${oy-15}" text-anchor="middle" font-size="${fs}" fill="${dimColor}" font-family="Inter,Arial,sans-serif" font-weight="700">${panel.input.width} мм</text>
+    <text x="${ox+dW/2}" y="${oy-15}" text-anchor="middle" font-size="${fs}" fill="${dimColor}" font-family="Inter,Arial,sans-serif" font-weight="700">${Math.round(X.size*10)} мм</text>
     <line x1="${ox+dW+12}" y1="${oy}" x2="${ox+dW+12}" y2="${oy+dH}" stroke="${dimColor}" stroke-width="1.4"/>
     <line x1="${ox+dW+6}" y1="${oy}" x2="${ox+dW+18}" y2="${oy}" stroke="${dimColor}" stroke-width="1.4"/>
     <line x1="${ox+dW+6}" y1="${oy+dH}" x2="${ox+dW+18}" y2="${oy+dH}" stroke="${dimColor}" stroke-width="1.4"/>
-    <text x="${ox+dW+16}" y="${oy+dH/2}" text-anchor="middle" font-size="${fs}" fill="${dimColor}" font-family="Inter,Arial,sans-serif" font-weight="700" transform="rotate(90,${ox+dW+16},${oy+dH/2})">${panel.input.height} мм</text>
+    <text x="${ox+dW+16}" y="${oy+dH/2}" text-anchor="middle" font-size="${fs}" fill="${dimColor}" font-family="Inter,Arial,sans-serif" font-weight="700" transform="rotate(90,${ox+dW+16},${oy+dH/2})">${Math.round(Y.size*10)} мм</text>
   `;
 }
 
@@ -475,7 +486,12 @@ function updatePanelUI(mode, panel, rowData) {
   const colorNames = ['', 'срібло', 'бронза', 'графіт'];
   const facetNames = ['', '0', '5', '10', '15', '20'];
 
+  const sizeLine = rowData.adjusted
+    ? `<span>Розмір панно: <b>${rowData.panelW}×${rowData.panelH} мм</b> <span style="opacity:.7">(підігнано під розкрій)</span></span>`
+    : `<span>Розмір панно: <b>${rowData.panelW}×${rowData.panelH} мм</b></span>`;
+
   document.getElementById('info-' + mode).innerHTML = `
+    ${sizeLine}
     <span>Плитка: <b>${rowData.tileSizePrecise.toFixed(2)}×${rowData.tileSizePrecise.toFixed(2)} мм</b></span>
     <span>Діагоналі: <b>${rowData.d1.toFixed(2)}×${rowData.d2.toFixed(2)} мм</b></span>
     <span>Сітка: <b>${rowData.cols}×${rowData.rowCount}</b></span>
@@ -556,9 +572,9 @@ function openModal(mode) {
   const { panel, rowData, colorName, facetName } = panelData[mode] || {};
   if (!rowData) return;
 
-  const modeNames = { cover: 'з перекриттям', cut: 'з підрізкою', fit: 'підгонка' };
+  const modeNames = { cover: 'з перекриттям', cut: 'квадрати', fit: 'ромби' };
   document.getElementById('modalTitle').textContent =
-    `Панно ${panel.input.width}×${panel.input.height} мм (${modeNames[mode]})`;
+    `Панно ${rowData.panelW}×${rowData.panelH} мм (${modeNames[mode]})`;
 
   document.getElementById('orderDiag').innerHTML =
     `Діагональ ромба: <b>${rowData.d1.toFixed(2)} × ${rowData.d2.toFixed(2)} мм</b>`;
