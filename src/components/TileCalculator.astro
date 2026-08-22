@@ -260,7 +260,7 @@ function generateRows(panel) {
     const fp = CFG.facetsPrices[Number(panel.input.facet) - 1] || 0; // грн за 1 м фацета
     let facetMeters = 0;
     for (const row of rows) facetMeters += row.quantity * 2 * (row.width + row.height) / 1000;
-    total = Math.round(areaM2 * rate + facetMeters * fp);
+    total = Math.round((areaM2 * rate + facetMeters * fp) * 0.85); // −15% до підсумкової ціни
   }
 
   return {
