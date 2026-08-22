@@ -74,6 +74,7 @@ export const ledCalcConfig = {
   maxSize: 2000,      // залишено для сумісності
   maxW: 3000,         // макс. ширина, мм
   maxH: 1600,         // макс. висота, мм
+  maxCircle: 2200,    // макс. діаметр кола, мм
   defaultW: 400,
   defaultH: 600,
 };

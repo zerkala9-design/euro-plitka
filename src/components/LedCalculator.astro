@@ -335,7 +335,7 @@ document.querySelectorAll('input[name="shape"]').forEach(r => {
     state.shape = e.target.value;
     // для кола діаметр обмежений меншою зі сторін — перезатискаємо, якщо треба
     if (state.shape === 'circle') {
-      const capD = Math.min(CFG.maxW, CFG.maxH);
+      const capD = CFG.maxCircle || Math.min(CFG.maxW, CFG.maxH);
       if (state.W > capD) { state.W = capD; const wi = document.getElementById('ledW'); if (wi) wi.value = capD; }
     }
     document.querySelectorAll('.led-shape-grid .led-type-card').forEach(c => c.classList.remove('selected'));
@@ -354,7 +354,7 @@ const clampSize = (v, fallback, max) => {
 };
 // макс. по осі; для кола — менша зі сторін (діаметр з квадратного листа)
 const maxFor = (id, shape) => shape === 'circle'
-  ? Math.min(CFG.maxW, CFG.maxH)
+  ? (CFG.maxCircle || Math.min(CFG.maxW, CFG.maxH))
   : (id === 'ledW' ? CFG.maxW : CFG.maxH);
 ['ledW', 'ledH'].forEach(id => {
   const inp = document.getElementById(id);
