@@ -244,9 +244,10 @@ function generateRows(panel) {
 
   let total = rows.reduce((s, r) => s + r.price, 0);
 
-  // Фіксована ціна за м² за кольором (квадрати / ромби):
-  //   Срібло — 3000 / 3600;  Бронза, Графіт — 4200 / 4800.
-  // Націнка за фацет: 15мм → +10%, 20мм → ще +10% (×1.21).
+  // Ціна = матеріал (за площею) + фацет (за периметром усіх плиток).
+  // Чим менші плитки — тим більший сумарний периметр фацета → дорожче.
+  //   Матеріал, грн/м²: Срібло 3000/3600, Бронза/Графіт 4200/4800 (квадрати/ромби).
+  //   Фацет, грн/м: [0, 35, 55, 75, 95] для 0/5/10/15/20 мм.
   {
     const RATES = {
       1: { cut: 3000, fit: 3600 }, // срібло
@@ -254,12 +255,12 @@ function generateRows(panel) {
       3: { cut: 4200, fit: 4800 }, // графіт
     };
     const r = RATES[Number(panel.input.color)] || RATES[1];
-    // Площа за ФАКТИЧНИМ розміром панно (для квадратів — підігнаним під розкрій)
     const areaM2 = (X.size / 100) * (Y.size / 100);
     const rate = panel.mode === 'fit' ? r.fit : r.cut;
-    const facetV = Number(panel.input.facet); // 4 = 15мм, 5 = 20мм
-    const facetMult = facetV === 4 ? 1.10 : facetV === 5 ? 1.21 : 1;
-    total = Math.round(areaM2 * rate * facetMult);
+    const fp = CFG.facetsPrices[Number(panel.input.facet) - 1] || 0; // грн за 1 м фацета
+    let facetMeters = 0;
+    for (const row of rows) facetMeters += row.quantity * 2 * (row.width + row.height) / 1000;
+    total = Math.round(areaM2 * rate + facetMeters * fp);
   }
 
   return {
