@@ -1,0 +1,121 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TileCalculator from '../../components/TileCalculator.astro';
+
+const faq = [
+  { q: 'Сколько стоит зеркальное панно на заказ?', a: 'Цена зависит от площади, цвета зеркала и фацета — от 2300 грн/м². Точную стоимость под ваши размеры мгновенно рассчитает калькулятор на этой странице: введите ширину и высоту стены и выберите параметры.' },
+  { q: 'Как заказать зеркальное панно на стену?', a: 'Измерьте стену, введите размеры в калькулятор, выберите цвет и фацет — и увидите раскрой и цену. Затем оставьте имя и телефон в форме заказа или позвоните нам. Изготовление 3–7 дней.' },
+  { q: 'Можно ли сделать панно по индивидуальному размеру?', a: 'Да, каждое зеркальное панно изготавливается точно под размеры вашей стены. Раскрой рассчитывается автоматически, чтобы элементы легли ровно и симметрично, без узких обрезков.' },
+  { q: 'Из чего делают зеркальное панно?', a: 'Из качественного зеркала толщиной 4 мм в цветах серебро, бронза или графит. Панно собирается из отдельных элементов (квадратов или ромбов), часто с фацетом, который создаёт эффект огранки и игру света.' },
+  { q: 'Сколько стоит доставка и монтаж панно?', a: 'По Киеву доставляем собственным транспортом, по Украине — Новой Почтой. По желанию выполняем монтаж под ключ опытной бригадой с гарантией на работы. Стоимость зависит от объёма — уточняйте при заказе.' },
+  { q: 'Сколько изготавливается зеркальное панно?', a: 'Стандартные заказы — 3–5 рабочих дней, нестандартные размеры и сложный раскрой — 5–7 дней. Точный срок подтверждаем при оформлении.' },
+];
+
+const breadcrumbs = [
+  { name: 'Главная', path: '/ru/' },
+  { name: 'Зеркальное панно на заказ', path: '/ru/dzerkalne-panno-na-zamovlennya/' },
+];
+---
+
+<Layout
+  lang="ru"
+  title="Зеркальное панно на заказ — купить, цена, калькулятор"
+  description="Зеркальное панно на стену на заказ по вашему размеру. Купить панно из зеркальной плитки от производителя: серебро, бронза, графит, фацет. Онлайн-калькулятор цены, доставка по Украине."
+  breadcrumbs={breadcrumbs}
+  faq={faq}
+  product={{ name: 'Зеркальное панно на заказ', lowPrice: 2300 }}
+>
+  <div class="page-hero page-hero--dark">
+    <div class="container">
+      <div class="breadcrumb"><a href="/ru/">Главная</a><span>›</span><span>Зеркальное панно на заказ</span></div>
+      <div class="section-label">Изготовление под ваш размер</div>
+      <h1>Зеркальное панно на заказ</h1>
+      <p class="hero-sub">Панно на стену по индивидуальному размеру · серебро, бронза, графит · фацет · от 2300 грн/м² · изготовление 3–7 дней</p>
+    </div>
+  </div>
+
+  <section class="section intro-section">
+    <div class="container">
+      <p class="intro-lead">Зеркальное панно на стену — эффектный акцент, который добавляет пространству света и глубины и визуально увеличивает комнату. Мы изготавливаем панно <strong>на заказ точно по вашим размерам</strong> от производителя: собственное производство, точный раскрой на ЧПУ, фацет для игры света. Рассчитайте стоимость своего панно за секунду в калькуляторе ниже.</p>
+      <div class="intro-features">
+        <div class="intro-feature">
+          <span class="intro-feature__icon">◆</span>
+          <div>
+            <strong>Купить от производителя</strong>
+            <p>Собственное производство в Киеве — цена без переплат посредникам</p>
+          </div>
+        </div>
+        <div class="intro-feature">
+          <span class="intro-feature__icon">◆</span>
+          <div>
+            <strong>Любой размер</strong>
+            <p>Панно под размеры вашей стены, 2 варианта раскроя на выбор</p>
+          </div>
+        </div>
+        <div class="intro-feature">
+          <span class="intro-feature__icon">◆</span>
+          <div>
+            <strong>Цена сразу</strong>
+            <p>Онлайн-калькулятор считает точную стоимость под ваш размер</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <TileCalculator lang="ru" />
+
+  <section class="section">
+    <div class="container">
+      <a href="/ru/katalog/" class="related-link">
+        <span class="related-link__label">Готовые дизайны</span>
+        <span class="related-link__title">Каталог зеркальных панно →</span>
+        <span class="related-link__desc">Асимметрия, шеврон, геометрия, диагонали — или собственный эскиз</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-label">Вопросы и ответы</div>
+      <h2>О зеркальном панно на заказ</h2>
+      <div class="faq">
+        {faq.map((item) => (
+          <div class="faq-item">
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero--dark { background: var(--bg); border-bottom: 1px solid var(--border); padding: 40px 0 32px; }
+  .page-hero--dark .breadcrumb a { color: var(--text-muted); }
+  .page-hero--dark .breadcrumb { color: var(--text-muted); margin-bottom: 14px; font-size: 0.85rem; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .page-hero--dark h1 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); color: var(--text); margin-bottom: 10px; }
+  .hero-sub { color: var(--text-muted); font-size: 1rem; }
+  .section-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 8px; }
+  .intro-section { background: var(--bg); padding: 32px 0; border-bottom: 1px solid var(--border); }
+  .intro-lead { font-size: 1.05rem; color: var(--text-mid); line-height: 1.8; max-width: 72ch; margin-bottom: 28px; }
+  .intro-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .intro-feature { display: flex; gap: 16px; align-items: flex-start; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; transition: border-color 0.2s; }
+  .intro-feature:hover { border-color: rgba(201,168,76,0.3); }
+  .intro-feature__icon { color: var(--gold); font-size: 1rem; flex-shrink: 0; margin-top: 3px; }
+  .intro-feature strong { display: block; color: var(--text); font-size: 1rem; margin-bottom: 4px; }
+  .intro-feature p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; margin: 0; }
+  .related-link { display: block; background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--gold); border-radius: 12px; padding: 22px 26px; transition: border-color 0.2s; }
+  .related-link:hover { border-color: rgba(201,168,76,0.5); }
+  .related-link__label { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 6px; }
+  .related-link__title { display: block; font-size: 1.15rem; color: var(--text); font-weight: 600; margin-bottom: 4px; }
+  .related-link__desc { display: block; font-size: 0.9rem; color: var(--text-muted); }
+  .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 28px; }
+  .faq-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; transition: border-color 0.2s; }
+  .faq-item:hover { border-color: rgba(201,168,76,0.3); }
+  .faq-item h3 { margin-bottom: 10px; color: var(--gold); font-size: 1.05rem; }
+  .faq-item p { font-size: 0.93rem; color: var(--text-muted); line-height: 1.7; margin: 0; }
+  @media (max-width: 768px) { .intro-features { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) { .faq { grid-template-columns: 1fr; } }
+</style>

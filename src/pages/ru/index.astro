@@ -1,0 +1,329 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TileCalculator from '../../components/TileCalculator.astro';
+---
+
+<Layout
+  lang="ru"
+  title="Зеркальная плитка Киев — панно, монтаж, калькулятор"
+  description="Зеркальная плитка в Киеве от производителя. Изготовление панно на заказ, монтаж, онлайн-калькулятор раскроя. Серебро, бронза, графит. Фацет 5–20 мм."
+>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero__base"></div>
+    <div class="hero__overlay"></div>
+    <div class="hero__reveal" id="heroReveal"></div>
+    <div class="hero__glow" id="heroGlow"></div>
+    <canvas class="hero__mask" id="heroMaskCanvas" aria-hidden="true"></canvas>
+    <div class="container hero__inner">
+      <div class="hero__content">
+        <div class="badge badge--dark">Производитель в Киеве</div>
+        <h1 class="hero__title">Зеркальная плитка<br>и LED зеркала</h1>
+        <p class="hero__text">Панно, фасады, декор на заказ. Собственное производство — серебро, бронза, графит, с фацетом или без.</p>
+        <div class="hero__actions">
+          <a href="#calculator" class="btn btn--primary btn--lg">Рассчитать стоимость</a>
+          <a href="tel:+380995283637" class="btn btn--ghost btn--lg">+38 (099) 528-36-37</a>
+        </div>
+        <div class="hero__stats">
+          <div class="hero__stat">
+            <span class="hero__stat-num">10+</span>
+            <span class="hero__stat-label">лет на рынке</span>
+          </div>
+          <div class="hero__stat">
+            <span class="hero__stat-num">5000+</span>
+            <span class="hero__stat-label">выполненных объектов</span>
+          </div>
+          <div class="hero__stat">
+            <span class="hero__stat-num">3</span>
+            <span class="hero__stat-label">цвета зеркала</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__shortcuts" id="heroShortcuts">
+      <a href="/ru/led-dzerkalo/#ledCalc" class="hero-shortcut">
+        <span class="hero-shortcut__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/></svg>
+        </span>
+        <span class="hero-shortcut__label">Калькулятор<br>LED зеркал</span>
+        <span class="hero-shortcut__arrow">→</span>
+      </a>
+      <a href="#calculator" class="hero-shortcut">
+        <span class="hero-shortcut__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="1.5"/><path d="M4 10h16M4 15h16M10 4v16M15 4v16"/></svg>
+        </span>
+        <span class="hero-shortcut__label">Калькулятор<br>плитки</span>
+        <span class="hero-shortcut__arrow">→</span>
+      </a>
+    </div>
+    <a href="#calculator" class="hero__scroll" aria-label="Прокрутить вниз">
+      <span></span>
+    </a>
+  </section>
+
+  <!-- ПРЕИМУЩЕСТВА -->
+  <section class="section section--white">
+    <div class="container">
+      <div class="section-header--center">
+        <div class="badge">Почему выбирают нас</div>
+        <h2>Производство и монтаж под ключ</h2>
+        <div class="divider divider--center"></div>
+      </div>
+      <div class="grid-4">
+        <div class="feature">
+          <div class="feature-icon">✂️</div>
+          <h3>Собственное производство</h3>
+          <p>Резка, фацетирование и шлифовка на собственном оборудовании в Киеве</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">📐</div>
+          <h3>Точный расчёт</h3>
+          <p>Онлайн-калькулятор показывает 2 варианта раскроя и стоимость материала</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🚚</div>
+          <h3>Доставка по Украине</h3>
+          <p>Отправляем Новой почтой в любой город, упаковка защищает от боя</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🔧</div>
+          <h3>Монтаж в Киеве</h3>
+          <p>Выезд мастера, монтаж на клей или крепления, гарантия 2 года</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- КАЛЬКУЛЯТОР -->
+  <section class="section section--gray" id="calculator">
+    <div class="container">
+      <div class="section-header--center">
+        <div class="badge">Онлайн-калькулятор</div>
+        <h2>Рассчитайте стоимость панно</h2>
+        <div class="divider divider--center"></div>
+        <p>Введите размеры стены — получите 2 варианта раскроя и точную цену</p>
+      </div>
+    </div>
+    <TileCalculator lang="ru" />
+  </section>
+
+  <!-- ПРОДУКЦИЯ -->
+  <section class="section section--white">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge">Ассортимент</div>
+        <h2>Зеркальная плитка</h2>
+        <div class="divider"></div>
+        <p>Три цвета, пять размеров фацета — подберём под любой интерьер</p>
+      </div>
+      <div class="grid-3 products">
+        <div class="product-card">
+          <div class="product-card__preview product-card__preview--silver"></div>
+          <div class="product-card__body">
+            <h3>Серебро</h3>
+            <p>Классическая серебряная зеркальная плитка для ванных комнат и гостиных.</p>
+            <div class="product-card__price">от 3 000 грн/м²</div>
+            <a href="/ru/dzerkalna-plitka/" class="btn btn--outline" style="width:100%">Подробнее</a>
+          </div>
+        </div>
+        <div class="product-card product-card--featured">
+          <div class="product-badge">Популярное</div>
+          <div class="product-card__preview product-card__preview--bronze"></div>
+          <div class="product-card__body">
+            <h3>Бронза</h3>
+            <p>Тёплое бронзовое зеркало — стильное решение для современных интерьеров.</p>
+            <div class="product-card__price">от 4 200 грн/м²</div>
+            <a href="/ru/dzerkalna-plitka/" class="btn btn--primary" style="width:100%">Подробнее</a>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="product-card__preview product-card__preview--graphite"></div>
+          <div class="product-card__body">
+            <h3>Графит</h3>
+            <p>Тёмное графитовое зеркало для акцентных стен и зон отдыха.</p>
+            <div class="product-card__price">от 4 200 грн/м²</div>
+            <a href="/ru/dzerkalna-plitka/" class="btn btn--outline" style="width:100%">Подробнее</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- КАК МЫ РАБОТАЕМ -->
+  <section class="section section--gray">
+    <div class="container">
+      <div class="how-layout">
+        <div class="how-text">
+          <div class="badge">Процесс работы</div>
+          <h2>От заказа до монтажа</h2>
+          <div class="divider"></div>
+          <div class="steps">
+            <div class="step">
+              <div class="step__num"></div>
+              <div class="step__body">
+                <h3>Заказ и расчёт</h3>
+                <p>Укажите размеры в калькуляторе или позвоните — определим количество и стоимость</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step__num"></div>
+              <div class="step__body">
+                <h3>Производство</h3>
+                <p>Режем, фацетируем и упаковываем на собственном производстве. Срок 3–7 дней</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step__num"></div>
+              <div class="step__body">
+                <h3>Доставка или самовывоз</h3>
+                <p>Новая почта по всей Украине или самовывоз из Киева</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step__num"></div>
+              <div class="step__body">
+                <h3>Монтаж (при необходимости)</h3>
+                <p>Выезд мастера в Киеве и пригороде. Гарантия 2 года</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="how-visual">
+          <img src="/panno-geometry.png" alt="Зеркальное панно в интерьере" class="how-visual__img" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-banner">
+    <div class="container">
+      <div class="badge badge--dark" style="margin-bottom:20px">Бесплатная консультация</div>
+      <h2>Готовы обсудить ваш проект?</h2>
+      <p>Позвоните или напишите — ответим в течение 15 минут в рабочее время</p>
+      <div class="cta-banner__actions">
+        <a href="tel:+380995283637" class="btn btn--primary btn--lg">+38 (099) 528-36-37</a>
+        <a href="https://t.me/europlitka" class="btn btn--lg" target="_blank" rel="noopener" style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,0.3)">Написать в Telegram</a>
+      </div>
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+  .hero { position: relative; min-height: 92vh; display: flex; align-items: center; overflow: hidden; color: #fff; background: #0d0b07; }
+  .hero__base { position: absolute; inset: 0; z-index: 1; background: url('/hero-off.jpg') center/cover no-repeat; filter: brightness(0.82) saturate(0.95); }
+  .hero__overlay { position: absolute; inset: 0; z-index: 2; background: linear-gradient(90deg, rgba(20,18,12,0.9) 0%, rgba(20,18,12,0.65) 45%, rgba(20,18,12,0.2) 100%), linear-gradient(0deg, rgba(20,18,12,0.55) 0%, transparent 40%); }
+  .hero__reveal { position: absolute; inset: 0; z-index: 3; background: url('/hero-on.jpg') center/cover no-repeat; filter: brightness(1.05) saturate(1.05) contrast(1.02); pointer-events: none; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-image: none; mask-image: none; opacity: 0; transition: opacity 0.4s ease; }
+  .hero__reveal.is-active { opacity: 1; }
+  .hero__glow { position: absolute; z-index: 4; left: 0; top: 0; width: 620px; height: 620px; margin-left: -310px; margin-top: -310px; border-radius: 50%; background: radial-gradient(circle, rgba(226,240,255,0.6) 0%, rgba(208,228,255,0.33) 32%, rgba(200,222,255,0.12) 58%, transparent 74%); mix-blend-mode: screen; pointer-events: none; opacity: 0; transition: opacity 0.45s ease; will-change: transform; }
+  .hero__glow.is-active { opacity: 1; }
+  .hero__mask { position: absolute; inset: 0; pointer-events: none; display: none; }
+  .hero__inner { position: relative; z-index: 5; padding: 100px 24px; display: flex; align-items: center; justify-content: space-between; gap: 40px; }
+  .hero__title, .hero__text { text-shadow: 0 2px 24px rgba(0,0,0,0.5); }
+  .hero__shortcuts { position: absolute; z-index: 6; top: 23%; left: 61%; display: flex; flex-direction: column; gap: 18px; padding: 26px 30px; }
+  .hero__shortcuts::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse at center, rgba(10,8,4,0.6) 0%, rgba(10,8,4,0.32) 55%, transparent 78%); border-radius: 18px; }
+  .hero.fx .hero__shortcuts { opacity: 0; transition: opacity 0.5s ease; }
+  .hero.fx .hero__shortcuts.is-lit { opacity: 1; }
+  .hero-shortcut { display: flex; align-items: center; gap: 16px; color: #fff; padding: 6px 4px 20px; border-bottom: 1px solid rgba(212,170,90,0.5); transition: all 0.2s; min-width: 260px; }
+  .hero-shortcut:hover { border-color: var(--gold-light); transform: translateX(4px); }
+  .hero-shortcut__icon { width: 46px; height: 46px; flex-shrink: 0; border: 1px solid rgba(212,170,90,0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold-light); }
+  .hero-shortcut__icon svg { width: 24px; height: 24px; }
+  .hero-shortcut__label { flex: 1; font-size: 1.15rem; font-weight: 600; line-height: 1.2; letter-spacing: 0.01em; text-transform: uppercase; text-shadow: 0 2px 16px rgba(0,0,0,0.6); }
+  .hero-shortcut__arrow { font-size: 1.5rem; color: var(--gold-light); transition: transform 0.2s; }
+  .hero-shortcut:hover .hero-shortcut__arrow { transform: translateX(5px); }
+  .hero__content { max-width: 620px; }
+  .hero__title { margin: 22px 0 22px; line-height: 1.08; color: #fff; font-size: clamp(2.4rem, 6vw, 4.2rem); letter-spacing: -0.01em; }
+  .hero__text { font-size: 1.15rem; margin-bottom: 38px; max-width: 480px; color: rgba(255,255,255,0.82); }
+  .hero__actions { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero__stats { display: flex; gap: 44px; margin-top: 56px; padding-top: 36px; border-top: 1px solid rgba(255,255,255,0.18); flex-wrap: wrap; }
+  .hero__stat-num { display: block; font-family: var(--font-heading); font-size: 2.4rem; font-weight: 800; color: var(--gold-light); line-height: 1; margin-bottom: 6px; }
+  .hero__stat-label { font-size: 0.82rem; color: rgba(255,255,255,0.6); }
+  .btn--ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,0.35); }
+  .btn--ghost:hover { background: rgba(255,255,255,0.1); border-color: #fff; transform: translateY(-1px); }
+  .hero__scroll { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 2; width: 26px; height: 42px; border: 2px solid rgba(255,255,255,0.4); border-radius: 14px; display: flex; justify-content: center; }
+  .hero__scroll span { width: 4px; height: 8px; background: #fff; border-radius: 2px; margin-top: 7px; animation: scrollDot 1.6s ease-in-out infinite; }
+  @keyframes scrollDot { 0% { opacity: 0; transform: translateY(0); } 40% { opacity: 1; } 80% { opacity: 0; transform: translateY(12px); } 100% { opacity: 0; } }
+  .feature { padding: 24px; }
+  .feature h3 { margin-bottom: 10px; font-size: 1rem; }
+  .feature p { font-size: 0.9rem; }
+  .product-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: box-shadow 0.2s, transform 0.2s; position: relative; }
+  .product-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+  .product-card--featured { border-color: var(--gold-border); box-shadow: 0 4px 24px rgba(184,144,58,0.12); }
+  .product-badge { position: absolute; top: 16px; right: 16px; background: var(--gold); color: #fff; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 100px; }
+  .product-card__preview { height: 180px; position: relative; }
+  .product-card__preview::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 70%); }
+  .product-card__preview--silver { background: linear-gradient(160deg, #eee 0%, #b0b0b0 50%, #d0d0d0 100%); }
+  .product-card__preview--bronze { background: linear-gradient(160deg, #d4a84b 0%, #8b6914 50%, #c9a040 100%); }
+  .product-card__preview--graphite { background: linear-gradient(160deg, #777 0%, #333 50%, #555 100%); }
+  .product-card__body { padding: 28px; }
+  .product-card__body h3 { margin-bottom: 10px; }
+  .product-card__body p { font-size: 0.92rem; margin-bottom: 18px; }
+  .product-card__price { font-weight: 700; color: var(--gold); font-size: 1.1rem; margin-bottom: 18px; }
+  .how-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .how-text .badge { margin-bottom: 16px; display: inline-block; }
+  .how-text h2 { margin-bottom: 0; }
+  .how-text .divider { margin: 20px 0 36px; }
+  .how-visual { display: flex; flex-direction: column; align-items: center; }
+  .how-visual__img { width: 100%; max-width: 420px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); display: block; }
+  @media (max-width: 960px) { .how-layout { grid-template-columns: 1fr; gap: 48px; } .how-visual { order: -1; } }
+  @media (max-width: 1100px) { .hero__shortcuts { display: none; } }
+  @media (max-width: 640px) {
+    .hero { min-height: 80vh; }
+    .hero__inner { padding: 64px 20px 40px; }
+    .hero__title { font-size: clamp(2rem, 9vw, 2.6rem); }
+    .hero__text { font-size: 1rem; margin-bottom: 28px; }
+    .hero__actions { flex-direction: column; align-items: stretch; }
+    .hero__actions .btn { width: 100%; }
+    .hero__stats { gap: 24px; margin-top: 32px; padding-top: 28px; }
+    .hero__stat-num { font-size: 1.9rem; }
+    .hero__overlay { background: linear-gradient(0deg, rgba(20,18,12,0.92) 0%, rgba(20,18,12,0.55) 60%, rgba(20,18,12,0.4) 100%); }
+  }
+</style>
+
+<script>
+  const SPOTLIGHT_R = 260;
+  const hero = document.getElementById('hero');
+  const reveal = document.getElementById('heroReveal');
+  const glow = document.getElementById('heroGlow');
+  const canvas = document.getElementById('heroMaskCanvas');
+  if (hero && reveal && canvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    hero.classList.add('fx');
+    const shortcuts = document.getElementById('heroShortcuts');
+    const mouse = { x: -999, y: -999 };
+    const smooth = { x: -999, y: -999 };
+    let active = false;
+    const sizeCanvas = () => { const r = hero.getBoundingClientRect(); canvas.width = Math.round(r.width); canvas.height = Math.round(r.height); };
+    sizeCanvas();
+    window.addEventListener('resize', sizeCanvas);
+    hero.addEventListener('mousemove', (e) => {
+      const r = hero.getBoundingClientRect();
+      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+      if (!active) { active = true; smooth.x = mouse.x; smooth.y = mouse.y; reveal.classList.add('is-active'); glow && glow.classList.add('is-active'); }
+    });
+    hero.addEventListener('mouseleave', () => { active = false; reveal.classList.remove('is-active'); glow && glow.classList.remove('is-active'); shortcuts && shortcuts.classList.remove('is-lit'); });
+    const R = SPOTLIGHT_R;
+    let frame = 0;
+    const draw = () => {
+      if (active) {
+        smooth.x += (mouse.x - smooth.x) * 0.1; smooth.y += (mouse.y - smooth.y) * 0.1;
+        const x = smooth.x.toFixed(1), y = smooth.y.toFixed(1);
+        const mask = `radial-gradient(circle ${R}px at ${x}px ${y}px, #000 0%, #000 40%, rgba(0,0,0,0.55) 66%, rgba(0,0,0,0.16) 86%, transparent 100%)`;
+        reveal.style.webkitMaskImage = mask; reveal.style.maskImage = mask;
+        if (glow) glow.style.transform = `translate(${x}px, ${y}px)`;
+        if (shortcuts && (frame++ & 3) === 0) {
+          const hr = hero.getBoundingClientRect();
+          const sr = shortcuts.getBoundingClientRect();
+          const cx = sr.left + sr.width / 2 - hr.left;
+          const cy = sr.top + sr.height / 2 - hr.top;
+          const dist = Math.hypot(smooth.x - cx, smooth.y - cy);
+          shortcuts.classList.toggle('is-lit', dist < R + Math.max(sr.width, sr.height) / 2);
+        }
+      }
+      requestAnimationFrame(draw);
+    };
+    requestAnimationFrame(draw);
+  }
+</script>
