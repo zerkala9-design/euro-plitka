@@ -6,4 +6,6 @@
 # Будь-який інший старий index.php → головна
 /index.php*   /   301
 # Стара сторінка панно (зі старими параметрами сортування) → каталог
-/dzerkalne-panno*   /katalog/   301
+# (точний шлях, щоб не чіпати /dzerkalne-panno-na-zamovlennya/)
+/dzerkalne-panno   /katalog/   301
+/dzerkalne-panno/   /katalog/   301
