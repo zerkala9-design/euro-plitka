@@ -1,0 +1,136 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TileCalculator from '../components/TileCalculator.astro';
+
+const faq = [
+  { q: 'Скільки коштує дзеркальне панно на замовлення?', a: 'Ціна залежить від площі, кольору дзеркала та фацету — від 2300 грн/м². Точну вартість під ваші розміри миттєво порахує калькулятор на цій сторінці: введіть ширину й висоту стіни та оберіть параметри.' },
+  { q: 'Як замовити дзеркальне панно на стіну?', a: 'Виміряйте стіну, введіть розміри в калькулятор, оберіть колір і фацет — і побачите розкрій та ціну. Далі залиште ім’я й телефон у формі замовлення або зателефонуйте нам. Виготовлення 3–7 днів.' },
+  { q: 'Чи можна зробити панно за індивідуальним розміром?', a: 'Так, кожне дзеркальне панно виготовляється точно під розміри вашої стіни. Розкрій розраховується автоматично, щоб елементи лягли рівно й симетрично, без вузьких обрізків.' },
+  { q: 'З чого роблять дзеркальне панно?', a: 'З якісного дзеркала товщиною 4 мм у кольорах срібло, бронза або графіт. Панно збирається з окремих елементів (квадратів або ромбів), часто з фацетом, який створює ефект огранки та гру світла.' },
+  { q: 'Скільки коштує доставка та монтаж панно?', a: 'По Києву доставляємо власним транспортом, по Україні — Новою Поштою. За бажанням виконуємо монтаж під ключ досвідченою бригадою з гарантією на роботи. Вартість залежить від обсягу — уточнюйте при замовленні.' },
+  { q: 'Скільки виготовляється дзеркальне панно?', a: 'Стандартні замовлення — 3–5 робочих днів, нестандартні розміри та складний розкрій — 5–7 днів. Точний термін підтверджуємо при оформленні.' },
+];
+
+const breadcrumbs = [
+  { name: 'Головна', path: '/' },
+  { name: 'Дзеркальне панно на замовлення', path: '/dzerkalne-panno-na-zamovlennya/' },
+];
+---
+
+<Layout
+  title="Дзеркальне панно на замовлення — купити, ціна, калькулятор"
+  description="Дзеркальне панно на стіну на замовлення за вашим розміром. Купити панно з дзеркальної плитки від виробника: срібло, бронза, графіт, фацет. Онлайн-калькулятор ціни, доставка по Україні."
+  breadcrumbs={breadcrumbs}
+  faq={faq}
+  product={{ name: 'Дзеркальне панно на замовлення', lowPrice: 2300 }}
+>
+  <div class="page-hero page-hero--dark">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Головна</a><span>›</span><span>Дзеркальне панно на замовлення</span></div>
+      <div class="section-label">Виготовлення під ваш розмір</div>
+      <h1>Дзеркальне панно на замовлення</h1>
+      <p class="hero-sub">Панно на стіну за індивідуальним розміром · срібло, бронза, графіт · фацет · від 2300 грн/м² · виготовлення 3–7 днів</p>
+    </div>
+  </div>
+
+  <section class="section intro-section">
+    <div class="container">
+      <p class="intro-lead">Дзеркальне панно на стіну — ефектний акцент, який додає простору світла й глибини та візуально збільшує кімнату. Ми виготовляємо панно <strong>на замовлення точно за вашими розмірами</strong> від виробника: власне виробництво, точний розкрій на ЧПУ, фацет для гри світла. Порахуйте вартість свого панно за секунду в калькуляторі нижче.</p>
+      <div class="intro-features">
+        <div class="intro-feature">
+          <span class="intro-feature__icon">◆</span>
+          <div>
+            <strong>Купити від виробника</strong>
+            <p>Власне виробництво в Києві — ціна без переплат посередникам</p>
+          </div>
+        </div>
+        <div class="intro-feature">
+          <span class="intro-feature__icon">◆</span>
+          <div>
+            <strong>Будь-який розмір</strong>
+            <p>Панно під розміри вашої стіни, 2 варіанти розкрою на вибір</p>
+          </div>
+        </div>
+        <div class="intro-feature">
+          <span class="intro-feature__icon">◆</span>
+          <div>
+            <strong>Ціна одразу</strong>
+            <p>Онлайн-калькулятор рахує точну вартість під ваш розмір</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <TileCalculator />
+
+  <section class="section">
+    <div class="container">
+      <a href="/katalog/" class="related-link">
+        <span class="related-link__label">Готові дизайни</span>
+        <span class="related-link__title">Каталог дзеркальних панно →</span>
+        <span class="related-link__desc">Асиметрія, шеврон, геометрія, діагоналі — або власний ескіз</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-label">Запитання та відповіді</div>
+      <h2>Про дзеркальне панно на замовлення</h2>
+      <div class="faq">
+        {faq.map((item) => (
+          <div class="faq-item">
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero--dark {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 0 32px;
+  }
+  .page-hero--dark .breadcrumb a { color: var(--text-muted); }
+  .page-hero--dark .breadcrumb { color: var(--text-muted); margin-bottom: 14px; font-size: 0.85rem; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .page-hero--dark h1 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); color: var(--text); margin-bottom: 10px; }
+  .hero-sub { color: var(--text-muted); font-size: 1rem; }
+
+  .section-label {
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--gold); margin-bottom: 8px;
+  }
+
+  .intro-section { background: var(--bg); padding: 32px 0; border-bottom: 1px solid var(--border); }
+  .intro-lead { font-size: 1.05rem; color: var(--text-mid); line-height: 1.8; max-width: 72ch; margin-bottom: 28px; }
+  .intro-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .intro-feature {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; transition: border-color 0.2s;
+  }
+  .intro-feature:hover { border-color: rgba(201,168,76,0.3); }
+  .intro-feature__icon { color: var(--gold); font-size: 1rem; flex-shrink: 0; margin-top: 3px; }
+  .intro-feature strong { display: block; color: var(--text); font-size: 1rem; margin-bottom: 4px; }
+  .intro-feature p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; margin: 0; }
+
+  .related-link { display: block; background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--gold); border-radius: 12px; padding: 22px 26px; transition: border-color 0.2s; }
+  .related-link:hover { border-color: rgba(201,168,76,0.5); }
+  .related-link__label { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 6px; }
+  .related-link__title { display: block; font-size: 1.15rem; color: var(--text); font-weight: 600; margin-bottom: 4px; }
+  .related-link__desc { display: block; font-size: 0.9rem; color: var(--text-muted); }
+
+  .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 28px; }
+  .faq-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; transition: border-color 0.2s; }
+  .faq-item:hover { border-color: rgba(201,168,76,0.3); }
+  .faq-item h3 { margin-bottom: 10px; color: var(--gold); font-size: 1.05rem; }
+  .faq-item p { font-size: 0.93rem; color: var(--text-muted); line-height: 1.7; margin: 0; }
+
+  @media (max-width: 768px) { .intro-features { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) { .faq { grid-template-columns: 1fr; } }
+</style>
