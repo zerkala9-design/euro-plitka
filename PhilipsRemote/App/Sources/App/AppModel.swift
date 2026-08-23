@@ -27,10 +27,46 @@ final class AppModel {
     /// Called on first appearance.
     func bootstrap() async {
         PhoneConnectivity.shared.activate()
-        // Connection is IP‑based only (no Wi‑Fi/Bonjour scan).
         if let device = deviceStore.selectedDevice, device.isPaired {
             if settings.wakeOnLaunch { await controller.wake() }
             await controller.connect(to: device)
+            // If the TV's IP changed (couldn't connect), find it and heal.
+            if !controller.state.isConnected {
+                await autoLocateTV()
+            }
+        }
+    }
+
+    /// Browse the network for the saved TV and, if it's found at a new IP,
+    /// update its address and reconnect. Independent of the stored IP/MAC —
+    /// this is how the app follows the TV when its address changes.
+    func autoLocateTV() async {
+        guard !isScanning,
+              let target = deviceStore.selectedDevice ?? deviceStore.devices.first,
+              deviceStore.devices.count == 1 else { return }
+        isScanning = true
+        await discovery.resetSeen()
+        let stream = await discovery.discover()
+
+        let locate = Task { () -> String? in
+            for await found in stream { return found.host }   // first Android TV seen
+            return nil
+        }
+        let timeout = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(8))
+            locate.cancel()
+            await self?.discovery.stop()
+        }
+        let newHost = await locate.value
+        timeout.cancel()
+        await discovery.stop()
+        isScanning = false
+
+        guard let newHost, newHost != target.host else { return }
+        deviceStore.setHost(newHost, for: target)
+        if target.isPaired, deviceStore.selectedDeviceID == target.id,
+           let updated = deviceStore.selectedDevice {
+            await controller.connect(to: updated)
         }
     }
 
@@ -72,6 +108,15 @@ final class AppModel {
         } else if !discovered.contains(where: { $0.host == device.host }) {
             discovered.append(device)
             Haptics.shared.selectionChanged()
+        }
+    }
+
+    /// Returning to the app: reconnect, and if that fails (IP changed while we
+    /// were away) locate the TV and heal the address.
+    func reconnectOrLocate() async {
+        await controller.reconnectIfNeeded()
+        if !controller.state.isConnected, deviceStore.selectedDevice?.isPaired == true {
+            await autoLocateTV()
         }
     }
 

@@ -13,13 +13,19 @@ public actor DiscoveryService {
 
     private var browsers: [NWBrowser] = []
     private var seenHosts: Set<String> = []
+    private var continuation: AsyncStream<TVDevice>.Continuation?
 
     public init() {}
+
+    private func store(_ continuation: AsyncStream<TVDevice>.Continuation) {
+        self.continuation = continuation
+    }
 
     /// Stream of discovered & verified Philips TVs. The stream keeps emitting as
     /// devices appear; cancel the enclosing task to stop browsing.
     public func discover() -> AsyncStream<TVDevice> {
         AsyncStream { continuation in
+            Task { await self.store(continuation) }
             // Android TV Remote v2 advertises this Bonjour service.
             let serviceTypes = ["_androidtvremote2._tcp", "_androidtvremote._tcp"]
 
@@ -81,6 +87,8 @@ public actor DiscoveryService {
     public func stop() {
         browsers.forEach { $0.cancel() }
         browsers.removeAll()
+        continuation?.finish()
+        continuation = nil
     }
 
     /// Resolve a Bonjour endpoint to an IPv4 host string.

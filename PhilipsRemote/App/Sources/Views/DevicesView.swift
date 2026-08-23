@@ -31,10 +31,23 @@ struct DevicesView: View {
 
                 Section {
                     Button {
+                        Task { await model.autoLocateTV() }
+                    } label: {
+                        HStack {
+                            Label("Find TV automatically", systemImage: "wifi")
+                            if model.isScanning {
+                                Spacer(); ProgressView()
+                            }
+                        }
+                    }
+                    .disabled(model.isScanning)
+                    Button {
                         showManualAdd = true
                     } label: {
                         Label("Add TV by IP", systemImage: "plus.circle.fill")
                     }
+                } footer: {
+                    Text("‘Find TV’ locates your TV even if its IP address changed.")
                 }
             }
             .scrollContentBackground(.hidden)

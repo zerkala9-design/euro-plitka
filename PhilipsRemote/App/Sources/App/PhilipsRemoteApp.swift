@@ -20,8 +20,9 @@ struct PhilipsRemoteApp: App {
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
-                // Returning to the app: silently restore a dropped connection.
-                Task { await model.controller.reconnectIfNeeded() }
+                // Returning to the app: restore the connection, and if the TV's
+                // IP changed while away, find it automatically.
+                Task { await model.reconnectOrLocate() }
             case .background:
                 // Stop retrying while suspended; we reconnect on next foreground.
                 model.controller.enterBackground()

@@ -65,6 +65,12 @@ final class DeviceStore {
         update(device) { $0.macAddress = (mac?.isEmpty == true) ? nil : mac }
     }
 
+    /// Update a saved TV's IP address (used when auto‑discovery finds it at a
+    /// new address). Keeps the same id, name and pairing.
+    func setHost(_ host: String, for device: TVDevice) {
+        update(device) { $0.host = host }
+    }
+
     func toggleFavorite(_ device: TVDevice) {
         update(device) { $0.isFavorite.toggle() }
     }
