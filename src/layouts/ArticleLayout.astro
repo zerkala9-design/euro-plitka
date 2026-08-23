@@ -1,29 +1,38 @@
 ---
 import Layout from './Layout.astro';
-import { articles, articleBySlug } from '../data/articles';
+import { articles as artUk } from '../data/articles';
+import { articles as artRu } from '../data/articles-ru';
 
 interface Faq { q: string; a: string; }
 interface Props {
   slug: string;
   description: string;
   faq?: Faq[];
+  lang?: 'uk' | 'ru';
 }
 
-const { slug, description, faq } = Astro.props;
-const meta = articleBySlug(slug);
+const { slug, description, faq, lang = 'uk' } = Astro.props;
+const articles = lang === 'ru' ? artRu : artUk;
+const meta = articles.find((a) => a.slug === slug);
 if (!meta) throw new Error(`Article not found: ${slug}`);
 
+const base = lang === 'ru' ? '/ru' : '';
+const L = lang === 'ru'
+  ? { home: 'Главная', blog: 'Статьи', article: 'Статья', reading: 'чтения', faqTitle: 'Частые вопросы', ctaStrong: 'Рассчитайте стоимость за секунду', ctaText: 'Введите размеры в калькуляторе — и увидите точную цену сразу.', ctaTile: 'Калькулятор плитки', ctaLed: 'LED зеркала', more: 'Читайте также', locale: 'ru-RU' }
+  : { home: 'Головна', blog: 'Статті', article: 'Стаття', reading: 'читання', faqTitle: 'Часті запитання', ctaStrong: 'Порахуйте вартість за секунду', ctaText: 'Введіть розміри у калькуляторі — і побачите точну ціну одразу.', ctaTile: 'Калькулятор плитки', ctaLed: 'LED дзеркала', more: 'Читайте також', locale: 'uk-UA' };
+
 const breadcrumbs = [
-  { name: 'Головна', path: '/' },
-  { name: 'Статті', path: '/statti/' },
-  { name: meta.title, path: `/statti/${slug}/` },
+  { name: L.home, path: `${base}/` },
+  { name: L.blog, path: `${base}/statti/` },
+  { name: meta.title, path: `${base}/statti/${slug}/` },
 ];
 
-const fmtDate = (iso) => new Date(iso).toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
+const fmtDate = (iso) => new Date(iso).toLocaleDateString(L.locale, { day: 'numeric', month: 'long', year: 'numeric' });
 const others = articles.filter((a) => a.slug !== slug).slice(0, 2);
 ---
 
 <Layout
+  lang={lang}
   title={meta.title}
   description={description}
   breadcrumbs={breadcrumbs}
@@ -33,12 +42,12 @@ const others = articles.filter((a) => a.slug !== slug).slice(0, 2);
   <article class="post">
     <div class="container post__inner">
       <div class="breadcrumb">
-        <a href="/">Головна</a><span>›</span><a href="/statti/">Статті</a><span>›</span><span>Стаття</span>
+        <a href={`${base}/`}>{L.home}</a><span>›</span><a href={`${base}/statti/`}>{L.blog}</a><span>›</span><span>{L.article}</span>
       </div>
       <div class="post__meta">
         <time datetime={meta.date}>{fmtDate(meta.date)}</time>
         <span>·</span>
-        <span>{meta.readingTime} читання</span>
+        <span>{meta.readingTime} {L.reading}</span>
       </div>
       <h1>{meta.title}</h1>
 
@@ -48,7 +57,7 @@ const others = articles.filter((a) => a.slug !== slug).slice(0, 2);
 
       {faq && faq.length > 0 && (
         <section class="post__faq">
-          <h2>Часті запитання</h2>
+          <h2>{L.faqTitle}</h2>
           <div class="faq">
             {faq.map((item) => (
               <div class="faq-item">
@@ -62,21 +71,21 @@ const others = articles.filter((a) => a.slug !== slug).slice(0, 2);
 
       <div class="post__cta">
         <div>
-          <strong>Порахуйте вартість за секунду</strong>
-          <p>Введіть розміри у калькуляторі — і побачите точну ціну одразу.</p>
+          <strong>{L.ctaStrong}</strong>
+          <p>{L.ctaText}</p>
         </div>
         <div class="post__cta-links">
-          <a href="/dzerkalna-plitka/#calculator" class="btn btn--primary">Калькулятор плитки</a>
-          <a href="/led-dzerkalo/" class="btn btn--ghost">LED дзеркала</a>
+          <a href={`${base}/dzerkalna-plitka/#calculator`} class="btn btn--primary">{L.ctaTile}</a>
+          <a href={`${base}/led-dzerkalo/`} class="btn btn--ghost">{L.ctaLed}</a>
         </div>
       </div>
 
       {others.length > 0 && (
         <section class="post__more">
-          <div class="section-label">Читайте також</div>
+          <div class="section-label">{L.more}</div>
           <div class="more-grid">
             {others.map((a) => (
-              <a href={`/statti/${a.slug}/`} class="more-card">
+              <a href={`${base}/statti/${a.slug}/`} class="more-card">
                 <span class="more-card__title">{a.title}</span>
                 <span class="more-card__excerpt">{a.excerpt}</span>
               </a>
