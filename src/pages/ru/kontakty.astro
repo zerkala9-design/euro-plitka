@@ -1,0 +1,107 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { site } from '../../data/site';
+---
+
+<Layout lang="ru" title="Контакты — зеркала на заказ в Киеве" description="Контакты Евро Плитка: телефон, email, адрес в Киеве. Заказать зеркальную плитку, панно и LED зеркала на заказ."
+  breadcrumbs={[{ name: 'Главная', path: '/ru/' }, { name: 'Контакты', path: '/ru/kontakty/' }]}>
+  <div class="page-hero page-hero--dark">
+    <div class="container">
+      <div class="breadcrumb"><a href="/ru/">Главная</a><span>›</span><span>Контакты</span></div>
+      <div class="section-label">Свяжитесь с нами</div>
+      <h1>Контакты</h1>
+      <p class="hero-sub">Отвечаем быстро — телефон, Telegram, email</p>
+    </div>
+  </div>
+
+  <section class="section contacts-section">
+    <div class="container">
+      <div class="contacts-grid">
+        <div class="contact-card">
+          <div class="contact-card__icon">◆</div>
+          <div class="contact-card__label">Телефон</div>
+          <h3>Телефон</h3>
+          <a href={`tel:${site.phone.tel}`}>{site.phone.display}</a>
+          {site.phone2 && <a href={`tel:${site.phone2.tel}`} style="display:block;margin-top:4px">{site.phone2.display}</a>}
+        </div>
+        <div class="contact-card">
+          <div class="contact-card__icon">■</div>
+          <div class="contact-card__label">Почта</div>
+          <h3>Email</h3>
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card__icon">▲</div>
+          <div class="contact-card__label">График</div>
+          <h3>График работы</h3>
+          <p>Пн–Пт: 10:00–18:00</p>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card__icon">→</div>
+          <div class="contact-card__label">Мессенджер</div>
+          <h3>Telegram</h3>
+          <a href={site.social.telegram} target="_blank">Написать в Telegram</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section address-section">
+    <div class="container">
+      <div class="address-layout">
+        <div class="address-info">
+          <div class="section-label">Адрес</div>
+          <h2>Где мы находимся</h2>
+          <div class="address-details">
+            <div class="address-row"><span class="address-row__icon">◆</span><div><strong>Адрес</strong><p>ул. Вадима Гетьмана, 27, Киев</p></div></div>
+            <div class="address-row"><span class="address-row__icon">▲</span><div><strong>График работы</strong><p>Пн–Пт: 10:00–18:00</p></div></div>
+            <div class="address-row"><span class="address-row__icon">■</span><div><strong>Самовывоз</strong><p>После согласования заказа и оплаты предоплаты</p></div></div>
+          </div>
+        </div>
+        <div class="cta-block">
+          <div class="section-label">Заказать</div>
+          <h2>Готовы сделать заказ?</h2>
+          <p>Позвоните или напишите — рассчитаем стоимость и ответим на все вопросы.</p>
+          <div class="cta-buttons">
+            <a href={`tel:${site.phone.tel}`} class="btn btn--primary">{site.phone.display}</a>
+            {site.phone2 && <a href={`tel:${site.phone2.tel}`} class="btn btn--outline">{site.phone2.display}</a>}
+            <a href={site.social.telegram} target="_blank" class="btn btn--outline">Telegram</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero--dark { background: var(--bg); border-bottom: 1px solid var(--border); padding: 60px 0 48px; }
+  .page-hero--dark .breadcrumb { color: var(--text-muted); margin-bottom: 20px; font-size: 0.88rem; display: flex; gap: 8px; align-items: center; }
+  .page-hero--dark .breadcrumb a { color: var(--text-muted); }
+  .page-hero--dark h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text); margin-bottom: 12px; }
+  .hero-sub { color: var(--text-muted); font-size: 1.1rem; }
+  .section-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 8px; }
+  .contacts-section { background: var(--bg); }
+  .contacts-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .contact-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 32px 24px; text-align: center; transition: border-color 0.2s; }
+  .contact-card:hover { border-color: rgba(201,168,76,0.3); }
+  .contact-card__icon { font-size: 1.2rem; color: var(--gold); margin-bottom: 12px; }
+  .contact-card__label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); margin-bottom: 8px; }
+  .contact-card h3 { font-size: 1rem; color: var(--text); margin-bottom: 10px; }
+  .contact-card a { color: var(--gold); font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: opacity 0.2s; }
+  .contact-card a:hover { opacity: 0.7; }
+  .contact-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; }
+  .address-section { background: #111; }
+  .address-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  .address-info h2 { font-size: 1.4rem; color: var(--text); margin-bottom: 24px; }
+  .address-details { display: flex; flex-direction: column; gap: 20px; }
+  .address-row { display: flex; gap: 16px; align-items: flex-start; }
+  .address-row__icon { color: var(--gold); font-size: 0.9rem; flex-shrink: 0; margin-top: 3px; }
+  .address-row strong { display: block; color: var(--text); font-size: 0.92rem; margin-bottom: 4px; }
+  .address-row p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; margin: 0; }
+  .cta-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 40px; }
+  .cta-block h2 { font-size: 1.4rem; color: var(--text); margin-bottom: 12px; }
+  .cta-block p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 28px; }
+  .cta-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
+  @media (max-width: 900px) { .contacts-grid { grid-template-columns: 1fr 1fr; } .address-layout { grid-template-columns: 1fr; gap: 32px; } }
+  @media (max-width: 480px) { .contacts-grid { grid-template-columns: 1fr; } }
+</style>

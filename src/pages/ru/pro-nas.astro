@@ -1,0 +1,98 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout lang="ru" title="О нас — производитель зеркал в Киеве" description="Евро Плитка — производитель зеркальной плитки, панно и LED зеркал в Киеве. Собственное производство, монтаж под ключ, 10+ лет опыта."
+  breadcrumbs={[{ name: 'Главная', path: '/ru/' }, { name: 'О нас', path: '/ru/pro-nas/' }]}>
+  <div class="page-hero page-hero--dark">
+    <div class="container">
+      <div class="breadcrumb"><a href="/ru/">Главная</a><span>›</span><span>О нас</span></div>
+      <div class="section-label">Киевский производитель</div>
+      <h1>О компании</h1>
+      <p class="hero-sub">Более 10 лет изготавливаем зеркальную плитку и LED зеркала</p>
+    </div>
+  </div>
+
+  <section class="section about-section">
+    <div class="container">
+      <div class="about-layout">
+        <div class="about-text">
+          <div class="section-label">Наша история</div>
+          <h2>Евро Плитка</h2>
+          <p>Компания <strong>Евро Плитка</strong> — киевский производитель зеркальной плитки и LED зеркал. Более 10 лет мы помогаем клиентам преображать интерьеры, добавляя пространству света и глубины.</p>
+          <p>Мы изготавливаем зеркальную плитку собственными силами на современном оборудовании. Это позволяет нам держать качество под полным контролем и предлагать конкурентные цены без переплат посредникам.</p>
+        </div>
+        <div class="about-advantages">
+          <div class="section-label">Наши преимущества</div>
+          <ul class="advantages-list">
+            <li><span class="adv-icon">✦</span><span>Собственное производство в Киеве</span></li>
+            <li><span class="adv-icon">✦</span><span>Точный раскрой на ЧПУ — минимум отходов</span></li>
+            <li><span class="adv-icon">✦</span><span>Зеркало Silver, Bronze, Graphite с фацетом 0–20 мм</span></li>
+            <li><span class="adv-icon">✦</span><span>LED зеркала любых размеров на заказ</span></li>
+            <li><span class="adv-icon">✦</span><span>Монтаж опытной бригадой</span></li>
+            <li><span class="adv-icon">✦</span><span>Доставка по Киеву и Украине</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section stats-section">
+    <div class="container">
+      <div class="section-label">Цифры</div>
+      <h2>Наши результаты</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-card__num">10+</div><div class="stat-card__label">Лет опыта</div><p>На рынке зеркального декора Украины</p></div>
+        <div class="stat-card"><div class="stat-card__num">500+</div><div class="stat-card__label">Проектов завершено</div><p>Квартиры, рестораны, отели, офисы</p></div>
+        <div class="stat-card"><div class="stat-card__num">3–7</div><div class="stat-card__label">Дней изготовления</div><p>Стандартные и нестандартные размеры</p></div>
+        <div class="stat-card"><div class="stat-card__num">100%</div><div class="stat-card__label">Гарантия качества</div><p>Собственное производство, контроль на каждом этапе</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section steps-section">
+    <div class="container">
+      <div class="section-label">Процесс</div>
+      <h2>Как мы работаем</h2>
+      <div class="steps-grid">
+        <div class="step-card"><div class="step-card__num">01</div><h3>Заказ</h3><p>Свяжитесь с нами по телефону или Telegram. Уточняем размеры, цвет, фацет и количество.</p></div>
+        <div class="step-card"><div class="step-card__num">02</div><h3>Расчёт</h3><p>Готовим точную смету с помощью калькулятора. Предлагаем 2 варианта раскроя.</p></div>
+        <div class="step-card"><div class="step-card__num">03</div><h3>Изготовление</h3><p>Производим плитку на собственном оборудовании. Точный раскрой на ЧПУ, полировка фацета.</p></div>
+        <div class="step-card"><div class="step-card__num">04</div><h3>Доставка и монтаж</h3><p>Доставляем в аккуратной упаковке. По желанию — монтаж опытной бригадой с гарантией.</p></div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero--dark { background: var(--bg); border-bottom: 1px solid var(--border); padding: 60px 0 48px; }
+  .page-hero--dark .breadcrumb { color: var(--text-muted); margin-bottom: 20px; font-size: 0.88rem; display: flex; gap: 8px; align-items: center; }
+  .page-hero--dark .breadcrumb a { color: var(--text-muted); }
+  .page-hero--dark h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text); margin-bottom: 12px; }
+  .hero-sub { color: var(--text-muted); font-size: 1.1rem; }
+  .section-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 8px; }
+  .about-section { background: var(--bg); }
+  .about-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  .about-text h2 { font-size: 1.6rem; color: var(--text); margin-bottom: 20px; }
+  .about-text p { font-size: 1rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.8; }
+  .about-text strong { color: var(--text); }
+  .advantages-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+  .advantages-list li { display: flex; gap: 12px; align-items: flex-start; font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; }
+  .adv-icon { color: var(--gold); flex-shrink: 0; font-size: 0.8rem; margin-top: 3px; }
+  .stats-section { background: #111; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 32px; }
+  .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 32px 24px; text-align: center; transition: border-color 0.2s; }
+  .stat-card:hover { border-color: rgba(201,168,76,0.3); }
+  .stat-card__num { font-size: 2.8rem; font-weight: 800; color: var(--gold); line-height: 1; margin-bottom: 8px; }
+  .stat-card__label { font-size: 0.88rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text); margin-bottom: 8px; }
+  .stat-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin: 0; }
+  .steps-section { background: var(--bg); }
+  .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 32px; }
+  .step-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; transition: border-color 0.2s; }
+  .step-card:hover { border-color: rgba(201,168,76,0.3); }
+  .step-card__num { font-size: 2rem; font-weight: 800; color: var(--gold); opacity: 0.5; line-height: 1; margin-bottom: 16px; }
+  .step-card h3 { color: var(--text); font-size: 1rem; margin-bottom: 10px; }
+  .step-card p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.7; margin: 0; }
+  @media (max-width: 900px) { .about-layout { grid-template-columns: 1fr; gap: 32px; } .stats-grid { grid-template-columns: 1fr 1fr; } .steps-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .stats-grid { grid-template-columns: 1fr; } .steps-grid { grid-template-columns: 1fr; } }
+</style>

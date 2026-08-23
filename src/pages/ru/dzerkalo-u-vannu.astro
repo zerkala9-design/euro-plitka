@@ -1,0 +1,100 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import LedCalculator from '../../components/LedCalculator.astro';
+
+const faq = [
+  { q: 'Какое зеркало лучше в ванную — с фоновой или фронтальной подсветкой?', a: 'Для уютной атмосферы и эффекта «парящего» зеркала берут фоновую подсветку. Для яркого равномерного света под макияж и бритьё — фронтальную. Можно совместить оба варианта.' },
+  { q: 'Не запотевает ли зеркало в ванной?', a: 'Чтобы зеркало не запотевало после душа, добавьте опцию подогрева (+400 грн) — нагревательный элемент за зеркалом держит поверхность чистой и прозрачной.' },
+  { q: 'Безопасна ли LED-подсветка во влажном помещении?', a: 'Да, мы используем влагозащищённые светодиодные ленты и компоненты, рассчитанные на ванную комнату. Подключение выполняется по нормам электробезопасности.' },
+  { q: 'Какой цвет света выбрать для ванной?', a: 'Холодный 6000K — яркий и функциональный, хорош для макияжа. Нейтральный 4000K — универсальный. Тёплый 3000K — мягкий и уютный. Опционально можно добавить диммер для регулировки яркости.' },
+  { q: 'Можно ли сделать зеркало по моему размеру и форме?', a: 'Да, зеркала в ванную изготавливаются по индивидуальным размерам — прямоугольные, круглые или с закруглёнными углами. Рассчитайте стоимость в калькуляторе ниже.' },
+  { q: 'Сколько стоит зеркало в ванную с подсветкой?', a: 'Цена зависит от размера, типа подсветки и опций. Точную стоимость мгновенно покажет онлайн-калькулятор на этой странице.' },
+];
+
+const breadcrumbs = [
+  { name: 'Главная', path: '/ru/' },
+  { name: 'LED зеркала', path: '/ru/led-dzerkalo/' },
+  { name: 'Зеркало в ванную', path: '/ru/dzerkalo-u-vannu/' },
+];
+---
+
+<Layout
+  lang="ru"
+  title="Зеркало в ванную с подсветкой на заказ — Киев"
+  description="LED зеркало в ванную комнату с подсветкой по вашему размеру. Фоновая и фронтальная подсветка, подогрев против запотевания, сенсор. Калькулятор цены онлайн."
+  breadcrumbs={breadcrumbs}
+  faq={faq}
+  product={{ name: 'LED зеркало в ванную с подсветкой', lowPrice: 3120 }}
+>
+  <div class="page-hero page-hero--dark">
+    <div class="container">
+      <div class="breadcrumb"><a href="/ru/">Главная</a><span>›</span><a href="/ru/led-dzerkalo/">LED зеркала</a><span>›</span><span>Зеркало в ванную</span></div>
+      <div class="section-label">Для ванной комнаты</div>
+      <h1>Зеркало в ванную с подсветкой</h1>
+      <p class="hero-sub">Изготовление по вашему размеру · подсветка, подогрев против запотевания, сенсор · Киев и вся Украина</p>
+    </div>
+  </div>
+
+  <section class="section intro">
+    <div class="container">
+      <p class="intro-lead">Зеркало с LED-подсветкой — это не только свет, но и атмосфера в ванной комнате. Мы изготавливаем зеркала любых размеров и форм с влагозащищённой подсветкой, а опция подогрева держит поверхность чистой даже после горячего душа.</p>
+      <div class="benefits">
+        <div class="benefit"><span class="benefit__icon">◆</span><div><strong>Не запотевает</strong><p>Опция подогрева держит зеркало прозрачным после душа</p></div></div>
+        <div class="benefit"><span class="benefit__icon">◆</span><div><strong>Влагозащита</strong><p>LED-компоненты, рассчитанные на ванную комнату</p></div></div>
+        <div class="benefit"><span class="benefit__icon">◆</span><div><strong>Любая форма</strong><p>Прямоугольные, круглые, с закруглёнными углами</p></div></div>
+        <div class="benefit"><span class="benefit__icon">◆</span><div><strong>Управление</strong><p>Сенсор включения касанием, диммер яркости</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section calc-section">
+    <div class="container">
+      <div class="section-label">Онлайн-калькулятор</div>
+      <h2>Рассчитайте цену зеркала в ванную</h2>
+      <LedCalculator lang="ru" />
+    </div>
+  </section>
+
+  <section class="section faq-section">
+    <div class="container">
+      <div class="section-label">Вопросы и ответы</div>
+      <h2>Зеркало в ванную — частые вопросы</h2>
+      <div class="faq">
+        {faq.map((item) => (
+          <div class="faq-item">
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero--dark { background: var(--bg); border-bottom: 1px solid var(--border); padding: 40px 0 32px; }
+  .page-hero--dark .breadcrumb { color: var(--text-muted); margin-bottom: 14px; font-size: 0.85rem; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .page-hero--dark .breadcrumb a { color: var(--text-muted); }
+  .page-hero--dark h1 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); color: var(--text); margin-bottom: 10px; }
+  .hero-sub { color: var(--text-muted); font-size: 1rem; }
+  .section-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 8px; }
+  .intro { background: var(--bg); padding-top: 32px; }
+  .intro-lead { font-size: 1.05rem; color: var(--text-mid); line-height: 1.8; max-width: 70ch; margin-bottom: 28px; }
+  .benefits { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .benefit { display: flex; gap: 12px; align-items: flex-start; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .benefit__icon { color: var(--gold); flex-shrink: 0; margin-top: 2px; }
+  .benefit strong { display: block; color: var(--text); font-size: 0.95rem; margin-bottom: 4px; }
+  .benefit p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; margin: 0; }
+  .calc-section { background: var(--bg); }
+  .calc-section h2 { color: var(--text); margin-bottom: 18px; }
+  .faq-section { background: var(--bg); }
+  .faq-section h2 { color: var(--text); margin-bottom: 8px; }
+  .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+  .faq-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; transition: border-color 0.2s; }
+  .faq-item:hover { border-color: rgba(201,168,76,0.3); }
+  .faq-item h3 { margin-bottom: 10px; color: var(--gold); font-size: 1.05rem; }
+  .faq-item p { font-size: 0.93rem; color: var(--text-muted); line-height: 1.7; margin: 0; }
+  @media (max-width: 900px) { .benefits { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px) { .faq { grid-template-columns: 1fr; } }
+  @media (max-width: 460px) { .benefits { grid-template-columns: 1fr; } }
+</style>
