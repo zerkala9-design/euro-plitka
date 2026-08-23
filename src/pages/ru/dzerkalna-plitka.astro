@@ -1,0 +1,114 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TileCalculator from '../../components/TileCalculator.astro';
+
+const faq = [
+  { q: 'Что такое фацет на зеркальной плитке?', a: 'Фацет — это срезанный и отполированный под углом край зеркала. Благодаря фацету на рёбрах плитки возникает эффект огранки, который рассеивает свет и создаёт блеск. Доступны фацеты 0, 5, 10, 15 и 20 мм.' },
+  { q: 'Какие размеры зеркальной плитки?', a: 'Размеры рассчитываются автоматически калькулятором в зависимости от размеров вашей стены и выбранного фацета. Вы получаете 2 варианта раскроя — квадратами или ромбами — на выбор.' },
+  { q: 'Какие цвета зеркала есть?', a: 'Серебро — классическое прозрачное зеркало. Бронза — тёплое золотисто-коричневое зеркало. Графит — тёмное современное зеркало. Все три цвета доступны с любым фацетом.' },
+  { q: 'Как монтируется зеркальная плитка?', a: 'Плитка крепится на специальный зеркальный клей или двусторонний монтажный скотч на ровную стену. Наша бригада выполнит монтаж аккуратно и быстро по Киеву и области.' },
+  { q: 'Сколько стоит зеркальная плитка?', a: 'Цена зависит от площади, цвета и фацета. Серебро — от 3000 грн/м², Бронза и Графит — от 4200 грн/м². Точную стоимость вашего панно рассчитает калькулятор на этой странице за секунду.' },
+  { q: 'Сколько изготавливается заказ?', a: 'Изготовление зеркального панно занимает обычно 3–7 рабочих дней в зависимости от размера и сложности раскроя. Доставка по Киеву и по всей Украине.' },
+];
+
+const breadcrumbs = [
+  { name: 'Главная', path: '/ru/' },
+  { name: 'Зеркальная плитка', path: '/ru/dzerkalna-plitka/' },
+];
+---
+
+<Layout
+  lang="ru"
+  title="Зеркальная плитка Киев — купить с фацетом"
+  description="Зеркальная плитка с фацетом 0-20 мм. Серебро, Бронза, Графит. Онлайн-калькулятор панно. Доставка по Киеву."
+  breadcrumbs={breadcrumbs}
+  faq={faq}
+  product={{ name: 'Зеркальная плитка с фацетом', lowPrice: 3000 }}
+>
+  <div class="page-hero page-hero--dark">
+    <div class="container">
+      <div class="breadcrumb"><a href="/ru/">Главная</a><span>›</span><span>Зеркальная плитка</span></div>
+      <div class="section-label">Премиум зеркало</div>
+      <h1>Зеркальная плитка с фацетом</h1>
+      <p class="hero-sub">Серебро · Бронза · Графит — фацет 0, 5, 10, 15, 20 мм</p>
+    </div>
+  </div>
+
+  <section class="section intro-section">
+    <div class="container">
+      <div class="intro-features">
+        <div class="intro-feature">
+          <span class="intro-feature__icon">◆</span>
+          <div>
+            <strong>Собственное производство</strong>
+            <p>Точный раскрой на ЧПУ на современном оборудовании</p>
+          </div>
+        </div>
+        <div class="intro-feature">
+          <span class="intro-feature__icon">◆</span>
+          <div>
+            <strong>3 цвета · 5 фацетов</strong>
+            <p>Серебро, Бронза, Графит — фацет 0, 5, 10, 15, 20 мм</p>
+          </div>
+        </div>
+        <div class="intro-feature">
+          <span class="intro-feature__icon">◆</span>
+          <div>
+            <strong>Монтаж и доставка</strong>
+            <p>Опытная бригада, аккуратная упаковка по всей Украине</p>
+          </div>
+        </div>
+      </div>
+      <a href="/ru/dzerkalna-plitka-romb/" class="related-link">
+        <span class="related-link__label">Популярный раскрой</span>
+        <span class="related-link__title">Зеркальная плитка ромбом (диамант) →</span>
+        <span class="related-link__desc">Эффектная огранка, игра света на гранях, визуально расширяет пространство</span>
+      </a>
+    </div>
+  </section>
+
+  <TileCalculator lang="ru" />
+
+  <section class="section">
+    <div class="container">
+      <div class="section-label">Вопросы и ответы</div>
+      <h2>О зеркальной плитке</h2>
+      <div class="faq">
+        {faq.map((item) => (
+          <div class="faq-item">
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero--dark { background: var(--bg); border-bottom: 1px solid var(--border); padding: 60px 0 48px; }
+  .page-hero--dark .breadcrumb a { color: var(--text-muted); }
+  .page-hero--dark .breadcrumb { color: var(--text-muted); margin-bottom: 20px; font-size: 0.88rem; display: flex; gap: 8px; align-items: center; }
+  .page-hero--dark h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text); margin-bottom: 12px; }
+  .hero-sub { color: var(--text-muted); font-size: 1.1rem; }
+  .section-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 8px; }
+  .intro-section { background: var(--bg); padding: 40px 0; border-bottom: 1px solid var(--border); }
+  .intro-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .intro-feature { display: flex; gap: 16px; align-items: flex-start; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; transition: border-color 0.2s; }
+  .intro-feature:hover { border-color: rgba(201,168,76,0.3); }
+  .intro-feature__icon { color: var(--gold); font-size: 1rem; flex-shrink: 0; margin-top: 3px; }
+  .intro-feature strong { display: block; color: var(--text); font-size: 1rem; margin-bottom: 4px; }
+  .intro-feature p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; margin: 0; }
+  .related-link { display: block; margin-top: 24px; background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--gold); border-radius: 12px; padding: 22px 26px; transition: border-color 0.2s; }
+  .related-link:hover { border-color: rgba(201,168,76,0.5); }
+  .related-link__label { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 6px; }
+  .related-link__title { display: block; font-size: 1.15rem; color: var(--text); font-weight: 600; margin-bottom: 4px; }
+  .related-link__desc { display: block; font-size: 0.9rem; color: var(--text-muted); }
+  .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 28px; }
+  .faq-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; transition: border-color 0.2s; }
+  .faq-item:hover { border-color: rgba(201,168,76,0.3); }
+  .faq-item h3 { margin-bottom: 10px; color: var(--gold); font-size: 1.05rem; }
+  .faq-item p { font-size: 0.93rem; color: var(--text-muted); line-height: 1.7; margin: 0; }
+  @media (max-width: 768px) { .intro-features { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) { .faq { grid-template-columns: 1fr; } }
+</style>

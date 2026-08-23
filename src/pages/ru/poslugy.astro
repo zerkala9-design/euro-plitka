@@ -1,0 +1,120 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const faq = [
+  { q: 'Вы изготавливаете зеркала по индивидуальным размерам?', a: 'Да, все изделия — зеркальная плитка, панно и LED зеркала — изготавливаются под ваши размеры. Точный раскрой на ЧПУ даёт минимум отходов и аккуратные края.' },
+  { q: 'Вы делаете монтаж или только изготовление?', a: 'Делаем полный цикл: изготовление, доставку и монтаж под ключ. Опытная бригада установит зеркальную плитку или LED зеркало по Киеву и области. На выполненные работы действует гарантия.' },
+  { q: 'Сколько времени занимает изготовление?', a: 'Зеркальная плитка и панно — обычно 3–7 рабочих дней, LED зеркала — 3–7 дней в зависимости от опций. Точный срок подтверждаем при заказе.' },
+  { q: 'Куда доставляете?', a: 'По Киеву — собственным транспортом, по всей Украине — Новой Почтой. Зеркала упаковываем в защитный материал, что гарантирует целостность при перевозке.' },
+  { q: 'Как узнать стоимость?', a: 'Быстрее всего — через онлайн-калькуляторы на сайте: для плитки/панно и для LED зеркал. Введите размеры и параметры — и увидите точную цену сразу.' },
+];
+
+const breadcrumbs = [
+  { name: 'Главная', path: '/ru/' },
+  { name: 'Услуги', path: '/ru/poslugy/' },
+];
+---
+
+<Layout
+  lang="ru"
+  title="Услуги — изготовление и монтаж зеркал в Киеве"
+  description="Изготовление зеркальной плитки, панно и LED зеркал на заказ. Монтаж под ключ, доставка по Киеву и Украине. Гарантия на работы."
+  breadcrumbs={breadcrumbs}
+  faq={faq}
+>
+  <div class="page-hero page-hero--dark">
+    <div class="container">
+      <div class="breadcrumb"><a href="/ru/">Главная</a><span>›</span><span>Услуги</span></div>
+      <div class="section-label">Что мы делаем</div>
+      <h1>Наши услуги</h1>
+      <p class="hero-sub">Изготовление, монтаж и доставка зеркальных изделий по Киеву и Украине</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="services-list">
+        <div class="service-card">
+          <div class="service-card__num">01</div>
+          <div class="service-card__body">
+            <h2>Зеркальная плитка с фацетом</h2>
+            <p>Изготавливаем зеркальную плитку в цветах серебро, бронза, графит с фацетом 0–20 мм. Точный раскрой на ЧПУ, минимум отходов.</p>
+            <a href="/ru/dzerkalna-plitka/" class="service-link">Калькулятор →</a>
+          </div>
+        </div>
+        <div class="service-card">
+          <div class="service-card__num">02</div>
+          <div class="service-card__body">
+            <h2>Зеркальные панно</h2>
+            <p>Проектируем и изготавливаем зеркальные панно для стен любого размера. Индивидуальный подбор раскроя, 2 варианта компоновки.</p>
+            <a href="/ru/dzerkalne-panno-na-zamovlennya/" class="service-link">Открыть калькулятор →</a>
+          </div>
+        </div>
+        <div class="service-card">
+          <div class="service-card__num">03</div>
+          <div class="service-card__body">
+            <h2>LED зеркала на заказ</h2>
+            <p>Изготавливаем LED зеркала фоновой и фронтальной подсветки любых размеров. Опции: подогрев, сенсор, диммер. Изготовление 3–7 дней.</p>
+            <a href="/ru/led-dzerkalo/" class="service-link">Калькулятор LED →</a>
+          </div>
+        </div>
+        <div class="service-card">
+          <div class="service-card__num">04</div>
+          <div class="service-card__body">
+            <h2>Монтаж и установка</h2>
+            <p>Опытная бригада установит зеркальную плитку или LED зеркало аккуратно и быстро. Гарантия на выполненные работы.</p>
+          </div>
+        </div>
+        <div class="service-card">
+          <div class="service-card__num">05</div>
+          <div class="service-card__body">
+            <h2>Доставка по Киеву и Украине</h2>
+            <p>Доставляем изделия в удобное для вас время собственным транспортом или Новой Почтой. Аккуратная упаковка гарантирует целостность зеркал.</p>
+            <a href="/ru/dostavka/" class="service-link">Условия доставки →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section faq-section">
+    <div class="container">
+      <div class="section-label">Вопросы и ответы</div>
+      <h2>Частые вопросы об услугах</h2>
+      <div class="faq">
+        {faq.map((item) => (
+          <div class="faq-item">
+            <h3>{item.q}</h3>
+            <p>{item.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero--dark { background: var(--bg); border-bottom: 1px solid var(--border); padding: 60px 0 48px; }
+  .page-hero--dark .breadcrumb { color: var(--text-muted); margin-bottom: 20px; font-size: 0.88rem; display: flex; gap: 8px; align-items: center; }
+  .page-hero--dark .breadcrumb a { color: var(--text-muted); }
+  .page-hero--dark h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text); margin-bottom: 12px; }
+  .hero-sub { color: var(--text-muted); font-size: 1.1rem; }
+  .section-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold); margin-bottom: 8px; }
+  .services-list { display: flex; flex-direction: column; gap: 16px; }
+  .service-card { display: flex; gap: 32px; align-items: flex-start; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 32px; transition: border-color 0.2s; }
+  .service-card:hover { border-color: rgba(201,168,76,0.3); }
+  .service-card__num { font-size: 2.2rem; font-weight: 800; color: var(--gold); opacity: 0.4; line-height: 1; flex-shrink: 0; min-width: 52px; transition: opacity 0.2s; }
+  .service-card:hover .service-card__num { opacity: 0.8; }
+  .service-card__body h2 { font-size: 1.15rem; color: var(--text); margin-bottom: 10px; }
+  .service-card__body p { color: var(--text-muted); font-size: 0.93rem; line-height: 1.7; margin: 0 0 14px; max-width: 65ch; }
+  .service-link { font-size: 0.85rem; font-weight: 600; color: var(--gold); text-decoration: none; letter-spacing: 0.04em; transition: opacity 0.2s; }
+  .service-link:hover { opacity: 0.7; }
+  .faq-section { background: var(--bg); }
+  .faq-section h2 { color: var(--text); margin-bottom: 8px; }
+  .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+  .faq-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; transition: border-color 0.2s; }
+  .faq-item:hover { border-color: rgba(201,168,76,0.3); }
+  .faq-item h3 { margin-bottom: 10px; color: var(--gold); font-size: 1.05rem; }
+  .faq-item p { font-size: 0.93rem; color: var(--text-muted); line-height: 1.7; margin: 0; }
+  @media (max-width: 560px) { .service-card { flex-direction: column; gap: 12px; } .service-card__num { font-size: 1.6rem; } .faq { grid-template-columns: 1fr; } }
+</style>

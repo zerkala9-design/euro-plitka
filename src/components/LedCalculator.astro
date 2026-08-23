@@ -1,6 +1,63 @@
 ---
 import { ledCalcConfig } from '../data/site';
 const cfg = JSON.stringify(ledCalcConfig);
+const { lang = 'uk' } = Astro.props;
+const DICT = {
+  uk: {
+    typeTitle: '1. Тип підсвітки', backName: 'ФОНОВА', backDesc: 'Світло по контуру ззаду', backAlt: 'Фонова LED-підсвітка',
+    frontName: 'ФРОНТАЛЬНА', frontDesc: 'Світло на лицьовій частині', frontAlt: 'Фронтальна LED-підсвітка',
+    shapeTitle: '2. Форма дзеркала', rect: 'Прямокутник', circle: 'Коло',
+    rounded: 'Заокруглені кути', sizeTitle: '3. Розмір дзеркала',
+    widthLabel: 'Ширина (мм)', heightLabel: 'Висота (мм)', diameterLabel: 'Діаметр (мм)', mm: 'мм',
+    lightTitle: '4. Колір світла', optionsTitle: '5. Додаткові опції',
+    mountingTitle: '6. Монтаж', mountingBtn: 'Додати монтаж', mountingAdded: 'Монтаж додано',
+    deliveryTitle: '7. Доставка Київ', deliveryBtn: 'Додати доставку', deliveryAdded: 'Доставку додано',
+    summaryTitle: 'Ваше дзеркало', qty: 'Кількість', pcs: 'шт', priceLabel: 'ЦІНА', total: 'Разом:',
+    orderBtn: '🛒 Замовити дзеркало', modalTitle: 'Замовлення LED дзеркала',
+    phName: "Ім'я та Прізвище", phPhone: 'Телефон', phComment: "Коментар (необов'язково)", send: 'Відправити замовлення',
+    locale: 'uk-UA', currency: 'грн',
+    typeBack: 'Фонова', typeFront: 'Фронтальна', noOptions: 'Без опцій', roundedSuffix: ', заокруглені кути',
+    rLight: 'Підсвітка', rShape: 'Форма', rSize: 'Розмір', rColor: 'Колір', rOptions: 'Опції',
+    bMirror: 'Дзеркало з опціями:', bMounting: 'Монтаж:', bDelivery: 'Доставка:',
+    alertNamePhone: "Будь ласка, вкажіть ім'я та телефон",
+    alertNoForm: 'Форму ще не підключено до пошти. Зверніться, будь ласка, у Telegram або за телефоном.',
+    sending: 'Відправляємо…', subject: 'Заявка з сайту — LED дзеркало',
+    fName: "Ім'я", fPhone: 'Телефон', fComment: 'Коментар', fOrder: 'Замовлення',
+    success: "Дякуємо! Заявку відправлено. Ми зв'яжемося з вами найближчим часом.",
+    failSend: 'Не вдалося відправити. Спробуйте ще раз або напишіть у Telegram.',
+    failNet: 'Помилка мережі. Перевірте інтернет і спробуйте ще раз.',
+    lightLabels: { warm: 'Тепле 3000K', neutral: 'Нейтральне 4000K', cold: 'Холодне 6000K' },
+    optionLabels: { heat: 'Підігрів', sensor: 'Сенсор', dimmer: 'Дімер' },
+  },
+  ru: {
+    typeTitle: '1. Тип подсветки', backName: 'ФОНОВАЯ', backDesc: 'Свет по контуру сзади', backAlt: 'Фоновая LED-подсветка',
+    frontName: 'ФРОНТАЛЬНАЯ', frontDesc: 'Свет на лицевой части', frontAlt: 'Фронтальная LED-подсветка',
+    shapeTitle: '2. Форма зеркала', rect: 'Прямоугольник', circle: 'Круг',
+    rounded: 'Закруглённые углы', sizeTitle: '3. Размер зеркала',
+    widthLabel: 'Ширина (мм)', heightLabel: 'Высота (мм)', diameterLabel: 'Диаметр (мм)', mm: 'мм',
+    lightTitle: '4. Цвет света', optionsTitle: '5. Дополнительные опции',
+    mountingTitle: '6. Монтаж', mountingBtn: 'Добавить монтаж', mountingAdded: 'Монтаж добавлен',
+    deliveryTitle: '7. Доставка Киев', deliveryBtn: 'Добавить доставку', deliveryAdded: 'Доставка добавлена',
+    summaryTitle: 'Ваше зеркало', qty: 'Количество', pcs: 'шт', priceLabel: 'ЦЕНА', total: 'Итого:',
+    orderBtn: '🛒 Заказать зеркало', modalTitle: 'Заказ LED зеркала',
+    phName: 'Имя и Фамилия', phPhone: 'Телефон', phComment: 'Комментарий (необязательно)', send: 'Отправить заказ',
+    locale: 'ru-RU', currency: 'грн',
+    typeBack: 'Фоновая', typeFront: 'Фронтальная', noOptions: 'Без опций', roundedSuffix: ', закруглённые углы',
+    rLight: 'Подсветка', rShape: 'Форма', rSize: 'Размер', rColor: 'Цвет', rOptions: 'Опции',
+    bMirror: 'Зеркало с опциями:', bMounting: 'Монтаж:', bDelivery: 'Доставка:',
+    alertNamePhone: 'Пожалуйста, укажите имя и телефон',
+    alertNoForm: 'Форма ещё не подключена к почте. Свяжитесь, пожалуйста, в Telegram или по телефону.',
+    sending: 'Отправляем…', subject: 'Заявка с сайта — LED зеркало',
+    fName: 'Имя', fPhone: 'Телефон', fComment: 'Комментарий', fOrder: 'Заказ',
+    success: 'Спасибо! Заявка отправлена. Мы свяжемся с вами в ближайшее время.',
+    failSend: 'Не удалось отправить. Попробуйте ещё раз или напишите в Telegram.',
+    failNet: 'Ошибка сети. Проверьте интернет и попробуйте ещё раз.',
+    lightLabels: { warm: 'Тёплый 3000K', neutral: 'Нейтральный 4000K', cold: 'Холодный 6000K' },
+    optionLabels: { heat: 'Подогрев', sensor: 'Сенсор', dimmer: 'Диммер' },
+  },
+};
+const T = DICT[lang] || DICT.uk;
+const tJson = JSON.stringify(T);
 ---
 
 <div class="led-calc" id="ledCalc">
@@ -8,47 +65,47 @@ const cfg = JSON.stringify(ledCalcConfig);
 
     <!-- 1. Тип підсвітки -->
     <div class="led-step">
-      <h3 class="led-step__title">1. Тип підсвітки</h3>
+      <h3 class="led-step__title">{T.typeTitle}</h3>
       <div class="led-type-grid">
         <label class="led-type-card" data-type="back">
           <input type="radio" name="mirrorType" value="back" checked />
-          <img class="led-type-card__photo" id="typeImgBack" src="/led-back-rect.png" alt="Фонова LED-підсвітка" loading="lazy" />
-          <span>ФОНОВА</span>
-          <small>Світло по контуру ззаду</small>
+          <img class="led-type-card__photo" id="typeImgBack" src="/led-back-rect.png" alt={T.backAlt} loading="lazy" />
+          <span>{T.backName}</span>
+          <small>{T.backDesc}</small>
         </label>
         <label class="led-type-card" data-type="front">
           <input type="radio" name="mirrorType" value="front" />
-          <img class="led-type-card__photo" id="typeImgFront" src="/led-front-rect.png" alt="Фронтальна LED-підсвітка" loading="lazy" />
-          <span>ФРОНТАЛЬНА</span>
-          <small>Світло на лицьовій частині</small>
+          <img class="led-type-card__photo" id="typeImgFront" src="/led-front-rect.png" alt={T.frontAlt} loading="lazy" />
+          <span>{T.frontName}</span>
+          <small>{T.frontDesc}</small>
         </label>
       </div>
     </div>
 
     <!-- 2. Форма -->
     <div class="led-step">
-      <h3 class="led-step__title">2. Форма дзеркала</h3>
+      <h3 class="led-step__title">{T.shapeTitle}</h3>
       <div class="led-type-grid led-shape-grid">
         <label class="led-type-card" data-shape="rect">
           <input type="radio" name="shape" value="rect" checked />
           <svg class="led-shape-ico" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <rect x="8" y="12" width="32" height="24" rx="4" stroke="currentColor" stroke-width="2.5"/>
           </svg>
-          <span>Прямокутник</span>
+          <span>{T.rect}</span>
         </label>
         <label class="led-type-card" data-shape="circle">
           <input type="radio" name="shape" value="circle" />
           <svg class="led-shape-ico" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <circle cx="24" cy="24" r="15" stroke="currentColor" stroke-width="2.5"/>
           </svg>
-          <span>Коло</span>
+          <span>{T.circle}</span>
         </label>
       </div>
       <label class="led-corner" id="cornerRow">
         <span class="led-corner__info">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="5.5"/></svg>
-          <span class="led-corner__label">Заокруглені кути</span>
-          <span class="led-corner__price">+600 грн</span>
+          <span class="led-corner__label">{T.rounded}</span>
+          <span class="led-corner__price">+600 {T.currency}</span>
         </span>
         <span class="led-toggle-switch">
           <input type="checkbox" id="roundedCorners" />
@@ -59,20 +116,20 @@ const cfg = JSON.stringify(ledCalcConfig);
 
     <!-- 3. Розмір -->
     <div class="led-step">
-      <h3 class="led-step__title">3. Розмір дзеркала</h3>
+      <h3 class="led-step__title">{T.sizeTitle}</h3>
       <div class="led-size-row">
         <label class="led-size-field" id="fieldW">
-          <span id="labelW">Ширина (мм)</span>
+          <span id="labelW">{T.widthLabel}</span>
           <div class="led-size-input">
             <input type="number" id="ledW" value="400" min="300" max="3000" step="10" />
-            <span>мм</span>
+            <span>{T.mm}</span>
           </div>
         </label>
         <label class="led-size-field" id="fieldH">
-          <span>Висота (мм)</span>
+          <span>{T.heightLabel}</span>
           <div class="led-size-input">
             <input type="number" id="ledH" value="600" min="300" max="1600" step="10" />
-            <span>мм</span>
+            <span>{T.mm}</span>
           </div>
         </label>
       </div>
@@ -80,13 +137,13 @@ const cfg = JSON.stringify(ledCalcConfig);
 
     <!-- 4. Колір світла -->
     <div class="led-step">
-      <h3 class="led-step__title">4. Колір світла</h3>
+      <h3 class="led-step__title">{T.lightTitle}</h3>
       <div class="led-light-grid" id="lightGrid"></div>
     </div>
 
     <!-- 5. Додаткові опції -->
     <div class="led-step">
-      <h3 class="led-step__title">5. Додаткові опції</h3>
+      <h3 class="led-step__title">{T.optionsTitle}</h3>
       <div class="led-options-grid" id="optionsGrid"></div>
     </div>
 
@@ -94,12 +151,12 @@ const cfg = JSON.stringify(ledCalcConfig);
     <div class="led-step">
       <div class="led-service-row">
         <div class="led-service">
-          <h3 class="led-step__title">6. Монтаж</h3>
-          <button class="btn btn--ghost led-toggle" id="toggleMounting">Додати монтаж</button>
+          <h3 class="led-step__title">{T.mountingTitle}</h3>
+          <button class="btn btn--ghost led-toggle" id="toggleMounting">{T.mountingBtn}</button>
         </div>
         <div class="led-service">
-          <h3 class="led-step__title">7. Доставка Київ</h3>
-          <button class="btn btn--ghost led-toggle" id="toggleDelivery">Додати доставку</button>
+          <h3 class="led-step__title">{T.deliveryTitle}</h3>
+          <button class="btn btn--ghost led-toggle" id="toggleDelivery">{T.deliveryBtn}</button>
         </div>
       </div>
     </div>
@@ -108,30 +165,30 @@ const cfg = JSON.stringify(ledCalcConfig);
   <!-- Підсумок праворуч -->
   <div class="led-calc__right">
     <div class="led-summary">
-      <h3>Ваше дзеркало</h3>
+      <h3>{T.summaryTitle}</h3>
       <div class="led-summary__list" id="summaryList"></div>
       <div class="led-summary__row led-summary__qtyrow">
-        <span>Кількість</span>
+        <span>{T.qty}</span>
         <div class="led-qty">
           <button class="led-qty__btn" id="qtyMinus" aria-label="Менше">−</button>
           <span class="led-qty__val" id="qtyVal">1</span>
           <button class="led-qty__btn" id="qtyPlus" aria-label="Більше">+</button>
-          <span class="led-qty__unit">шт</span>
+          <span class="led-qty__unit">{T.pcs}</span>
         </div>
       </div>
     </div>
 
     <div class="led-price-box">
-      <p class="led-price-label">ЦІНА</p>
+      <p class="led-price-label">{T.priceLabel}</p>
       <div class="led-price-breakdown" id="priceBreakdown"></div>
       <div class="led-price-total">
-        <span>Разом:</span>
+        <span>{T.total}</span>
         <span class="led-price-total__val" id="totalPrice">0 грн</span>
       </div>
     </div>
 
     <button class="btn btn--primary" style="width:100%;margin-top:16px" id="ledOrderBtn">
-      🛒 Замовити дзеркало
+      {T.orderBtn}
     </button>
   </div>
 </div>
@@ -140,19 +197,23 @@ const cfg = JSON.stringify(ledCalcConfig);
 <div class="order-modal" id="ledOrderModal">
   <div class="order-modal__box">
     <button class="order-modal__close" id="closeLedModal">✕</button>
-    <h3>Замовлення LED дзеркала</h3>
+    <h3>{T.modalTitle}</h3>
     <div class="led-order-summary" id="ledOrderSummary"></div>
     <div class="order-modal__form" style="margin-top:16px">
-      <input type="text" placeholder="Ім'я та Прізвище" class="order-modal__input" id="ledName" />
-      <input type="tel" placeholder="Телефон" class="order-modal__input" id="ledPhone" />
-      <textarea placeholder="Коментар (необов'язково)" class="order-modal__input" rows="3" id="ledComment" style="resize:vertical"></textarea>
-      <button class="btn btn--primary" id="submitLedOrder" style="width:100%">Відправити замовлення</button>
+      <input type="text" placeholder={T.phName} class="order-modal__input" id="ledName" />
+      <input type="tel" placeholder={T.phPhone} class="order-modal__input" id="ledPhone" />
+      <textarea placeholder={T.phComment} class="order-modal__input" rows="3" id="ledComment" style="resize:vertical"></textarea>
+      <button class="btn btn--primary" id="submitLedOrder" style="width:100%">{T.send}</button>
     </div>
   </div>
 </div>
 
-<script define:vars={{ cfg }}>
+<script define:vars={{ cfg, tJson }}>
 const CFG = JSON.parse(cfg);
+const T = JSON.parse(tJson);
+// Локалізовані підписи кольорів світла та опцій (за id)
+CFG.lightColors = CFG.lightColors.map(lc => ({ ...lc, label: T.lightLabels[lc.id] || lc.label }));
+CFG.options = CFG.options.map(o => ({ ...o, label: T.optionLabels[o.id] || o.label }));
 
 let state = {
   type: 'back',
@@ -167,7 +228,7 @@ let state = {
 };
 const CORNER_PRICE = 600;
 
-const shapeLabels = { rect: 'Прямокутник', circle: 'Коло', oval: 'Овал' };
+const shapeLabels = { rect: T.rect, circle: T.circle, oval: T.circle };
 
 // Рендер опцій світла
 const lightGrid = document.getElementById('lightGrid');
@@ -241,7 +302,7 @@ function drawPreview() {
 function updateSizeUI() {
   const isCircle = state.shape === 'circle';
   document.getElementById('fieldH').style.display = isCircle ? 'none' : '';
-  document.getElementById('labelW').textContent = isCircle ? 'Діаметр (мм)' : 'Ширина (мм)';
+  document.getElementById('labelW').textContent = isCircle ? T.diameterLabel : T.widthLabel;
   if (isCircle) state.H = state.W;
   // фото типів підсвітки відповідно до форми
   updateTypeImages();
@@ -274,32 +335,32 @@ function recalc() {
   const total = mirrorTotal + mountingCost + deliveryCost;
 
   // Підсумок
-  const typeLabel = state.type === 'back' ? 'Фонова' : 'Фронтальна';
+  const typeLabel = state.type === 'back' ? T.typeBack : T.typeFront;
   const shapeLabel = shapeLabels[state.shape];
   const lightLabel = (CFG.lightColors.find(l => l.id === state.light) || {}).label || '';
-  const optLabels = CFG.options.filter(o => state.options[o.id]).map(o => o.label).join(', ') || 'Без опцій';
+  const optLabels = CFG.options.filter(o => state.options[o.id]).map(o => o.label).join(', ') || T.noOptions;
   const dimText = state.shape === 'circle' ? `⌀ ${state.W} мм` : `${state.W} × ${state.H} мм`;
 
   document.getElementById('summaryList').innerHTML = `
-    <div class="led-summary__row"><span>Підсвітка</span><span>${typeLabel}</span></div>
-    <div class="led-summary__row"><span>Форма</span><span>${shapeLabel}${rounded ? ', заокруглені кути' : ''}</span></div>
-    <div class="led-summary__row"><span>Розмір</span><span>${dimText}</span></div>
-    <div class="led-summary__row"><span>Колір</span><span>${lightLabel}</span></div>
-    <div class="led-summary__row"><span>Опції</span><span>${optLabels}</span></div>
+    <div class="led-summary__row"><span>${T.rLight}</span><span>${typeLabel}</span></div>
+    <div class="led-summary__row"><span>${T.rShape}</span><span>${shapeLabel}${rounded ? T.roundedSuffix : ''}</span></div>
+    <div class="led-summary__row"><span>${T.rSize}</span><span>${dimText}</span></div>
+    <div class="led-summary__row"><span>${T.rColor}</span><span>${lightLabel}</span></div>
+    <div class="led-summary__row"><span>${T.rOptions}</span><span>${optLabels}</span></div>
   `;
 
   drawPreview();
 
   document.getElementById('priceBreakdown').innerHTML = `
-    <div class="led-breakdown-row"><span>Дзеркало з опціями:</span><span>${mirrorTotal.toLocaleString('uk-UA')} грн</span></div>
-    <div class="led-breakdown-row"><span>Монтаж:</span><span>${mountingCost ? mountingCost.toLocaleString('uk-UA') + ' грн' : '0 грн'}</span></div>
-    <div class="led-breakdown-row"><span>Доставка:</span><span>${deliveryCost ? deliveryCost.toLocaleString('uk-UA') + ' грн' : '0 грн'}</span></div>
+    <div class="led-breakdown-row"><span>${T.bMirror}</span><span>${mirrorTotal.toLocaleString(T.locale)} ${T.currency}</span></div>
+    <div class="led-breakdown-row"><span>${T.bMounting}</span><span>${mountingCost ? mountingCost.toLocaleString(T.locale) + ' ' + T.currency : '0 ' + T.currency}</span></div>
+    <div class="led-breakdown-row"><span>${T.bDelivery}</span><span>${deliveryCost ? deliveryCost.toLocaleString(T.locale) + ' ' + T.currency : '0 ' + T.currency}</span></div>
   `;
 
-  document.getElementById('totalPrice').textContent = total.toLocaleString('uk-UA') + ' грн';
+  document.getElementById('totalPrice').textContent = total.toLocaleString(T.locale) + ' ' + T.currency;
 
   // Зберігаємо для замовлення
-  window._ledOrderData = { typeLabel, shapeLabel: shapeLabel + (rounded ? ', заокруглені кути' : ''), dimText, lightLabel, optLabels, unitPrice, qty: state.qty, mirrorTotal, mountingCost, deliveryCost, total };
+  window._ledOrderData = { typeLabel, shapeLabel: shapeLabel + (rounded ? T.roundedSuffix : ''), dimText, lightLabel, optLabels, unitPrice, qty: state.qty, mirrorTotal, mountingCost, deliveryCost, total };
 }
 
 // Заокруглені кути
@@ -380,7 +441,7 @@ function toggleService(id, key) {
   state[key] = !state[key];
   const btns = document.querySelectorAll(`#${id}, #${id}2`);
   btns.forEach(btn => {
-    btn.textContent = state[key] ? `✓ ${key === 'mounting' ? 'Монтаж додано' : 'Доставку додано'}` : `Додати ${key === 'mounting' ? 'монтаж' : 'доставку'}`;
+    btn.textContent = state[key] ? `✓ ${key === 'mounting' ? T.mountingAdded : T.deliveryAdded}` : (key === 'mounting' ? T.mountingBtn : T.deliveryBtn);
     btn.classList.toggle('active', state[key]);
   });
   recalc();
@@ -394,13 +455,13 @@ document.getElementById('ledOrderBtn').addEventListener('click', () => {
   document.getElementById('ledOrderSummary').innerHTML = `
     <table class="order-table">
       <tbody>
-        <tr><td>Підсвітка</td><td>${d.typeLabel}</td></tr>
-        <tr><td>Форма</td><td>${d.shapeLabel}</td></tr>
-        <tr><td>Розмір</td><td>${d.dimText}</td></tr>
-        <tr><td>Колір</td><td>${d.lightLabel}</td></tr>
-        <tr><td>Опції</td><td>${d.optLabels}</td></tr>
-        <tr><td>Кількість</td><td>${d.qty} шт</td></tr>
-        <tr class="order-total"><td>Разом</td><td><b>${(d.total || 0).toLocaleString('uk-UA')} грн</b></td></tr>
+        <tr><td>${T.rLight}</td><td>${d.typeLabel}</td></tr>
+        <tr><td>${T.rShape}</td><td>${d.shapeLabel}</td></tr>
+        <tr><td>${T.rSize}</td><td>${d.dimText}</td></tr>
+        <tr><td>${T.rColor}</td><td>${d.lightLabel}</td></tr>
+        <tr><td>${T.rOptions}</td><td>${d.optLabels}</td></tr>
+        <tr><td>${T.qty}</td><td>${d.qty} ${T.pcs}</td></tr>
+        <tr class="order-total"><td>${T.total.replace(':','')}</td><td><b>${(d.total || 0).toLocaleString(T.locale)} ${T.currency}</b></td></tr>
       </tbody>
     </table>
   `;
@@ -420,43 +481,43 @@ document.getElementById('submitLedOrder').addEventListener('click', async () => 
   const name = document.getElementById('ledName').value.trim();
   const phone = document.getElementById('ledPhone').value.trim();
   const comment = document.getElementById('ledComment').value.trim();
-  if (!name || !phone) { alert('Будь ласка, вкажіть ім\'я та телефон'); return; }
+  if (!name || !phone) { alert(T.alertNamePhone); return; }
 
   const summary = (document.getElementById('ledOrderSummary').innerText || '').replace(/\s*\n\s*/g, '\n').trim();
   const key = document.querySelector('meta[name="w3f-key"]')?.content;
   if (!key || key === 'WEB3FORMS_ACCESS_KEY') {
-    alert('Форму ще не підключено до пошти. Зверніться, будь ласка, у Telegram або за телефоном.');
+    alert(T.alertNoForm);
     return;
   }
 
   const original = btn.textContent;
-  btn.disabled = true; btn.textContent = 'Відправляємо…';
+  btn.disabled = true; btn.textContent = T.sending;
   try {
     const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
         access_key: key,
-        subject: 'Заявка з сайту — LED дзеркало',
+        subject: T.subject,
         from_name: 'euro-plitka.com.ua',
-        "Ім'я": name,
-        Телефон: phone,
-        Коментар: comment || '—',
-        Замовлення: summary,
+        [T.fName]: name,
+        [T.fPhone]: phone,
+        [T.fComment]: comment || '—',
+        [T.fOrder]: summary,
       }),
     });
     const data = await res.json();
     if (data.success) {
-      alert('Дякуємо! Заявку відправлено. Ми зв\'яжемося з вами найближчим часом.');
+      alert(T.success);
       document.getElementById('ledName').value = '';
       document.getElementById('ledPhone').value = '';
       document.getElementById('ledComment').value = '';
       document.getElementById('ledOrderModal').classList.remove('open');
     } else {
-      alert('Не вдалося відправити. Спробуйте ще раз або напишіть у Telegram.');
+      alert(T.failSend);
     }
   } catch (e) {
-    alert('Помилка мережі. Перевірте інтернет і спробуйте ще раз.');
+    alert(T.failNet);
   } finally {
     btn.disabled = false; btn.textContent = original;
   }

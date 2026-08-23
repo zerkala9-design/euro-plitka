@@ -17,6 +17,7 @@ interface Props {
   faq?: Faq[];
   article?: Article;
   product?: Product;
+  lang?: 'uk' | 'ru';
 }
 
 const {
@@ -28,11 +29,21 @@ const {
   faq,
   article,
   product,
+  lang = 'uk',
 } = Astro.props;
 
 const origin = 'https://euro-plitka.com.ua';
 const url = canonical ?? `${origin}${Astro.url.pathname}`;
 const ogImageUrl = `${origin}${ogImage}`;
+
+// hreflang: рахуємо парний URL для іншої мови
+const pathname = Astro.url.pathname;
+const ukPath = pathname.startsWith('/ru/') ? pathname.slice(3) : (pathname === '/ru' ? '/' : pathname);
+const ruPath = pathname.startsWith('/ru') ? pathname : ('/ru' + (pathname === '/' ? '/' : pathname));
+const ukHref = origin + ukPath;
+const ruHref = origin + ruPath;
+const htmlLang = lang === 'ru' ? 'ru' : 'uk';
+const ogLocale = lang === 'ru' ? 'ru_RU' : 'uk_UA';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -116,7 +127,7 @@ const faqLd = faq && faq.length ? {
 ---
 
 <!doctype html>
-<html lang="uk">
+<html lang={htmlLang}>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -125,6 +136,9 @@ const faqLd = faq && faq.length ? {
   <meta name="theme-color" content="#b89244" />
   <meta name="w3f-key" content={site.formAccessKey} />
   <link rel="canonical" href={url} />
+  <link rel="alternate" hreflang="uk" href={ukHref} />
+  <link rel="alternate" hreflang="ru" href={ruHref} />
+  <link rel="alternate" hreflang="x-default" href={ukHref} />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -135,7 +149,7 @@ const faqLd = faq && faq.length ? {
   <meta property="og:description" content={description} />
   <meta property="og:url" content={url} />
   <meta property="og:type" content="website" />
-  <meta property="og:locale" content="uk_UA" />
+  <meta property="og:locale" content={ogLocale} />
   <meta property="og:site_name" content="Євро Плитка" />
   <meta property="og:image" content={ogImageUrl} />
   <meta name="twitter:card" content="summary_large_image" />
@@ -149,10 +163,10 @@ const faqLd = faq && faq.length ? {
   {faqLd && <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />}
 </head>
 <body>
-  <Header />
+  <Header lang={lang} />
   <main>
     <slot />
   </main>
-  <Footer />
+  <Footer lang={lang} />
 </body>
 </html>
