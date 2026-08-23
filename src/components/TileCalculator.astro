@@ -1,26 +1,79 @@
 ---
 import { tileCalcConfig } from '../data/site';
 const cfg = JSON.stringify(tileCalcConfig);
+const { lang = 'uk' } = Astro.props;
+const DICT = {
+  uk: {
+    calcTitle: 'Калькулятор дзеркального панно',
+    calcSub: 'Введіть розміри вашої стіни — отримайте варіанти розкрою та вартість',
+    width: 'Ширина', height: 'Висота', facet: 'Фацет', color: 'Колір',
+    colSilver: 'Срібло', colBronze: 'Бронза', colGraphite: 'Графіт',
+    cutMode: 'Розкрій квадратами', fitMode: 'Розкрій ромбами',
+    reset: 'Скинути', zoomIn: 'Збільшити плитку', zoomOut: 'Зменшити плитку',
+    order: '🛒 Замовити', modalPanno: 'Дзеркальне панно',
+    phName: "Ім'я та Прізвище", phPhone: 'Телефон', send: 'Відправити замовлення',
+    locale: 'uk-UA', currency: 'грн', mm: 'мм', pcs: 'шт.',
+    colorNames: ['', 'срібло', 'бронза', 'графіт'],
+    panelSize: 'Розмір панно:', adjusted: '(підігнано під розкрій)',
+    tile: 'Плитка:', diagonals: 'Діагоналі:', grid: 'Сітка:', priceLbl: 'Ціна:',
+    cutName: 'квадрати', fitName: 'ромби', diagRhomb: 'Діагональ ромба:',
+    thForm: 'Форма', thSize: 'Розмір', thFacet: 'Фацет', thColor: 'Колір', thQty: 'К-во', thPrice: 'Ціна', totalLbl: 'Всього',
+    fSquare: 'квадрат', fRhomb: 'ромб', triangle: 'трикутник',
+    alertNamePhone: "Будь ласка, вкажіть ім'я та телефон",
+    alertNoForm: 'Форму ще не підключено до пошти. Зверніться, будь ласка, у Telegram або за телефоном.',
+    sending: 'Відправляємо…', subject: 'Заявка з сайту — дзеркальна плитка',
+    fName: "Ім'я", fPhone: 'Телефон', fPanno: 'Панно', fCut: 'Розкрій',
+    success: "Дякуємо! Заявку відправлено. Ми зв'яжемося з вами найближчим часом.",
+    failSend: 'Не вдалося відправити. Спробуйте ще раз або напишіть у Telegram.',
+    failNet: 'Помилка мережі. Перевірте інтернет і спробуйте ще раз.',
+  },
+  ru: {
+    calcTitle: 'Калькулятор зеркального панно',
+    calcSub: 'Введите размеры вашей стены — получите варианты раскроя и стоимость',
+    width: 'Ширина', height: 'Высота', facet: 'Фацет', color: 'Цвет',
+    colSilver: 'Серебро', colBronze: 'Бронза', colGraphite: 'Графит',
+    cutMode: 'Раскрой квадратами', fitMode: 'Раскрой ромбами',
+    reset: 'Сбросить', zoomIn: 'Увеличить плитку', zoomOut: 'Уменьшить плитку',
+    order: '🛒 Заказать', modalPanno: 'Зеркальное панно',
+    phName: 'Имя и Фамилия', phPhone: 'Телефон', send: 'Отправить заказ',
+    locale: 'ru-RU', currency: 'грн', mm: 'мм', pcs: 'шт.',
+    colorNames: ['', 'серебро', 'бронза', 'графит'],
+    panelSize: 'Размер панно:', adjusted: '(подогнано под раскрой)',
+    tile: 'Плитка:', diagonals: 'Диагонали:', grid: 'Сетка:', priceLbl: 'Цена:',
+    cutName: 'квадраты', fitName: 'ромбы', diagRhomb: 'Диагональ ромба:',
+    thForm: 'Форма', thSize: 'Размер', thFacet: 'Фацет', thColor: 'Цвет', thQty: 'Кол-во', thPrice: 'Цена', totalLbl: 'Всего',
+    fSquare: 'квадрат', fRhomb: 'ромб', triangle: 'треугольник',
+    alertNamePhone: 'Пожалуйста, укажите имя и телефон',
+    alertNoForm: 'Форма ещё не подключена к почте. Свяжитесь, пожалуйста, в Telegram или по телефону.',
+    sending: 'Отправляем…', subject: 'Заявка с сайта — зеркальная плитка',
+    fName: 'Имя', fPhone: 'Телефон', fPanno: 'Панно', fCut: 'Раскрой',
+    success: 'Спасибо! Заявка отправлена. Мы свяжемся с вами в ближайшее время.',
+    failSend: 'Не удалось отправить. Попробуйте ещё раз или напишите в Telegram.',
+    failNet: 'Ошибка сети. Проверьте интернет и попробуйте ещё раз.',
+  },
+};
+const T = DICT[lang] || DICT.uk;
+const tJson = JSON.stringify(T);
 ---
 
 <section class="calc-section section">
   <div class="container">
-    <h2 class="calc-title">Калькулятор дзеркального панно</h2>
-    <p class="calc-sub">Введіть розміри вашої стіни — отримайте варіанти розкрою та вартість</p>
+    <h2 class="calc-title">{T.calcTitle}</h2>
+    <p class="calc-sub">{T.calcSub}</p>
 
     <div class="calc-inputs">
       <label class="calc-field">
-        <span class="calc-field__label">Ширина</span>
+        <span class="calc-field__label">{T.width}</span>
         <input type="number" id="wallW" value="1500" min="300" max="5000" step="10" />
-        <span class="calc-field__unit">мм</span>
+        <span class="calc-field__unit">{T.mm}</span>
       </label>
       <label class="calc-field">
-        <span class="calc-field__label">Висота</span>
+        <span class="calc-field__label">{T.height}</span>
         <input type="number" id="wallH" value="2700" min="300" max="5000" step="10" />
-        <span class="calc-field__unit">мм</span>
+        <span class="calc-field__unit">{T.mm}</span>
       </label>
       <label class="calc-field">
-        <span class="calc-field__label">Фацет</span>
+        <span class="calc-field__label">{T.facet}</span>
         <select id="facet">
           <option value="1">0 мм</option>
           <option value="2">5 мм</option>
@@ -30,11 +83,11 @@ const cfg = JSON.stringify(tileCalcConfig);
         </select>
       </label>
       <label class="calc-field calc-field--color">
-        <span class="calc-field__label">Колір</span>
+        <span class="calc-field__label">{T.color}</span>
         <select id="color">
-          <option value="1">Срібло</option>
-          <option value="2">Бронза</option>
-          <option value="3">Графіт</option>
+          <option value="1">{T.colSilver}</option>
+          <option value="2">{T.colBronze}</option>
+          <option value="3">{T.colGraphite}</option>
         </select>
         <span class="calc-field__swatch" id="colorSwatch"></span>
       </label>
@@ -44,38 +97,38 @@ const cfg = JSON.stringify(tileCalcConfig);
       <!-- cut -->
       <div class="calc-panel" id="panel-cut">
         <div class="panel-header">
-          <span class="panel-mode">Розкрій квадратами</span>
+          <span class="panel-mode">{T.cutMode}</span>
         </div>
         <div class="panel-preview">
           <svg class="panel-svg" id="svg-cut" xmlns="http://www.w3.org/2000/svg"></svg>
           <div class="panel-cutted" id="cutted-cut"></div>
         </div>
         <div class="panel-zoom">
-          <button class="zoom-btn" id="reset-cut" title="Скинути">↺</button>
-          <button class="zoom-btn" id="zoom-in-cut" title="Збільшити плитку">−</button>
-          <button class="zoom-btn" id="zoom-out-cut" title="Зменшити плитку">+</button>
+          <button class="zoom-btn" id="reset-cut" title={T.reset}>↺</button>
+          <button class="zoom-btn" id="zoom-in-cut" title={T.zoomIn}>−</button>
+          <button class="zoom-btn" id="zoom-out-cut" title={T.zoomOut}>+</button>
         </div>
         <div class="panel-info" id="info-cut"></div>
         <div class="panel-price" id="price-cut"></div>
-        <button class="btn btn--primary panel-order" data-mode="cut">🛒 Замовити</button>
+        <button class="btn btn--primary panel-order" data-mode="cut">{T.order}</button>
       </div>
 
       <!-- fit -->
       <div class="calc-panel" id="panel-fit">
         <div class="panel-header">
-          <span class="panel-mode">Розкрій ромбами</span>
+          <span class="panel-mode">{T.fitMode}</span>
         </div>
         <div class="panel-preview">
           <svg class="panel-svg" id="svg-fit" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
         <div class="panel-zoom">
-          <button class="zoom-btn" id="reset-fit" title="Скинути">↺</button>
-          <button class="zoom-btn" id="zoom-in-fit" title="Збільшити плитку">−</button>
-          <button class="zoom-btn" id="zoom-out-fit" title="Зменшити плитку">+</button>
+          <button class="zoom-btn" id="reset-fit" title={T.reset}>↺</button>
+          <button class="zoom-btn" id="zoom-in-fit" title={T.zoomIn}>−</button>
+          <button class="zoom-btn" id="zoom-out-fit" title={T.zoomOut}>+</button>
         </div>
         <div class="panel-info" id="info-fit"></div>
         <div class="panel-price" id="price-fit"></div>
-        <button class="btn btn--primary panel-order" data-mode="fit">🛒 Замовити</button>
+        <button class="btn btn--primary panel-order" data-mode="fit">{T.order}</button>
       </div>
     </div>
 
@@ -83,21 +136,22 @@ const cfg = JSON.stringify(tileCalcConfig);
     <div class="order-modal" id="orderModal">
       <div class="order-modal__box">
         <button class="order-modal__close" id="closeModal">✕</button>
-        <h3 id="modalTitle">Дзеркальне панно</h3>
+        <h3 id="modalTitle">{T.modalPanno}</h3>
         <div class="order-diag" id="orderDiag"></div>
         <table class="order-table" id="orderTable"></table>
         <div class="order-modal__form">
-          <input type="text" placeholder="Ім'я та Прізвище" class="order-modal__input" id="modalName" />
-          <input type="tel" placeholder="Телефон" class="order-modal__input" id="modalPhone" />
-          <button class="btn btn--primary" id="submitOrder" style="width:100%">Відправити замовлення</button>
+          <input type="text" placeholder={T.phName} class="order-modal__input" id="modalName" />
+          <input type="tel" placeholder={T.phPhone} class="order-modal__input" id="modalPhone" />
+          <button class="btn btn--primary" id="submitOrder" style="width:100%">{T.send}</button>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<script define:vars={{ cfg }}>
+<script define:vars={{ cfg, tJson }}>
 const CFG = JSON.parse(cfg);
+const T = JSON.parse(tJson);
 const MODES = ['cut', 'fit'];
 const customCols = { cut: 0, fit: 0 };
 const panelData = {};
@@ -481,29 +535,29 @@ function drawPanel(mode, panel, info) {
 }
 
 // --- Відображення інфо та ціни ---
-function fmt(n) { return n.toLocaleString('uk-UA') + ' грн'; }
+function fmt(n) { return n.toLocaleString(T.locale) + ' ' + T.currency; }
 
 function updatePanelUI(mode, panel, rowData) {
-  const colorNames = ['', 'срібло', 'бронза', 'графіт'];
+  const colorNames = T.colorNames;
   const facetNames = ['', '0', '5', '10', '15', '20'];
 
   const sizeLine = rowData.adjusted
-    ? `<span>Розмір панно: <b>${rowData.panelW}×${rowData.panelH} мм</b> <span style="opacity:.7">(підігнано під розкрій)</span></span>`
-    : `<span>Розмір панно: <b>${rowData.panelW}×${rowData.panelH} мм</b></span>`;
+    ? `<span>${T.panelSize} <b>${rowData.panelW}×${rowData.panelH} ${T.mm}</b> <span style="opacity:.7">${T.adjusted}</span></span>`
+    : `<span>${T.panelSize} <b>${rowData.panelW}×${rowData.panelH} ${T.mm}</b></span>`;
 
   document.getElementById('info-' + mode).innerHTML = `
     ${sizeLine}
-    <span>Плитка: <b>${rowData.tileSizePrecise.toFixed(2)}×${rowData.tileSizePrecise.toFixed(2)} мм</b></span>
-    <span>Діагоналі: <b>${rowData.d1.toFixed(2)}×${rowData.d2.toFixed(2)} мм</b></span>
-    <span>Сітка: <b>${rowData.cols}×${rowData.rowCount}</b></span>
+    <span>${T.tile} <b>${rowData.tileSizePrecise.toFixed(2)}×${rowData.tileSizePrecise.toFixed(2)} ${T.mm}</b></span>
+    <span>${T.diagonals} <b>${rowData.d1.toFixed(2)}×${rowData.d2.toFixed(2)} ${T.mm}</b></span>
+    <span>${T.grid} <b>${rowData.cols}×${rowData.rowCount}</b></span>
   `;
 
   document.getElementById('price-' + mode).innerHTML = `
-    <span class="price-label">Ціна:</span> <span class="price-total">${fmt(rowData.total)}</span>
+    <span class="price-label">${T.priceLbl}</span> <span class="price-total">${fmt(rowData.total)}</span>
   `;
 
   // Зберігаємо для модалки
-  panelData[mode] = { panel, rowData, colorName: colorNames[Number(panel.input.color)] || 'срібло', facetName: facetNames[Number(panel.input.facet)] || '10' };
+  panelData[mode] = { panel, rowData, colorName: colorNames[Number(panel.input.color)] || colorNames[1], facetName: facetNames[Number(panel.input.facet)] || '10' };
 }
 
 // --- Головний рендер ---
@@ -573,29 +627,29 @@ function openModal(mode) {
   const { panel, rowData, colorName, facetName } = panelData[mode] || {};
   if (!rowData) return;
 
-  const modeNames = { cover: 'з перекриттям', cut: 'квадрати', fit: 'ромби' };
+  const modeNames = { cover: '', cut: T.cutName, fit: T.fitName };
   document.getElementById('modalTitle').textContent =
     `Панно ${rowData.panelW}×${rowData.panelH} мм (${modeNames[mode]})`;
 
   document.getElementById('orderDiag').innerHTML =
-    `Діагональ ромба: <b>${rowData.d1.toFixed(2)} × ${rowData.d2.toFixed(2)} мм</b>`;
+    `${T.diagRhomb} <b>${rowData.d1.toFixed(2)} × ${rowData.d2.toFixed(2)} ${T.mm}</b>`;
 
-  const formNames = { 1: 'квадрат', 1.3: 'ромб' };
+  const formNames = { 1: T.fSquare, 1.3: T.fRhomb };
   const rows = rowData.rows.map(r => {
-    const fName = r.triangle ? 'трикутник' : (formNames[r.form] || 'квадрат');
+    const fName = r.triangle ? T.triangle : (formNames[r.form] || T.fSquare);
     return `<tr>
       <td>${fName}</td>
       <td class="num">${r.wLabel.toFixed(2)}×${r.hLabel.toFixed(2)}</td>
-      <td class="num">${facetName} мм</td>
+      <td class="num">${facetName} ${T.mm}</td>
       <td>${colorName}</td>
-      <td class="num">${r.quantity} шт.</td>
+      <td class="num">${r.quantity} ${T.pcs}</td>
       <td class="num"><b class="cell-price">${fmt(r.price)}</b></td>
     </tr>`;
   }).join('');
 
   document.getElementById('orderTable').innerHTML = `
-    <thead><tr><th>Форма</th><th class="num">Розмір</th><th class="num">Фацет</th><th>Колір</th><th class="num">К-во</th><th class="num">Ціна</th></tr></thead>
-    <tbody>${rows}<tr class="order-total"><td colspan="4">Всього</td><td class="num" colspan="2"><b class="cell-price">${fmt(rowData.total)}</b></td></tr></tbody>
+    <thead><tr><th>${T.thForm}</th><th class="num">${T.thSize}</th><th class="num">${T.thFacet}</th><th>${T.thColor}</th><th class="num">${T.thQty}</th><th class="num">${T.thPrice}</th></tr></thead>
+    <tbody>${rows}<tr class="order-total"><td colspan="4">${T.totalLbl}</td><td class="num" colspan="2"><b class="cell-price">${fmt(rowData.total)}</b></td></tr></tbody>
   `;
   document.getElementById('orderModal').classList.add('open');
 }
@@ -615,44 +669,44 @@ document.getElementById('submitOrder').addEventListener('click', async () => {
   const btn = document.getElementById('submitOrder');
   const name = document.getElementById('modalName').value.trim();
   const phone = document.getElementById('modalPhone').value.trim();
-  if (!name || !phone) { alert("Будь ласка, вкажіть ім'я та телефон"); return; }
+  if (!name || !phone) { alert(T.alertNamePhone); return; }
 
-  const title = document.getElementById('modalTitle').textContent || 'Дзеркальне панно';
+  const title = document.getElementById('modalTitle').textContent || T.modalPanno;
   const diag = (document.getElementById('orderDiag').innerText || '').trim();
   const summary = ((diag ? diag + '\n' : '') + (document.getElementById('orderTable').innerText || '')).replace(/\s*\n\s*/g, '\n').trim();
   const key = document.querySelector('meta[name="w3f-key"]')?.content;
   if (!key || key === 'WEB3FORMS_ACCESS_KEY') {
-    alert('Форму ще не підключено до пошти. Зверніться, будь ласка, у Telegram або за телефоном.');
+    alert(T.alertNoForm);
     return;
   }
 
   const original = btn.textContent;
-  btn.disabled = true; btn.textContent = 'Відправляємо…';
+  btn.disabled = true; btn.textContent = T.sending;
   try {
     const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
         access_key: key,
-        subject: 'Заявка з сайту — дзеркальна плитка',
+        subject: T.subject,
         from_name: 'euro-plitka.com.ua',
-        "Ім'я": name,
-        Телефон: phone,
-        Панно: title,
-        Розкрій: summary,
+        [T.fName]: name,
+        [T.fPhone]: phone,
+        [T.fPanno]: title,
+        [T.fCut]: summary,
       }),
     });
     const data = await res.json();
     if (data.success) {
-      alert('Дякуємо! Заявку відправлено. Ми зв\'яжемося з вами найближчим часом.');
+      alert(T.success);
       document.getElementById('modalName').value = '';
       document.getElementById('modalPhone').value = '';
       document.getElementById('orderModal').classList.remove('open');
     } else {
-      alert('Не вдалося відправити. Спробуйте ще раз або напишіть у Telegram.');
+      alert(T.failSend);
     }
   } catch (e) {
-    alert('Помилка мережі. Перевірте інтернет і спробуйте ще раз.');
+    alert(T.failNet);
   } finally {
     btn.disabled = false; btn.textContent = original;
   }
