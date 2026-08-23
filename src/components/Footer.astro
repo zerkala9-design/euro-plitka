@@ -1,16 +1,25 @@
 ---
-import { site, nav } from '../data/site';
+import { site } from '../data/site';
+import { navByLang, ui, withLang } from '../data/i18n';
+const { lang = 'uk' } = Astro.props;
 const year = new Date().getFullYear();
+const nav = navByLang[lang].map((item) => ({ ...item, path: withLang(item.path, lang) }));
+const t = ui[lang];
+const cols = { uk: { catalog: 'Каталог', company: 'Компанія', contacts: 'Контакти' }, ru: { catalog: 'Каталог', company: 'Компания', contacts: 'Контакты' } }[lang];
+const brandText = lang === 'ru'
+  ? 'Зеркальная плитка и LED зеркала в Киеве. Изготовление панно и монтаж от производителя.'
+  : 'Дзеркальна плитка та LED дзеркала в Києві. Виготовлення панно та монтаж від виробника.';
+const bottomTag = lang === 'ru' ? 'Зеркальная плитка в Киеве' : 'Дзеркальна плитка в Києві';
 ---
 
 <footer class="footer">
   <div class="footer__top">
     <div class="container footer__grid">
       <div class="footer__brand">
-        <a href="/" class="logo">
+        <a href={withLang('/', lang)} class="logo">
           <span class="logo__euro">Euro</span><span class="logo__plitka">Plitka</span>
         </a>
-        <p>Дзеркальна плитка та LED дзеркала в Києві. Виготовлення панно та монтаж від виробника.</p>
+        <p>{brandText}</p>
         <div class="footer__socials">
           {site.social.instagram && (
             <a href={site.social.instagram} target="_blank" rel="noopener" class="social-link">
@@ -28,7 +37,7 @@ const year = new Date().getFullYear();
       </div>
 
       <div class="footer__col">
-        <h4>Каталог</h4>
+        <h4>{cols.catalog}</h4>
         <ul>
           {nav.slice(1, 5).map((item) => (
             <li><a href={item.path}>{item.label}</a></li>
@@ -37,7 +46,7 @@ const year = new Date().getFullYear();
       </div>
 
       <div class="footer__col">
-        <h4>Компанія</h4>
+        <h4>{cols.company}</h4>
         <ul>
           {nav.slice(5).map((item) => (
             <li><a href={item.path}>{item.label}</a></li>
@@ -46,7 +55,7 @@ const year = new Date().getFullYear();
       </div>
 
       <div class="footer__col">
-        <h4>Контакти</h4>
+        <h4>{cols.contacts}</h4>
         <ul class="footer__contacts">
           <li><a href={`tel:${site.phone.tel}`}>{site.phone.display}</a></li>
           {site.phone2 && <li><a href={`tel:${site.phone2.tel}`}>{site.phone2.display}</a></li>}
@@ -60,8 +69,8 @@ const year = new Date().getFullYear();
 
   <div class="footer__bottom">
     <div class="container footer__bottom-inner">
-      <span>© {year} {site.name}. Всі права захищені.</span>
-      <span>Дзеркальна плитка в Києві</span>
+      <span>© {year} {site.name}. {t.footerRights}.</span>
+      <span>{bottomTag}</span>
     </div>
   </div>
 </footer>

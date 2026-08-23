@@ -1,15 +1,24 @@
 ---
-import { site, nav } from '../data/site';
+import { site } from '../data/site';
+import { navByLang, ui, withLang } from '../data/i18n';
+const { lang = 'uk' } = Astro.props;
 const current = Astro.url.pathname;
+const nav = navByLang[lang].map((item) => ({ ...item, path: withLang(item.path, lang) }));
+const t = ui[lang];
+
+// Перемикач мов: парний URL іншої мови
+const pathname = Astro.url.pathname;
+const ukPath = pathname.startsWith('/ru/') ? pathname.slice(3) : (pathname === '/ru' ? '/' : pathname);
+const ruPath = pathname.startsWith('/ru') ? pathname : ('/ru' + (pathname === '/' ? '/' : pathname));
 ---
 
 <header class="header" id="header">
   <div class="container header__inner">
-    <a href="/" class="logo">
+    <a href={withLang('/', lang)} class="logo">
       <span class="logo__euro">Euro</span><span class="logo__plitka">Plitka</span>
     </a>
 
-    <nav class="nav" aria-label="Головне меню">
+    <nav class="nav" aria-label={t.menu}>
       <ul class="nav__list">
         {nav.map((item) => (
           <li>
@@ -25,6 +34,10 @@ const current = Astro.url.pathname;
     </nav>
 
     <div class="header__contacts">
+      <div class="lang-switch" aria-label={t.langLabel}>
+        <a href={ukPath} class:list={['lang-switch__opt', { active: lang === 'uk' }]}>UA</a>
+        <a href={ruPath} class:list={['lang-switch__opt', { active: lang === 'ru' }]}>RU</a>
+      </div>
       <a href={`tel:${site.phone.tel}`} class="header__phone">{site.phone.display}</a>
       <a href={site.social.telegram} class="btn btn--primary" target="_blank" rel="noopener">Telegram</a>
     </div>
@@ -41,6 +54,10 @@ const current = Astro.url.pathname;
       ))}
     </ul>
     <div class="mobile-nav__footer">
+      <div class="lang-switch lang-switch--mobile" aria-label={t.langLabel}>
+        <a href={ukPath} class:list={['lang-switch__opt', { active: lang === 'uk' }]}>UA</a>
+        <a href={ruPath} class:list={['lang-switch__opt', { active: lang === 'ru' }]}>RU</a>
+      </div>
       <a href={`tel:${site.phone.tel}`} class="mobile-nav__phone">{site.phone.display}</a>
       <a href={site.social.telegram} class="btn btn--primary" target="_blank" rel="noopener" style="width:100%;text-align:center">Telegram</a>
     </div>
@@ -115,6 +132,12 @@ const current = Astro.url.pathname;
   .nav__link.active { color: var(--gold); font-weight: 600; }
 
   .header__contacts { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+
+  .lang-switch { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .lang-switch__opt { padding: 5px 9px; font-size: 0.8rem; font-weight: 700; color: var(--text-mid); background: transparent; transition: background 0.15s, color 0.15s; }
+  .lang-switch__opt:hover { color: var(--gold); }
+  .lang-switch__opt.active { background: var(--gold); color: #fff; }
+  .lang-switch--mobile { align-self: flex-start; margin-bottom: 4px; }
   .header__phone {
     font-weight: 700;
     font-size: 0.95rem;
