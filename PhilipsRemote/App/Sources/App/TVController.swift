@@ -448,9 +448,12 @@ final class TVController {
     }
 
     func powerToggle() async {
-        // Try to reach the TV and toggle power (send reconnects first).
+        // Always send Wake‑on‑LAN first (harmless if the TV is already awake),
+        // then the power key. `send` reconnects if the TV is reachable. This is
+        // what reliably wakes a TV from networked standby.
+        await wake()
         await send(.standby)     // KEYCODE_POWER
-        // If we couldn't reach it, it's in deep sleep — wake it and retry.
+        // Still not reachable ⇒ deeper sleep ⇒ keep nudging with WoL + retries.
         if !state.isConnected { await powerOn() }
     }
 
