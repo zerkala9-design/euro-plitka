@@ -67,13 +67,6 @@ final class TVController {
     private var connectionGeneration = 0
     /// True while the app is foregrounded and should hold a live connection.
     private var wantsConnection = false
-    /// When the user last pressed a button. Only a recently‑used phone keeps the
-    /// connection alive; an idle phone yields so it doesn't fight another phone.
-    private var lastInteraction: Date?
-    private var isRecentlyActive: Bool {
-        guard let lastInteraction else { return false }
-        return Date().timeIntervalSince(lastInteraction) < 30
-    }
 
     func connect(to device: TVDevice) async {
         disconnect(userInitiated: false)
@@ -119,15 +112,13 @@ final class TVController {
         LiveActivityController.shared.end()
     }
 
-    /// The control channel dropped. If this phone is being actively used, keep
-    /// it alive by reconnecting (so buttons stay snappy). If it's idle, yield —
-    /// don't fight another phone; we reconnect on the next button press.
+    /// The control channel dropped — another phone took the TV's single remote
+    /// slot. Don't fight for it (that makes both phones flicker in and out);
+    /// just sit quietly disconnected and grab it back on the next button press.
     private func handleDropped(generation: Int) {
         guard generation == connectionGeneration, wantsConnection else { return }
         atv = nil
         state = .disconnected
-        guard isRecentlyActive, let device, settings.autoReconnect else { return }
-        scheduleReconnect(to: device, delay: 1.0)
     }
 
     /// Make sure we hold the TV's remote session before sending a command.
@@ -243,7 +234,6 @@ final class TVController {
             Haptics.shared.warning()
             return
         }
-        lastInteraction = Date()
         await ensureConnected()          // grab the TV back if another phone took it
         guard let atv else { return }
         await atv.sendKey(code)
@@ -288,7 +278,6 @@ final class TVController {
             Haptics.shared.warning()
             return
         }
-        lastInteraction = Date()
         heldKey = key
         Task { [weak self] in
             await self?.ensureConnected()    // grab the TV back if another phone took it
