@@ -91,6 +91,78 @@ public actor DiscoveryService {
         continuation = nil
     }
 
+    // MARK: - Subnet scan (fallback when mDNS is blocked)
+
+    /// Scan the phone's local /24 subnet for a host with the Android TV remote
+    /// port open, returning the first match. Works even when the router blocks
+    /// mDNS/Bonjour. Scans in small batches to avoid exhausting sockets.
+    public func scanForTV(port: UInt16 = 6466, timeout: TimeInterval = 1.2) async -> String? {
+        guard let prefix = Self.subnetPrefix() else { return nil }
+        for batchStart in stride(from: 1, through: 254, by: 40) {
+            let batchEnd = min(batchStart + 39, 254)
+            let found = await withTaskGroup(of: String?.self) { group -> String? in
+                for i in batchStart...batchEnd {
+                    let host = "\(prefix).\(i)"
+                    group.addTask { await Self.probePort(host: host, port: port, timeout: timeout) }
+                }
+                for await result in group where result != nil {
+                    group.cancelAll()
+                    return result
+                }
+                return nil
+            }
+            if let found { return found }
+        }
+        return nil
+    }
+
+    /// The first three octets of the phone's Wi‑Fi IPv4 address (e.g. "192.168.0").
+    private static func subnetPrefix() -> String? {
+        var result: String?
+        var ifaddr: UnsafeMutablePointer<ifaddrs>?
+        guard getifaddrs(&ifaddr) == 0, let first = ifaddr else { return nil }
+        defer { freeifaddrs(ifaddr) }
+        for ptr in sequence(first: first, next: { $0.pointee.ifa_next }) {
+            let ifa = ptr.pointee
+            guard ifa.ifa_addr.pointee.sa_family == UInt8(AF_INET) else { continue }
+            let name = String(cString: ifa.ifa_name)
+            guard name == "en0" else { continue }        // Wi‑Fi
+            var host = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+            getnameinfo(ifa.ifa_addr, socklen_t(ifa.ifa_addr.pointee.sa_len),
+                        &host, socklen_t(host.count), nil, 0, NI_NUMERICHOST)
+            let ip = String(cString: host)
+            let parts = ip.split(separator: ".")
+            if parts.count == 4 { result = parts[0...2].joined(separator: ".") }
+        }
+        return result
+    }
+
+    /// Try to open a TCP connection to `host:port`; returns the host on success.
+    private static func probePort(host: String, port: UInt16, timeout: TimeInterval) async -> String? {
+        final class Guard { var done = false; let lock = NSLock() }
+        let g = Guard()
+        return await withCheckedContinuation { (cont: CheckedContinuation<String?, Never>) in
+            let conn = NWConnection(host: NWEndpoint.Host(host),
+                                    port: NWEndpoint.Port(rawValue: port)!, using: .tcp)
+            let queue = DispatchQueue(label: "atv.probe")
+            func finish(_ value: String?) {
+                g.lock.lock(); let already = g.done; g.done = true; g.lock.unlock()
+                if already { return }
+                conn.cancel()
+                cont.resume(returning: value)
+            }
+            conn.stateUpdateHandler = { state in
+                switch state {
+                case .ready: finish(host)
+                case .failed, .cancelled: finish(nil)
+                default: break
+                }
+            }
+            conn.start(queue: queue)
+            queue.asyncAfter(deadline: .now() + timeout) { finish(nil) }
+        }
+    }
+
     /// Resolve a Bonjour endpoint to an IPv4 host string.
     private nonisolated func resolve(_ endpoint: NWEndpoint, completion: @escaping @Sendable (String?) -> Void) {
         let connection = NWConnection(to: endpoint, using: .tcp)

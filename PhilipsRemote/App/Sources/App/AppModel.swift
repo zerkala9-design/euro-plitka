@@ -42,25 +42,16 @@ final class AppModel {
     /// this is how the app follows the TV when its address changes.
     func autoLocateTV() async {
         guard !isScanning,
-              let target = deviceStore.selectedDevice ?? deviceStore.devices.first,
-              deviceStore.devices.count == 1 else { return }
+              let target = deviceStore.selectedDevice ?? deviceStore.devices.first else { return }
         isScanning = true
-        await discovery.resetSeen()
-        let stream = await discovery.discover()
+        defer { isScanning = false }
 
-        let locate = Task { () -> String? in
-            for await found in stream { return found.host }   // first Android TV seen
-            return nil
+        // 1. Try Bonjour/mDNS (fast when the router allows it).
+        var newHost = await firstDiscoveredHost(within: 5)
+        // 2. Fallback: scan the local subnet for the TV's remote port.
+        if newHost == nil {
+            newHost = await discovery.scanForTV()
         }
-        let timeout = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(8))
-            locate.cancel()
-            await self?.discovery.stop()
-        }
-        let newHost = await locate.value
-        timeout.cancel()
-        await discovery.stop()
-        isScanning = false
 
         guard let newHost, newHost != target.host else { return }
         deviceStore.setHost(newHost, for: target)
@@ -68,6 +59,25 @@ final class AppModel {
            let updated = deviceStore.selectedDevice {
             await controller.connect(to: updated)
         }
+    }
+
+    /// First Android TV host seen via Bonjour within `seconds`, or nil.
+    private func firstDiscoveredHost(within seconds: Double) async -> String? {
+        await discovery.resetSeen()
+        let stream = await discovery.discover()
+        let locate = Task { () -> String? in
+            for await found in stream { return found.host }
+            return nil
+        }
+        let timeout = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(seconds))
+            locate.cancel()
+            await self?.discovery.stop()
+        }
+        let host = await locate.value
+        timeout.cancel()
+        await discovery.stop()
+        return host
     }
 
     // MARK: - Discovery
