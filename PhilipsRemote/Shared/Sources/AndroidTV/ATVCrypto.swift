@@ -13,10 +13,44 @@ import SwiftASN1
 /// the Keychain, and reused. Exposed as a `sec_identity_t` for `Network`.
 public enum ATVCrypto {
 
-    // v2: force a fresh swift-certificates identity, ignoring any earlier
-    // hand-built (invalid) cert left in the Keychain from older builds.
-    private static let keyTag = "com.europlitka.philipsremote.atv.key.v2".data(using: .utf8)!
-    private static let certLabel = "com.europlitka.philipsremote.atv.cert.v2"
+    // v3: a SHARED identity baked into the app, so every phone presents the
+    // same client certificate. The TV only trusts one remote certificate, so a
+    // shared one lets several phones stay paired at once (it sees them as one
+    // remote) instead of each pairing evicting the previous.
+    private static let keyTag = "com.europlitka.philipsremote.atv.key.v3".data(using: .utf8)!
+    private static let certLabel = "com.europlitka.philipsremote.atv.cert.v3"
+
+    /// Fixed RSA private key shared by every install (PKCS#8 PEM).
+    private static let sharedKeyPEM = """
+    -----BEGIN PRIVATE KEY-----
+    MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC2QZDZoI1sUNNf
+    zD5tM0IOSpPzDd5Za02RVQAdCWM9FpeN/fJSelwO2hKIQUzeBprQUa4xrdwhE49M
+    yRvWkulHksYxxC36BaEsCv0Vpy+EbWdntbqIk2BlS2g2xnyDsxcTvKxkyjxEMCJp
+    FTLgFnSMEnn18TW58gJCkmjVdGpc81c4ueX06dvVM2gcfU1hk81NVCNnk0FTDNYf
+    KHS17cUHKRPWqPkl7ZsIA1dEAC7HPhdFn4op4BRctpEqTOSDhvbhmvfVvikBiEYs
+    QCvz9UU1QExKpIrsTjHDmimcDtfalOxMxHD2HcT9mjRO1wLfjpCQyK4vZijwRrkh
+    EY2Fs16NAgMBAAECggEACzgmtOQ88HcFRrdppwqUaBF6jBLFe5cEaQw6Jo9xDCNQ
+    5GJxQVcw8DpyZkWGzYAglZmsRyNJvWuD0xk/h8pMEVDdYdY5clOtuUAFQQj6qYSb
+    7KFzldFktLebTGE+7FM2T3Zk3Qt/Vuno+bO0Cba4KUtAi2hJg2R8ySD+0m0JLdGJ
+    Eki2hhY4+UB0VkbfHHdIDRmMl0WHBDppOvLWkiGRYWpiklznzp8/cyg1kfoCHo7G
+    MLjcaOM2p1TRNhV3cR4u7CZXLqD+F6n8ctBEUCvLu0F+YzNm6KWzn/k0SYeey12g
+    AlTGL9TIdoLGz4I3/pgjRqrPh6yGKVqYJku6+DOtTQKBgQDf2LPI/lphYE7EyVM8
+    Az/z0q8xTIfjN8cWLXxWMTbDnOhsxja7PAtzM3gELAjTvXtjMe3+caKOX9XGg5od
+    1IGAQgkG9qfdUH4tdBRKfg/vHbfBlxK0ujgn7B8A+bLLZCjWDjNh4cP6vWZ9HWH5
+    VEg5nxUjkbR2ca06Y/MmKNGr2wKBgQDQb3/f/siQK6jeNRLBTwfx/a8OBCaSWIWk
+    MPRBkaE6obTMPnE3PQx5yfKa2Y2MXtb7mha01WPmkxbdCdCb64SgFLEjzo50mYjq
+    Xg/N43SE1YaIq0qiAtYp+IKGLyw/CZHXFoTXtUEWVhQzQF4I1jUGSJvGh4YM560M
+    t2pXzKYftwKBgQDdG3GjBNODwhysNu0Xp2IhVqeke6LyZuMpXe6mOOCOYkwXPcdM
+    NOhed6WCAXkKpezeM7CRF+/o0HMaLl4qPwFYDmJaVYPEkUDBZxqv5kuY9vLOr4pT
+    qGnVzV9mmD7qttm7brWEZvwtja5RwZdIL99Tw3ae9sqaAHmK5rWDqOhK5wKBgDlH
+    iuKph8Bm3x9BgofxCgPsbSDy7w6kmQVIFre2J5KPQbonJsHBWx5U6wC27Hk4zueR
+    rs+/HJcOsOfJfLR8gpPjW9K1Pty4HLIba0hvS2P9sdz5BaeEFAqwql3ptMUWAigT
+    nioRO3PB8Actlynig+vYJEbok2QUfq/R7711Fen9AoGBAIG1roaUsz9tag0UhwHg
+    QC0kAN2ZO1uyH35wYQLp9/HgJrrSYVJTqaR0ZsaHdK3/QX/s+lmEdyaA4yh6XKba
+    vPEJE30doKVkh8hrUVWwQA2aE6NUjEAwWiJMV6yztswX6qD6Ov+5EF4yboZGcOh0
+    779K0P1IqfSeMAbXC72TJqGr
+    -----END PRIVATE KEY-----
+    """
 
     public struct Identity {
         public let secIdentity: SecIdentity
@@ -33,7 +67,7 @@ public enum ATVCrypto {
             return Identity(secIdentity: identity, modulus: numbers.modulus, exponent: numbers.exponent)
         }
 
-        let rsa = try _RSA.Signing.PrivateKey(keySize: .bits2048)
+        let rsa = try _RSA.Signing.PrivateKey(pemRepresentation: Self.sharedKeyPEM)
         let certDER = try makeCertificate(rsa: rsa)
         try importPrivateKey(rsa)
         try storeCertificate(certDER)
@@ -55,12 +89,14 @@ public enum ATVCrypto {
     private static func makeCertificate(rsa: _RSA.Signing.PrivateKey) throws -> Data {
         let key = Certificate.PrivateKey(rsa)
         let name = try DistinguishedName { CommonName("atvremote") }
+        // Fixed serial + validity dates so every install produces a byte‑identical
+        // certificate (the TV must recognise the same cert from any phone).
         let cert = try Certificate(
             version: .v3,
-            serialNumber: Certificate.SerialNumber(),
+            serialNumber: Certificate.SerialNumber(bytes: [0x2E, 0x75, 0x88, 0x1A, 0x9C, 0x40, 0x3B, 0x12]),
             publicKey: key.publicKey,
-            notValidBefore: Date().addingTimeInterval(-86_400),
-            notValidAfter: Date().addingTimeInterval(60 * 60 * 24 * 3650),
+            notValidBefore: Date(timeIntervalSince1970: 1_700_000_000),   // 2023-11-14
+            notValidAfter: Date(timeIntervalSince1970: 2_650_000_000),    // 2053
             issuer: name,
             subject: name,
             signatureAlgorithm: .sha256WithRSAEncryption,
