@@ -68,13 +68,17 @@ public enum ATVCrypto {
 
         let rsa = try _RSA.Signing.PrivateKey(pemRepresentation: Self.sharedKeyPEM)
         let certDER = try makeCertificate(rsa: rsa)
-        try importPrivateKey(rsa)
+        try importPrivateKey(pkcs1DER: Self.sharedKeyPKCS1DER())
         try storeCertificate(certDER)
 
-        guard let identity = try loadIdentityFromKeychain(),
-              let cert = copyCertificate(from: identity),
-              let numbers = publicKeyNumbers(from: cert) else {
-            throw PhilipsError.unknown("Identity setup failed")
+        guard let identity = try loadIdentityFromKeychain() else {
+            throw PhilipsError.unknown("Identity failed: no identity in keychain")
+        }
+        guard let cert = copyCertificate(from: identity) else {
+            throw PhilipsError.unknown("Identity failed: no cert in identity")
+        }
+        guard let numbers = publicKeyNumbers(from: cert) else {
+            throw PhilipsError.unknown("Identity failed: no public key numbers")
         }
         return Identity(secIdentity: identity, modulus: numbers.modulus, exponent: numbers.exponent)
     }
@@ -109,15 +113,25 @@ public enum ATVCrypto {
 
     // MARK: - Keychain: key + certificate → identity
 
-    private static func importPrivateKey(_ rsa: _RSA.Signing.PrivateKey) throws {
-        let pkcs1 = ASN1.pkcs1PrivateKey(from: rsa.derRepresentation)
+    /// The shared key's raw PKCS#1 DER (exactly what SecKeyCreateWithData wants
+    /// for an RSA private key), decoded straight from the embedded PEM.
+    private static func sharedKeyPKCS1DER() -> Data {
+        let base64 = sharedKeyPEM
+            .replacingOccurrences(of: "-----BEGIN RSA PRIVATE KEY-----", with: "")
+            .replacingOccurrences(of: "-----END RSA PRIVATE KEY-----", with: "")
+            .components(separatedBy: .whitespacesAndNewlines)
+            .joined()
+        return Data(base64Encoded: base64) ?? Data()
+    }
+
+    private static func importPrivateKey(pkcs1DER: Data) throws {
         let attrs: [String: Any] = [
             kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
             kSecAttrKeyClass as String: kSecAttrKeyClassPrivate,
             kSecAttrKeySizeInBits as String: 2048
         ]
         var error: Unmanaged<CFError>?
-        guard let key = SecKeyCreateWithData(pkcs1 as CFData, attrs as CFDictionary, &error) else {
+        guard let key = SecKeyCreateWithData(pkcs1DER as CFData, attrs as CFDictionary, &error) else {
             throw PhilipsError.unknown("Key import failed")
         }
         let add: [String: Any] = [
