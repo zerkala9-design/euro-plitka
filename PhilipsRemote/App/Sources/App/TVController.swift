@@ -67,6 +67,17 @@ final class TVController {
     private var connectionGeneration = 0
     /// True while the app is foregrounded and should hold a live connection.
     private var wantsConnection = false
+    /// When the user last pressed a button (only a recently‑used phone keeps
+    /// the connection alive, so idle phones don't fight the one in use).
+    private var lastInteraction: Date?
+    /// When the current connection was established, and how many times we were
+    /// dropped shortly after connecting (i.e. kicked by another phone).
+    private var lastConnectTime: Date?
+    private var quickDropCount = 0
+    private var isRecentlyActive: Bool {
+        guard let lastInteraction else { return false }
+        return Date().timeIntervalSince(lastInteraction) < 20
+    }
 
     func connect(to device: TVDevice) async {
         disconnect(userInitiated: false)
@@ -93,6 +104,7 @@ final class TVController {
         do {
             try await client.connect()
             state = .connected
+            lastConnectTime = Date()
             startLiveActivity()
         } catch let error as PhilipsError {
             state = .failed(error.localizedDescription)
@@ -112,13 +124,21 @@ final class TVController {
         LiveActivityController.shared.end()
     }
 
-    /// The control channel dropped — another phone took the TV's single remote
-    /// slot. Don't fight for it (that makes both phones flicker in and out);
-    /// just sit quietly disconnected and grab it back on the next button press.
+    /// The control channel dropped. If this phone is in active use, restore the
+    /// connection right away so buttons stay smooth (no per‑press reconnect
+    /// pause). But if it's being kicked repeatedly (another phone is actively
+    /// using the TV), stop fighting and yield — grab it back on the next press.
     private func handleDropped(generation: Int) {
         guard generation == connectionGeneration, wantsConnection else { return }
         atv = nil
         state = .disconnected
+
+        let lasted = lastConnectTime.map { Date().timeIntervalSince($0) } ?? .infinity
+        quickDropCount = lasted < 4 ? quickDropCount + 1 : 0
+
+        guard isRecentlyActive, quickDropCount < 3,
+              let device, settings.autoReconnect else { return }
+        scheduleReconnect(to: device, delay: 0.6)
     }
 
     /// Make sure we hold the TV's remote session before sending a command.
@@ -234,6 +254,7 @@ final class TVController {
             Haptics.shared.warning()
             return
         }
+        lastInteraction = Date()
         await ensureConnected()          // grab the TV back if another phone took it
         guard let atv else { return }
         await atv.sendKey(code)
@@ -279,6 +300,7 @@ final class TVController {
             return
         }
         heldKey = key
+        lastInteraction = Date()
         Task { [weak self] in
             await self?.ensureConnected()    // grab the TV back if another phone took it
             await self?.atv?.pressKey(code)
