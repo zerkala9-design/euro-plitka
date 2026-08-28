@@ -2,53 +2,23 @@ import Foundation
 import Security
 import Network
 import Crypto
-import _CryptoExtras
-import X509
-import SwiftASN1
 
 /// Certificate + key material for the Android TV Remote TLS connections.
 ///
-/// A persistent self‑signed RSA identity is generated with swift‑certificates
-/// (a valid X.509 cert — the hand‑rolled one was rejected by the TV), stored in
-/// the Keychain, and reused. Exposed as a `sec_identity_t` for `Network`.
+/// A single fixed client identity (RSA key + self‑signed cert) is baked into
+/// the app as a PKCS#12 blob and loaded with `SecPKCS12Import`. Because every
+/// install presents the *same* certificate, the TV — which only trusts one
+/// remote certificate — keeps several phones paired at once (it sees them as
+/// one remote) instead of each pairing evicting the previous.
 public enum ATVCrypto {
 
-    // v3: a SHARED identity baked into the app, so every phone presents the
-    // same client certificate. The TV only trusts one remote certificate, so a
-    // shared one lets several phones stay paired at once (it sees them as one
-    // remote) instead of each pairing evicting the previous.
-    private static let keyTag = "com.europlitka.philipsremote.atv.key.v4".data(using: .utf8)!
-    private static let certLabel = "com.europlitka.philipsremote.atv.cert.v4"
+    /// Password protecting the embedded PKCS#12 identity.
+    private static let p12Password = "europlitka"
 
-    /// Fixed RSA private key shared by every install (PKCS#1 PEM).
-    private static let sharedKeyPEM = """
-    -----BEGIN RSA PRIVATE KEY-----
-    MIIEowIBAAKCAQEAsA88987tWDtPQEuUPNVN9AvwekfAywZ9328BguLMpADT9dv4
-    I+ziC2JWzfddl/HrL7Xm29mSKHeArvFaJ9uwbEsV1o0Blpn5jtS7dm6yAcbURVMQ
-    PHemVkft7JUIxit/PqQxiDRw17aWM+9cZ2uF4Udx8FXZJXw5stb75/HQL31B9lCU
-    rF9SvDBrPjMZRKH/bBTgfNWWbByVMjhlvb+P9Zf3fZVkpe5/2MXkkPEhyAxFj/Hb
-    0Klfcnx1hXkowI7+hqvBxe8nBHvlm+HTtHuARqIQF4EqyqDZZAO9XOwDYpKQMa5L
-    ac+mB7Y3uiTsm0CZoD77N6rEnFF9r9uA3jseAQIDAQABAoIBAA52EKDd3pQaJQo9
-    MFh8gHoXVqHt+F7vcicy4pR6EBXi2oYt6AMoFIYbsPvF1yp2ohs0Yq7JaiOy8yng
-    zwdfQxhrZMhkzc4Cvjig7nf4eNxuqjtlKqbTgMvCqJSU8O2kH4AenlHs1XL71KPA
-    mV4GUIQeqUl00mYC6ZNawhdnvvJTgZFo1rpdTUqKzw5PYGXTbao1caSZ4q8WihFT
-    u33Kk0/tX2HF4CzzoReUFFtJ109ASlUJNO6kXAUHZ6VhBHYkLUfTdy2MWGeKVLOF
-    wpIcu5ZOAk+b85HdcEIzwyxBFn4rDuRfjuyOR0oEf0FjT3GOLPxZ636T8W4kvllr
-    s3a6CxUCgYEA3CEBuxlJT/cT3RFeZltTlfaALrtOsx1PL1pHh5Uqle54hbO1aXr5
-    8jsphdbNZtSlYJ3WWbpQJpOSdIU7Njpa/u+64jY+qSbHOssTZHGti93dihYLkVvn
-    ftK2/wjAaWAW7Qz2s0uA9xnLY5lXk+T0qeCkR3bPuzniqyVfnsQIRcUCgYEAzL/Q
-    IBpXxRrLpDU4R62MTplp0kdHJBClvH9jdaf8fXg3C6V5X2vAkWkJeK/x9z1vPpLx
-    /S2oN67lyW8ETgHa462Gw03g0bKRnlvf/5Cjz26wFaXqrLamElvAEtsDEV42fMfT
-    d8pcVuFnfyFpzJj48df3MNm8CpjXTdzaaDLtdw0CgYBBvUm7Co4uZ2dzOeCrSNLp
-    kjgtvJqAO1yOk7OQ9idFp3Yu18Bxw9wpTynTYpbtAsxw0jJVkaKmIqQ2UCOiykKq
-    qAVz0SdddMtC76rW8GwXvSaQOo0x1/SGl383IvHzhlLScHCskvvsz7NCB2V0MYgv
-    w3rMLNtU2rCq0/p+e6TM0QKBgQC/kkzibKNoqYyWJLF251ubAxGvDL/0b5sSxkJC
-    CJ5Gqx8dx4LLlB8GLrgM8tq7kQCwFH9Ues6k4wDfOv9VGYk7c9XekNRkf+adu6rX
-    DPcoE5Gvf6EWXoL+NFh/i+nP602h7LngoDdLlvTmT1YVd5+dcIs5as/1PlJc6OJ1
-    kgj7VQKBgBeDXitU+zB2oK9Xhd17/7JMAKo+JK/fMNTHZFyxrqRAjI9MOr1/zxG/
-    FZxdM5ODZyfPLaJGNDxIn9LD+SHVfwPCnYPk8J77QM7+u4HOBoEtfLjWPPA8O1M0
-    UmFjSh5QsOdaB3LhU8PEGSGcqbkrYCWosnHskh4/fH2ipa0OZZmG
-    -----END RSA PRIVATE KEY-----
+    /// Fixed shared identity (RSA 2048 key + self‑signed cert), PKCS#12/DER,
+    /// legacy‑encrypted for `SecPKCS12Import` compatibility, base64‑encoded.
+    private static let identityP12Base64 = """
+    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
     """
 
     public struct Identity {
@@ -60,121 +30,29 @@ public enum ATVCrypto {
     // MARK: - Identity
 
     public static func loadOrCreateIdentity() throws -> Identity {
-        if let identity = try loadIdentityFromKeychain(),
-           let cert = copyCertificate(from: identity),
-           let numbers = publicKeyNumbers(from: cert) {
-            return Identity(secIdentity: identity, modulus: numbers.modulus, exponent: numbers.exponent)
+        let base64 = identityP12Base64.components(separatedBy: .whitespacesAndNewlines).joined()
+        guard let p12Data = Data(base64Encoded: base64) else {
+            throw PhilipsError.unknown("Identity failed: bad p12 data")
         }
-
-        let rsa = try _RSA.Signing.PrivateKey(pemRepresentation: Self.sharedKeyPEM)
-        let certDER = try makeCertificate(rsa: rsa)
-        try importPrivateKey(pkcs1DER: Self.sharedKeyPKCS1DER())
-        try storeCertificate(certDER)
-
-        guard let identity = try loadIdentityFromKeychain() else {
-            throw PhilipsError.unknown("Identity failed: no identity in keychain")
+        let options: [String: Any] = [kSecImportExportPassphrase as String: p12Password]
+        var items: CFArray?
+        let status = SecPKCS12Import(p12Data as CFData, options as CFDictionary, &items)
+        guard status == errSecSuccess,
+              let array = items as? [[String: Any]],
+              let first = array.first,
+              let identityRef = first[kSecImportItemIdentity as String] else {
+            throw PhilipsError.unknown("Identity failed: p12 import (\(status))")
         }
-        guard let cert = copyCertificate(from: identity) else {
-            throw PhilipsError.unknown("Identity failed: no cert in identity")
-        }
-        guard let numbers = publicKeyNumbers(from: cert) else {
-            throw PhilipsError.unknown("Identity failed: no public key numbers")
+        let identity = identityRef as! SecIdentity
+        guard let cert = copyCertificate(from: identity),
+              let numbers = publicKeyNumbers(from: cert) else {
+            throw PhilipsError.unknown("Identity failed: no public key")
         }
         return Identity(secIdentity: identity, modulus: numbers.modulus, exponent: numbers.exponent)
     }
 
     public static func secIdentity(_ identity: SecIdentity) -> sec_identity_t? {
         sec_identity_create(identity)
-    }
-
-    // MARK: - Certificate (swift-certificates)
-
-    private static func makeCertificate(rsa: _RSA.Signing.PrivateKey) throws -> Data {
-        let key = Certificate.PrivateKey(rsa)
-        let name = try DistinguishedName { CommonName("atvremote") }
-        // Fixed serial + validity dates so every install produces a byte‑identical
-        // certificate (the TV must recognise the same cert from any phone).
-        let cert = try Certificate(
-            version: .v3,
-            serialNumber: Certificate.SerialNumber(bytes: [0x2E, 0x75, 0x88, 0x1A, 0x9C, 0x40, 0x3B, 0x12]),
-            publicKey: key.publicKey,
-            notValidBefore: Date(timeIntervalSince1970: 1_700_000_000),   // 2023-11-14
-            notValidAfter: Date(timeIntervalSince1970: 2_650_000_000),    // 2053
-            issuer: name,
-            subject: name,
-            signatureAlgorithm: .sha256WithRSAEncryption,
-            extensions: Certificate.Extensions {},
-            issuerPrivateKey: key
-        )
-        var serializer = DER.Serializer()
-        try serializer.serialize(cert)
-        return Data(serializer.serializedBytes)
-    }
-
-    // MARK: - Keychain: key + certificate → identity
-
-    /// The shared key's raw PKCS#1 DER (exactly what SecKeyCreateWithData wants
-    /// for an RSA private key), decoded straight from the embedded PEM.
-    private static func sharedKeyPKCS1DER() -> Data {
-        let base64 = sharedKeyPEM
-            .replacingOccurrences(of: "-----BEGIN RSA PRIVATE KEY-----", with: "")
-            .replacingOccurrences(of: "-----END RSA PRIVATE KEY-----", with: "")
-            .components(separatedBy: .whitespacesAndNewlines)
-            .joined()
-        return Data(base64Encoded: base64) ?? Data()
-    }
-
-    private static func importPrivateKey(pkcs1DER: Data) throws {
-        let attrs: [String: Any] = [
-            kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
-            kSecAttrKeyClass as String: kSecAttrKeyClassPrivate,
-            kSecAttrKeySizeInBits as String: 2048
-        ]
-        var error: Unmanaged<CFError>?
-        guard let key = SecKeyCreateWithData(pkcs1DER as CFData, attrs as CFDictionary, &error) else {
-            throw PhilipsError.unknown("Key import failed")
-        }
-        let add: [String: Any] = [
-            kSecClass as String: kSecClassKey,
-            kSecAttrApplicationTag as String: keyTag,
-            kSecValueRef as String: key
-        ]
-        SecItemDelete(add as CFDictionary)
-        let status = SecItemAdd(add as CFDictionary, nil)
-        guard status == errSecSuccess || status == errSecDuplicateItem else {
-            throw PhilipsError.unknown("Key store failed (\(status))")
-        }
-    }
-
-    private static func storeCertificate(_ der: Data) throws {
-        guard let cert = SecCertificateCreateWithData(nil, der as CFData) else {
-            throw PhilipsError.unknown("Bad certificate DER")
-        }
-        let add: [String: Any] = [
-            kSecClass as String: kSecClassCertificate,
-            kSecValueRef as String: cert,
-            kSecAttrLabel as String: certLabel
-        ]
-        SecItemDelete(add as CFDictionary)
-        let status = SecItemAdd(add as CFDictionary, nil)
-        guard status == errSecSuccess || status == errSecDuplicateItem else {
-            throw PhilipsError.unknown("Certificate store failed (\(status))")
-        }
-    }
-
-    private static func loadIdentityFromKeychain() throws -> SecIdentity? {
-        // Match only OUR identity (by the certificate label), so a stale
-        // identity from an earlier build is never picked up.
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassIdentity,
-            kSecAttrLabel as String: certLabel,
-            kSecReturnRef as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
-        ]
-        var item: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &item)
-        guard status == errSecSuccess, let item else { return nil }
-        return (item as! SecIdentity)
     }
 
     private static func copyCertificate(from identity: SecIdentity) -> SecCertificate? {
