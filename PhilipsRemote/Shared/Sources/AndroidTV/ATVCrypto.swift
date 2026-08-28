@@ -17,39 +17,38 @@ public enum ATVCrypto {
     // same client certificate. The TV only trusts one remote certificate, so a
     // shared one lets several phones stay paired at once (it sees them as one
     // remote) instead of each pairing evicting the previous.
-    private static let keyTag = "com.europlitka.philipsremote.atv.key.v3".data(using: .utf8)!
-    private static let certLabel = "com.europlitka.philipsremote.atv.cert.v3"
+    private static let keyTag = "com.europlitka.philipsremote.atv.key.v4".data(using: .utf8)!
+    private static let certLabel = "com.europlitka.philipsremote.atv.cert.v4"
 
-    /// Fixed RSA private key shared by every install (PKCS#8 PEM).
+    /// Fixed RSA private key shared by every install (PKCS#1 PEM).
     private static let sharedKeyPEM = """
-    -----BEGIN PRIVATE KEY-----
-    MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC2QZDZoI1sUNNf
-    zD5tM0IOSpPzDd5Za02RVQAdCWM9FpeN/fJSelwO2hKIQUzeBprQUa4xrdwhE49M
-    yRvWkulHksYxxC36BaEsCv0Vpy+EbWdntbqIk2BlS2g2xnyDsxcTvKxkyjxEMCJp
-    FTLgFnSMEnn18TW58gJCkmjVdGpc81c4ueX06dvVM2gcfU1hk81NVCNnk0FTDNYf
-    KHS17cUHKRPWqPkl7ZsIA1dEAC7HPhdFn4op4BRctpEqTOSDhvbhmvfVvikBiEYs
-    QCvz9UU1QExKpIrsTjHDmimcDtfalOxMxHD2HcT9mjRO1wLfjpCQyK4vZijwRrkh
-    EY2Fs16NAgMBAAECggEACzgmtOQ88HcFRrdppwqUaBF6jBLFe5cEaQw6Jo9xDCNQ
-    5GJxQVcw8DpyZkWGzYAglZmsRyNJvWuD0xk/h8pMEVDdYdY5clOtuUAFQQj6qYSb
-    7KFzldFktLebTGE+7FM2T3Zk3Qt/Vuno+bO0Cba4KUtAi2hJg2R8ySD+0m0JLdGJ
-    Eki2hhY4+UB0VkbfHHdIDRmMl0WHBDppOvLWkiGRYWpiklznzp8/cyg1kfoCHo7G
-    MLjcaOM2p1TRNhV3cR4u7CZXLqD+F6n8ctBEUCvLu0F+YzNm6KWzn/k0SYeey12g
-    AlTGL9TIdoLGz4I3/pgjRqrPh6yGKVqYJku6+DOtTQKBgQDf2LPI/lphYE7EyVM8
-    Az/z0q8xTIfjN8cWLXxWMTbDnOhsxja7PAtzM3gELAjTvXtjMe3+caKOX9XGg5od
-    1IGAQgkG9qfdUH4tdBRKfg/vHbfBlxK0ujgn7B8A+bLLZCjWDjNh4cP6vWZ9HWH5
-    VEg5nxUjkbR2ca06Y/MmKNGr2wKBgQDQb3/f/siQK6jeNRLBTwfx/a8OBCaSWIWk
-    MPRBkaE6obTMPnE3PQx5yfKa2Y2MXtb7mha01WPmkxbdCdCb64SgFLEjzo50mYjq
-    Xg/N43SE1YaIq0qiAtYp+IKGLyw/CZHXFoTXtUEWVhQzQF4I1jUGSJvGh4YM560M
-    t2pXzKYftwKBgQDdG3GjBNODwhysNu0Xp2IhVqeke6LyZuMpXe6mOOCOYkwXPcdM
-    NOhed6WCAXkKpezeM7CRF+/o0HMaLl4qPwFYDmJaVYPEkUDBZxqv5kuY9vLOr4pT
-    qGnVzV9mmD7qttm7brWEZvwtja5RwZdIL99Tw3ae9sqaAHmK5rWDqOhK5wKBgDlH
-    iuKph8Bm3x9BgofxCgPsbSDy7w6kmQVIFre2J5KPQbonJsHBWx5U6wC27Hk4zueR
-    rs+/HJcOsOfJfLR8gpPjW9K1Pty4HLIba0hvS2P9sdz5BaeEFAqwql3ptMUWAigT
-    nioRO3PB8Actlynig+vYJEbok2QUfq/R7711Fen9AoGBAIG1roaUsz9tag0UhwHg
-    QC0kAN2ZO1uyH35wYQLp9/HgJrrSYVJTqaR0ZsaHdK3/QX/s+lmEdyaA4yh6XKba
-    vPEJE30doKVkh8hrUVWwQA2aE6NUjEAwWiJMV6yztswX6qD6Ov+5EF4yboZGcOh0
-    779K0P1IqfSeMAbXC72TJqGr
-    -----END PRIVATE KEY-----
+    -----BEGIN RSA PRIVATE KEY-----
+    MIIEowIBAAKCAQEAsA88987tWDtPQEuUPNVN9AvwekfAywZ9328BguLMpADT9dv4
+    I+ziC2JWzfddl/HrL7Xm29mSKHeArvFaJ9uwbEsV1o0Blpn5jtS7dm6yAcbURVMQ
+    PHemVkft7JUIxit/PqQxiDRw17aWM+9cZ2uF4Udx8FXZJXw5stb75/HQL31B9lCU
+    rF9SvDBrPjMZRKH/bBTgfNWWbByVMjhlvb+P9Zf3fZVkpe5/2MXkkPEhyAxFj/Hb
+    0Klfcnx1hXkowI7+hqvBxe8nBHvlm+HTtHuARqIQF4EqyqDZZAO9XOwDYpKQMa5L
+    ac+mB7Y3uiTsm0CZoD77N6rEnFF9r9uA3jseAQIDAQABAoIBAA52EKDd3pQaJQo9
+    MFh8gHoXVqHt+F7vcicy4pR6EBXi2oYt6AMoFIYbsPvF1yp2ohs0Yq7JaiOy8yng
+    zwdfQxhrZMhkzc4Cvjig7nf4eNxuqjtlKqbTgMvCqJSU8O2kH4AenlHs1XL71KPA
+    mV4GUIQeqUl00mYC6ZNawhdnvvJTgZFo1rpdTUqKzw5PYGXTbao1caSZ4q8WihFT
+    u33Kk0/tX2HF4CzzoReUFFtJ109ASlUJNO6kXAUHZ6VhBHYkLUfTdy2MWGeKVLOF
+    wpIcu5ZOAk+b85HdcEIzwyxBFn4rDuRfjuyOR0oEf0FjT3GOLPxZ636T8W4kvllr
+    s3a6CxUCgYEA3CEBuxlJT/cT3RFeZltTlfaALrtOsx1PL1pHh5Uqle54hbO1aXr5
+    8jsphdbNZtSlYJ3WWbpQJpOSdIU7Njpa/u+64jY+qSbHOssTZHGti93dihYLkVvn
+    ftK2/wjAaWAW7Qz2s0uA9xnLY5lXk+T0qeCkR3bPuzniqyVfnsQIRcUCgYEAzL/Q
+    IBpXxRrLpDU4R62MTplp0kdHJBClvH9jdaf8fXg3C6V5X2vAkWkJeK/x9z1vPpLx
+    /S2oN67lyW8ETgHa462Gw03g0bKRnlvf/5Cjz26wFaXqrLamElvAEtsDEV42fMfT
+    d8pcVuFnfyFpzJj48df3MNm8CpjXTdzaaDLtdw0CgYBBvUm7Co4uZ2dzOeCrSNLp
+    kjgtvJqAO1yOk7OQ9idFp3Yu18Bxw9wpTynTYpbtAsxw0jJVkaKmIqQ2UCOiykKq
+    qAVz0SdddMtC76rW8GwXvSaQOo0x1/SGl383IvHzhlLScHCskvvsz7NCB2V0MYgv
+    w3rMLNtU2rCq0/p+e6TM0QKBgQC/kkzibKNoqYyWJLF251ubAxGvDL/0b5sSxkJC
+    CJ5Gqx8dx4LLlB8GLrgM8tq7kQCwFH9Ues6k4wDfOv9VGYk7c9XekNRkf+adu6rX
+    DPcoE5Gvf6EWXoL+NFh/i+nP602h7LngoDdLlvTmT1YVd5+dcIs5as/1PlJc6OJ1
+    kgj7VQKBgBeDXitU+zB2oK9Xhd17/7JMAKo+JK/fMNTHZFyxrqRAjI9MOr1/zxG/
+    FZxdM5ODZyfPLaJGNDxIn9LD+SHVfwPCnYPk8J77QM7+u4HOBoEtfLjWPPA8O1M0
+    UmFjSh5QsOdaB3LhU8PEGSGcqbkrYCWosnHskh4/fH2ipa0OZZmG
+    -----END RSA PRIVATE KEY-----
     """
 
     public struct Identity {
