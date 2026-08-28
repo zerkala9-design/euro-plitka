@@ -105,12 +105,23 @@ final class TVController {
             try await client.connect()
             state = .connected
             lastConnectTime = Date()
+            quickDropCount = 0
             startLiveActivity()
-        } catch let error as PhilipsError {
-            state = .failed(error.localizedDescription)
         } catch {
-            state = .failed(error.localizedDescription)
+            // Couldn't establish (e.g. Wi‑Fi weak). Keep retrying with backoff
+            // while the phone is in use, so it recovers when signal returns.
+            state = .failed((error as? PhilipsError)?.localizedDescription ?? error.localizedDescription)
+            quickDropCount += 1
+            retryConnect()
         }
+    }
+
+    /// Schedule another connect attempt (with backoff) while the phone is in
+    /// active use. Used after both a drop and a failed connect.
+    private func retryConnect() {
+        guard isRecentlyActive, let device, settings.autoReconnect else { return }
+        let delay = min(0.5 * Double(1 << min(quickDropCount, 3)), 4)   // 0.5→1→2→4s
+        scheduleReconnect(to: device, delay: delay)
     }
 
     func disconnect(userInitiated: Bool = true) {
@@ -139,9 +150,7 @@ final class TVController {
         // Keep an actively‑used phone connected — don't give up on flaky Wi‑Fi.
         // Back off on repeated quick drops so we neither spin nor start a
         // reconnect war with another phone; an idle phone (>20s) just yields.
-        guard isRecentlyActive, let device, settings.autoReconnect else { return }
-        let delay = min(0.5 * Double(1 << min(quickDropCount, 3)), 4)   // 0.5→1→2→4s
-        scheduleReconnect(to: device, delay: delay)
+        retryConnect()
     }
 
     /// Make sure we hold the TV's remote session before sending a command.
