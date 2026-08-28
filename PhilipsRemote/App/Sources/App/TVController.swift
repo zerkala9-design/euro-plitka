@@ -136,9 +136,12 @@ final class TVController {
         let lasted = lastConnectTime.map { Date().timeIntervalSince($0) } ?? .infinity
         quickDropCount = lasted < 4 ? quickDropCount + 1 : 0
 
-        guard isRecentlyActive, quickDropCount < 3,
-              let device, settings.autoReconnect else { return }
-        scheduleReconnect(to: device, delay: 0.6)
+        // Keep an actively‑used phone connected — don't give up on flaky Wi‑Fi.
+        // Back off on repeated quick drops so we neither spin nor start a
+        // reconnect war with another phone; an idle phone (>20s) just yields.
+        guard isRecentlyActive, let device, settings.autoReconnect else { return }
+        let delay = min(0.5 * Double(1 << min(quickDropCount, 3)), 4)   // 0.5→1→2→4s
+        scheduleReconnect(to: device, delay: delay)
     }
 
     /// Make sure we hold the TV's remote session before sending a command.
