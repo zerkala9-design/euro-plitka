@@ -135,6 +135,14 @@ const faqLd = faq && faq.length ? {
   <meta name="description" content={description} />
   <meta name="theme-color" content="#b89244" />
   <meta name="w3f-key" content={site.formAccessKey} />
+  <!-- Google Analytics (GA4) -->
+  <script async is:inline src="https://www.googletagmanager.com/gtag/js?id=G-6NGT1K71SQ"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6NGT1K71SQ');
+  </script>
   <link rel="canonical" href={url} />
   <link rel="alternate" hreflang="uk" href={ukHref} />
   <link rel="alternate" hreflang="ru" href={ruHref} />
